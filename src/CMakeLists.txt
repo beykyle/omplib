@@ -1,8 +1,21 @@
 file(GLOB_RECURSE SRC_CPP_FILES "*.cpp")
 list(FILTER SRC_CPP_FILES EXCLUDE REGEX ".*main.cpp")
 
-add_library(omplib_cpp ${SRC_CPP_FILES})
-target_include_directories(omplib_cpp PUBLIC ${CMAKE_SOURCE_DIR}/src)
+add_library(omplib ${SRC_CPP_FILES})
+target_include_directories(omplib PUBLIC ${CMAKE_SOURCE_DIR}/src)
 
-add_executable(omp main.cpp)
-target_link_libraries(omp omplib_cpp ${CMAKE_THREAD_LIBS_INIT})
+target_include_directories(omplib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_options(omplib PUBLIC
+  $<$<AND:$<CONFIG:Debug>,$<BOOL:${APPLE}>>:-fprofile-instr-generate -fcoverage-mapping -O0 -Wall -Wextra -Wdocumentation>
+  $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang,GNU>>:-O3>)
+target_link_options(omplib PUBLIC
+  $<$<AND:$<CONFIG:Debug>,$<BOOL:${APPLE}>>:-fprofile-instr-generate>)
+
+target_link_libraries(omplib PRIVATE nlohmann_json::nlohmann_json ${CMAKE_THREAD_LIBS_INIT})
+
+set_target_properties(omplib PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+  )
+
+add_executable(omp omplib.cpp)
+target_link_libraries(omp omplib)

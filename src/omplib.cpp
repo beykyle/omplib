@@ -1,4 +1,4 @@
-#include "potential/ompNeutron.hpp"
+#include "potential/params.hpp"
 
 #include <iostream>
 
