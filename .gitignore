@@ -26,9 +26,25 @@
 *.a
 *.lib
 
+# clang
+.clangd
+.cache/
+.clang-format
+*.profraw
+
+# misc
+# clang
+compile_commands.json
+
 # Executables
 *.exe
 *.out
 *.app
 build/
 debug/
+
+# Python
+**/__pycache__/
+
+# macOS
+*.DS_Store
