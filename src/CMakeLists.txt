@@ -1,5 +1,4 @@
 file(GLOB_RECURSE SRC_CPP_FILES "*.cpp")
-list(FILTER SRC_CPP_FILES EXCLUDE REGEX ".*main.cpp")
 
 add_library(omplib ${SRC_CPP_FILES})
 target_include_directories(omplib PUBLIC ${CMAKE_SOURCE_DIR}/src)
