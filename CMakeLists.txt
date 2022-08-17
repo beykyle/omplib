@@ -11,8 +11,7 @@ find_package (Git REQUIRED)
 
 project("OMPLib" VERSION ${version} LANGUAGES CXX)
 
-include(CTest)
-find_package (Threads)
+find_package(Threads)
 
 set(CMAKE_CXX_STANDARD 20)
 # valloric.github.io/YouCompleteMe/#c-family-semantic-completion
@@ -43,3 +42,5 @@ FetchContent_MakeAvailable(json)
 
 ## SUBDIRECTORIES
 add_subdirectory(src)
+add_subdirectory(test)
+add_subdirectory(docs)
