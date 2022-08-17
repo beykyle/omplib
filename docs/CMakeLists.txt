@@ -1,0 +1,8 @@
+find_package(Doxygen)
+if(Doxygen_FOUND)
+  file(GLOB_RECURSE MD_FILES "${PROJECT_SOURCE_DIR}/*.md")
+  set(DOXYGEN_DISTRIBUTE_GROUP_DOC YES)
+  set(DOXYGEN_USE_MATHJAX YES)
+  set(DOXYGEN_EXCLUDE_PATTERNS "*/pugixml.*" "*/nanoflann.hpp")
+  doxygen_add_docs(doc "src" "docs" ${MD_FILES} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+endif()
