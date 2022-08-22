@@ -53,12 +53,12 @@ struct OMParams<Projectile::proton> : public OMParams<Projectile::neutron>{
 // URL https://www.sciencedirect.com/science/article/pii/S0375947402013210.
 template <Projectile projectile>
 class KoningDelaroche03 : public OMParams<projectile> {
-  double e_fermi_0;
-  double e_fermi_A;
+  // fermi energy
+  double e_fermi_0, e_fermi_A;
   
   // real central
   double v1_0, v1_asym, v1_A, v2_0, v2_A, v3_0, v3_A, v4_0; // depth
-  double r_0, r_A, a_0, a_A;                                // shape
+  double rv_0, rv_A, av_0, av_A;                                // shape
 
   // cmplex central
   double w1_0, w1_A, w2_0, w2_A;
@@ -75,36 +75,139 @@ class KoningDelaroche03 : public OMParams<projectile> {
   double wso1, wso2;
 
   // structure and energy factors
-  double Ef(int at) const;
-  double asym(int zt, int at) const;
+  double Ef(int A) const;
+  double asym(int Z, int A) const;
 
 public:
   
-  double real_volu_r(int Z, int A, double erg) const final { return 0; }
-  double cmpl_volu_r(int Z, int A, double erg) const final { return 0; }
-  double real_surf_r(int Z, int A, double erg) const final { return 0; }
-  double cmpl_surf_r(int Z, int A, double erg) const final { return 0; }
-  double real_spin_r(int Z, int A, double erg) const final { return 0; }
-  double cmpl_spin_r(int Z, int A, double erg) const final { return 0; }
+  double real_volu_r(int Z, int A, double erg) const final;
+  double cmpl_volu_r(int Z, int A, double erg) const final;
+  double real_surf_r(int Z, int A, double erg) const final;
+  double cmpl_surf_r(int Z, int A, double erg) const final;
+  double real_spin_r(int Z, int A, double erg) const final;
+  double cmpl_spin_r(int Z, int A, double erg) const final;
   
-  double real_volu_a(int Z, int A, double erg) const final { return 0; }
-  double cmpl_volu_a(int Z, int A, double erg) const final { return 0; }
-  double real_surf_a(int Z, int A, double erg) const final { return 0; }
-  double cmpl_surf_a(int Z, int A, double erg) const final { return 0; }
-  double real_spin_a(int Z, int A, double erg) const final { return 0; }
-  double cmpl_spin_a(int Z, int A, double erg) const final { return 0; }
+  double real_volu_a(int Z, int A, double erg) const final;
+  double cmpl_volu_a(int Z, int A, double erg) const final;
+  double real_surf_a(int Z, int A, double erg) const final;
+  double cmpl_surf_a(int Z, int A, double erg) const final;
+  double real_spin_a(int Z, int A, double erg) const final;
+  double cmpl_spin_a(int Z, int A, double erg) const final;
 
-  double real_volu_V(int Z, int A, double erg) const final { return 0; }
-  double cmpl_volu_V(int Z, int A, double erg) const final { return 0; }
-  double real_surf_V(int Z, int A, double erg) const final { return 0; }
-  double cmpl_surf_V(int Z, int A, double erg) const final { return 0; }
-  double real_spin_V(int Z, int A, double erg) const final { return 0; }
-  double cmpl_spin_V(int Z, int A, double erg) const final { return 0; }
+  double real_volu_V(int Z, int A, double erg) const final;
+  double cmpl_volu_V(int Z, int A, double erg) const final;
+  double real_surf_V(int Z, int A, double erg) const final;
+  double cmpl_surf_V(int Z, int A, double erg) const final;
+  double real_spin_V(int Z, int A, double erg) const final;
+  double cmpl_spin_V(int Z, int A, double erg) const final;
 
   KoningDelaroche03<projectile>(json param_file);
   KoningDelaroche03<projectile>();
 };
-/*
+
+template<>
+class KoningDelaroche03<Projectile::proton> : public OMParams<Projectile::proton>{
+  double rc_0, rc_A, rc_A2;
+
+  double real_coul_r(int Z, int A, double erg) const final;
+  double real_coul_V(int Z, int A, double erg) const final;
+  
+  KoningDelaroche03(json param_file);
+  KoningDelaroche03();
+};
+
+// KD03 - term params that are the same between projectiles
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::Ef(int A) const {
+  return e_fermi_0 + e_fermi_A * static_cast<double>(A);
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::asym(int Z, int A) const {
+  const double a = static_cast<double>(A);
+  const double z = static_cast<double>(Z);
+  const double n = a - z;
+  return (n - z)/a;
+}
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::real_volu_r(
+    int Z, int A, double erg) const {
+  const double a = static_cast<double>(A);
+  return rv_0 - rv_A / pow(A , -1./3.);
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::cmpl_volu_r(
+    int Z, int A, double erg) const {
+  return real_volu_r(Z,A,erg);
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::real_surf_r(
+    int Z, int A, double erg) const {
+  return 0;
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::cmpl_surf_r(
+    int Z, int A, double erg) const {
+  return rd_0 - rd_A * pow(static_cast<double>(A), -1./3.);;
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::real_spin_r(
+    int Z, int A, double erg) const {
+  const double a = static_cast<double>(A);
+  return rso_0 - rso_A * pow(a, -1./3.);
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::cmpl_spin_r(
+    int Z, int A, double erg) const {
+  return real_spin_r(Z,A,erg);
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::real_volu_a(
+    int Z, int A, double erg) const {
+  const double a = static_cast<double>(A);
+  return av_0 - av_A / a;
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::cmpl_volu_a(
+    int Z, int A, double erg) const {
+  return real_volu_a(Z,A,erg);
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::real_surf_a(
+    int Z, int A, double erg) const {
+  return 0;
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::cmpl_surf_a(
+    int Z, int A, double erg) const {
+  const double a = static_cast<double>(A);
+  if constexpr (p == Projectile::neutron)
+    return ad_0 - ad_A * a;
+  else if constexpr(p == Projectile::proton)
+    return ad_0 + ad_A * a;
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::real_spin_a(
+    int Z, int A, double erg) const {
+  return aso_0;
+};
+
+template<Projectile p>
+double omplib::KoningDelaroche03<p>::cmpl_spin_a(
+    int Z, int A, double erg) const {
+  return real_spin_a(Z,A,erg);
+};
 
 // R. Varner, W. Thompson, T. McAbee, E. Ludwig, and T. Clegg, 
 // Physics Reports 201, 57 (1991), ISSN 0370-1573, 
@@ -168,7 +271,6 @@ public:
   WLH21<projectile>(json param_file);
   WLH21<projectile>();
 };
-*/
 };
 
 
