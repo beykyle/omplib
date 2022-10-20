@@ -40,7 +40,7 @@ public:
 };
 
 template <Proj p>
-/// @brief constructs a ChapelHill89<p> with params refit w/ MCMC; from
+/// @brief constructs a ChapelHill89\<p\> with params refit w/ MCMC; from
 /// Pruitt, C. D. et al, 
 /// “Uncertainty-Quantified Phenomenological Optical Potentials 
 /// for Single-Nucleon Scattering”, 
