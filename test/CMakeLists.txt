@@ -15,9 +15,12 @@ set(UNIT_TEST_SOURCES
 add_executable(all_tests ${UNIT_TEST_SOURCES})
 target_link_libraries(all_tests Catch2::Catch2WithMain omplib)
 
-# replace CTest with Catch2
-add_custom_target(test
-  COMMAND all_tests
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  COMMENT "Run Catch2 tests")
-add_dependencies(test all_tests)
+if(NOT CMAKE_TESTING_ENABLED)
+  add_custom_target(test
+    COMMAND all_tests
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Run Catch2 tests")
+  add_dependencies(test all_tests)
+endif()
+
+
