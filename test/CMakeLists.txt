@@ -12,12 +12,12 @@ set(UNIT_TEST_SOURCES
   )
 
 # https://github.com/catchorg/Catch2/blob/devel/docs/slow-compiles.md
-add_executable(run_tests ${UNIT_TEST_SOURCES})
-target_link_libraries(run_tests Catch2::Catch2 omplib)
+add_executable(all_tests ${UNIT_TEST_SOURCES})
+target_link_libraries(all_tests Catch2::Catch2WithMain omplib)
 
 # replace CTest with Catch2
 add_custom_target(test
-  COMMAND run_tests
+  COMMAND all_tests
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Run Catch2 tests")
-add_dependencies(test run_tests)
+add_dependencies(test all_tests)
