@@ -35,8 +35,8 @@ public:
   double real_surf_a(int Z, int A, double erg) const final;
   double real_spin_a(int Z, int A, double erg) const final;
   
-  ChapelHill89<projectile>(json param_file);
-  ChapelHill89<projectile>();
+  ChapelHill89(json param_file);
+  ChapelHill89();
 };
 
 template <Proj p>

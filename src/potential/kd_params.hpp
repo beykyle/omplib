@@ -68,13 +68,13 @@ public:
   double real_surf_V(int Z, int A, double erg) const override { return 0; }
   double real_surf_r(int Z, int A, double erg) const override { return 0; }
 
-  KoningDelaroche03<projectile>( const KoningDelaroche03<projectile>& rhs) = default;
+  KoningDelaroche03( const KoningDelaroche03<projectile>& rhs) = default;
 
   // @brief  Construct using params supplied in a json file
-  KoningDelaroche03<projectile>(json param_file);
+  KoningDelaroche03(json param_file);
 
   // @brief Construct using the default KD03 params
-  KoningDelaroche03<projectile>();
+  KoningDelaroche03();
 };
 
 

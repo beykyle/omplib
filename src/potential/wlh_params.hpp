@@ -33,8 +33,8 @@ public:
   double cmpl_surf_V(int Z, int A, double erg) const final;
   double real_spin_V(int Z, int A, double erg) const final;
 
-  WLH21<projectile>(json param_file);
-  WLH21<projectile>();
+  WLH21(json param_file);
+  WLH21();
 };
 
 }
