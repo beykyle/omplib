@@ -10,7 +10,7 @@ target_compile_options(omplib PUBLIC
 target_link_options(omplib PUBLIC
   $<$<AND:$<CONFIG:Debug>,$<BOOL:${APPLE}>>:-fprofile-instr-generate>)
 
-target_link_libraries(omplib PUBLIC nlohmann_json::nlohmann_json ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(omplib PRIVATE nlohmann_json::nlohmann_json ${CMAKE_THREAD_LIBS_INIT})
 
 set_target_properties(omplib PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
