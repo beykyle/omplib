@@ -1,7 +1,7 @@
 # cliutils.gitlab.io/modern-cmake/chapters/basics.html
 # https://docs.travis-ci.com/user/languages/cpp/#cmake
 cmake_minimum_required(VERSION 3.12.4)
-project("OMPLib" VERSION ${version} LANGUAGES CXX)
+project("OMPLib" VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 # valloric.github.io/YouCompleteMe/#c-family-semantic-completion
