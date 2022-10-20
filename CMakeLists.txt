@@ -13,13 +13,8 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "DEBUG")
 endif ()
 
-find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package (Git REQUIRED)
-
-
 find_package(Threads)
-
-
 
 # stackoverflow.com/a/24414345
 if (MSVC)
