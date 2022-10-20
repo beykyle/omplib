@@ -1,10 +1,8 @@
-file(GLOB_RECURSE TEST_CPP_FILES "*.cpp")
-
 Include(FetchContent)
 FetchContent_Declare(
   catch_download
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG v2.13.3
+  GIT_TAG v3.0.1
   )
 FetchContent_MakeAvailable(catch_download)
 
@@ -14,7 +12,7 @@ set(UNIT_TEST_SOURCES
   )
 
 # https://github.com/catchorg/Catch2/blob/devel/docs/slow-compiles.md
-add_executable(run_tests catch2_main.cpp ${UNIT_TEST_SOURCES})
+add_executable(run_tests ${UNIT_TEST_SOURCES})
 target_link_libraries(run_tests Catch2::Catch2 omplib)
 
 # replace CTest with Catch2
