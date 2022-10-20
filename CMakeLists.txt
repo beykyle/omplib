@@ -30,7 +30,6 @@ endif (!MSVC)
 
 ### External projects
 #####################
-include(ExternalProject)
 include(FetchContent)
 
 FetchContent_Declare(

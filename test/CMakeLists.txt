@@ -1,4 +1,3 @@
-Include(FetchContent)
 FetchContent_Declare(
   catch_download
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
