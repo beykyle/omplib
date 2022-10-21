@@ -1,4 +1,5 @@
 if(NOT CMAKE_TESTING_ENABLED)
+
   FetchContent_Declare(
     catch_download
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
@@ -11,6 +12,17 @@ if(NOT CMAKE_TESTING_ENABLED)
   set(UNIT_TEST_SOURCES
     test_read_json.cpp
     )
+  # Add unit test input files here
+# Prefixes are stripped so duplicate filenames must not appear
+set(UNIT_TEST_INPUTS
+  data/KDUQSamples/KDGlobal.json
+  )
+
+list(TRANSFORM UNIT_TEST_INPUTS PREPEND ${CMAKE_SOURCE_DIR}/)
+add_custom_target(
+  copy_ut_inputs ALL
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${UNIT_TEST_INPUTS} ${CMAKE_CURRENT_BINARY_DIR}
+  )
 
 # https://github.com/catchorg/Catch2/blob/devel/docs/slow-compiles.md
   add_executable(all_tests ${UNIT_TEST_SOURCES})
@@ -19,7 +31,9 @@ if(NOT CMAKE_TESTING_ENABLED)
     COMMAND all_tests
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Run Catch2 tests")
-  add_dependencies(test all_tests)
+  add_dependencies(test all_tests copy_ut_inputs)
+
+
 endif()
 
 
