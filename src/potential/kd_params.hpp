@@ -190,7 +190,7 @@ template<Proj proj>
 double KoningDelaroche03<proj>::real_cent_a(
     int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return av_0 - av_A / a;
+  return av_0 - av_A * a;
 };
 
 template<Proj proj>
