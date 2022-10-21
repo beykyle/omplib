@@ -12,7 +12,7 @@ using namespace omplib;
 TEST_CASE("Read json params from file") {
   
   // read default
-  const auto path  = "../../data/KDUQSamples/KDGlobal.json";
+  const auto path  = "KDGlobal.json";
   auto fstr  = std::ifstream(path);
   json pfile = json::parse(fstr);
   const auto kdn   = KoningDelaroche03<Proj::neutron>(pfile);
