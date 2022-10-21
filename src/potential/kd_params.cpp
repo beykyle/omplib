@@ -28,7 +28,7 @@ KoningDelaroche03<Proj::proton>::KoningDelaroche03()
 {
   // params which are different for protons
   e_fermi_0 = -8.4075;
-  e_fermi_A = 1.01378;
+  e_fermi_A = 0.01378;
   v2_0 = 7.067E-3;
   v2_A = 4.23E-6;
   v3_0 = 1.729E-5;
@@ -93,6 +93,9 @@ KoningDelaroche03<Proj::neutron>::build_KDUQ() {
   p.v3_A    = 1.45E-8;
   p.ad_0    = 5.43E-1;
   p.ad_A    = -2.14E-4;
+  
+  p.e_fermi_0 = -11.2815;
+  p.e_fermi_A = 0.02646;
 
   return p;
 };
@@ -143,6 +146,9 @@ KoningDelaroche03<Proj::proton>::build_KDUQ() {
   p.rc_A  = 6.72E-1;
   p.rc_A2 = 1.3E1;
 
+  p.e_fermi_0 = -8.4075;
+  p.e_fermi_A = 0.01378;
+  
   return p;
 };
 
