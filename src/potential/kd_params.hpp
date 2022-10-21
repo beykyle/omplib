@@ -91,7 +91,7 @@ public:
     // different for neutrons and protons
     {
       if constexpr (projectile == Proj::neutron) {
-        e_fermi_0 = -11.2841;
+        e_fermi_0 = -11.2814;
         e_fermi_A =  0.02646;
         ad_0 =  p["KDImagSurface"]["a_0_n" ];
         ad_A =  p["KDImagSurface"]["a_A_n" ]; 
@@ -104,7 +104,7 @@ public:
       }
       else if constexpr (projectile == Proj::proton) {
         e_fermi_0 = -8.4075;
-        e_fermi_A = 1.01378;
+        e_fermi_A = 0.01378;
         ad_0 =  p["KDImagSurface"]["a_0_p" ];
         ad_A =  p["KDImagSurface"]["a_A_p" ]; 
         v2_0 =  p["KDHartreeFock"]["V2_0_p"];
