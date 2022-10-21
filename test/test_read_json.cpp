@@ -2,6 +2,6 @@
 #include "catch2/matchers/catch_matchers.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 
-TEST_CASE("example") {
-  REQUIRE(true);
+TEST_CASE("Read json params from file") {
+
 }
