@@ -16,5 +16,5 @@ set_target_properties(omplib PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
   )
 
-add_executable(omp omplib.cpp)
-target_link_libraries(omp omplib)
+#add_executable(omp omplib.cpp)
+#target_link_libraries(omp omplib)
