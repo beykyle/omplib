@@ -9,7 +9,7 @@ if(NOT CMAKE_TESTING_ENABLED)
 
 # add new unit test source files here
   set(UNIT_TEST_SOURCES
-    test_example.cpp
+    test_read_json.cpp
     )
 
 # https://github.com/catchorg/Catch2/blob/devel/docs/slow-compiles.md
