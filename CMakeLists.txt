@@ -1,7 +1,14 @@
 # cliutils.gitlab.io/modern-cmake/chapters/basics.html
 # https://docs.travis-ci.com/user/languages/cpp/#cmake
 cmake_minimum_required(VERSION 3.12.4)
-project("OMPLib" VERSION 0.1 LANGUAGES CXX)
+
+# TODO this is a bit hacky
+if(DEFINED PROJECT_NAME)
+ set(SUBPROJECT ON)
+else()
+  set(SUBPROJECT OFF)
+  project("OMPLib" VERSION 0.1 LANGUAGES CXX)
+endif()
 
 set(CMAKE_CXX_STANDARD 20)
 # valloric.github.io/YouCompleteMe/#c-family-semantic-completion
@@ -42,3 +49,6 @@ FetchContent_MakeAvailable(json)
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(docs)
+if (NOT SUBPROJECT)
+  add_subdirectory(exec)
+endif()
