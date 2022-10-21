@@ -148,9 +148,9 @@ double KoningDelaroche03<proj>::Ef(int A) const {
 
 template<Proj proj>
 double KoningDelaroche03<proj>::asym(int Z, int A) const {
+  const double n = static_cast<double>(A - Z);
   const double a = static_cast<double>(A);
   const double z = static_cast<double>(Z);
-  const double n = a - z;
   return (n - z)/a;
 }
 
@@ -233,7 +233,7 @@ double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
     const double v3 = v3_0 - v3_A * a;
     const double v4 = v4_0;
 
-    return v1 * (1 - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE );
+    return v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE );
   }
   else if constexpr (proj == Proj::proton) {
     const double v1 = v1_0 - v1_A * a + v1_asym * alpha;
@@ -242,8 +242,8 @@ double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
     const double v4 = v4_0;
     const double vc = KoningDelaroche03<Proj::proton>::real_coul_V(Z,A,erg);
 
-    return v1 * (1 - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE )
-      + vc * v1 * ( v2 - 2 * v3 * dE + 3 * v4 * dE * dE);
+    return v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE )
+      + vc * v1 * ( v2 - 2. * v3 * dE + 3. * v4 * dE * dE);
     }
 }
 
