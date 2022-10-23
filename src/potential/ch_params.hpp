@@ -102,7 +102,7 @@ public:
   /// “Uncertainty-Quantified Phenomenological Optical Potentials 
   /// for Single-Nucleon Scattering”, 
   /// LLNL release number LLNL-JRNL-835671-DRAFT (to be published).
-  static ChapelHill89<projectile> build_KDUQ();
+  static ChapelHill89<projectile> build_CHUQ();
 };
 
 template<>
@@ -121,7 +121,7 @@ public:
       const ChapelHill89<Proj::proton>& rhs) = default;
   ChapelHill89();
   ChapelHill89(json p);
-  static ChapelHill89<Proj::proton> build_KDUQ();
+  static ChapelHill89<Proj::proton> build_CHUQ();
 };
 
 
