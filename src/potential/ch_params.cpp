@@ -13,10 +13,17 @@ ChapelHill89<Proj::proton>::ChapelHill89()
 
 template<>
 ChapelHill89<Proj::neutron>
-ChapelHill89<Proj::neutron>::build_CHUQ(){};
+ChapelHill89<Proj::neutron>::build_CHUQ()
+{
+ auto p = ChapelHill89<Proj::neutron>{};
+};
 
 ChapelHill89<Proj::proton>
-ChapelHill89<Proj::proton>::build_CHUQ() {};
+ChapelHill89<Proj::proton>::build_CHUQ() 
+{
+ auto p = ChapelHill89<Proj::proton>{};
+ return p;
+};
 
 ChapelHill89<Proj::proton>::ChapelHill89(json p)
   : OMParams<Proj::proton>()

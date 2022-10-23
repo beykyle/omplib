@@ -46,21 +46,22 @@ public:
   double real_cent_r(int Z, int A, double erg) const final;
   double cmpl_cent_r(int Z, int A, double erg) const final;
   double cmpl_surf_r(int Z, int A, double erg) const final;
-  double cmpl_spin_r(int Z, int A, double erg) const final;
+  double real_spin_r(int Z, int A, double erg) const final;
   
   double real_cent_a(int Z, int A, double erg) const final;
   double cmpl_cent_a(int Z, int A, double erg) const final;
   double cmpl_surf_a(int Z, int A, double erg) const final;
-  double cmpl_spin_a(int Z, int A, double erg) const final;
+  double real_spin_a(int Z, int A, double erg) const final;
 
   double real_cent_V(int Z, int A, double erg) const final;
   double cmpl_cent_V(int Z, int A, double erg) const final;
   double cmpl_surf_V(int Z, int A, double erg) const final;
+  double real_spin_V(int Z, int A, double erg) const final;
 
-  // CH89 does not have real surface or spin terms
-  double real_spin_r(int Z, int A, double erg) const final { return 0; }
-  double real_spin_V(int Z, int A, double erg) const final { return 0; }
-  double real_spin_a(int Z, int A, double erg) const final { return 0; }
+  // CH89 does not have real surface or complex spin terms
+  double cmpl_spin_r(int Z, int A, double erg) const final { return 0; }
+  double cmpl_spin_V(int Z, int A, double erg) const final { return 0; }
+  double cmpl_spin_a(int Z, int A, double erg) const final { return 0; }
   
   double real_surf_a(int Z, int A, double erg) const override { return 0; }
   double real_surf_V(int Z, int A, double erg) const override { return 0; }
@@ -143,7 +144,7 @@ double ChapelHill89<proj>::cmpl_surf_r(int Z, int A, double erg) const {
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::cmpl_spin_r(int Z, int A, double erg) const {
+double ChapelHill89<proj>::real_spin_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   return rso_0 + a * rso_A;
 }
@@ -164,7 +165,7 @@ double ChapelHill89<proj>::cmpl_surf_a(int Z, int A, double erg) const {
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::cmpl_spin_a(int Z, int A, double erg) const {
+double ChapelHill89<proj>::real_spin_a(int Z, int A, double erg) const {
   return aso;
 }
 
@@ -184,6 +185,11 @@ template<Proj proj>
 double ChapelHill89<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   const double dE = erg - Ec(Z,A,erg);
   return (ws_0  + asym(Z,A) * ws_asym) / (1 + exp( (dE - ws_e0)/ws_ew ));
+}
+
+template<Proj proj>
+double ChapelHill89<proj>::real_spin_V(int Z, int A, double erg) const {
+  return vso_0;
 }
 
 }
