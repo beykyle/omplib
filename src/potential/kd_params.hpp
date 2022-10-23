@@ -41,7 +41,8 @@ protected:
   
   // structure and energy factors
   double Ef(int A) const;
-  double asym(int Z, int A) const;
+
+  using OMParams<projectile>::asym;
 
 public:
 
@@ -70,6 +71,8 @@ public:
 
   KoningDelaroche03( const KoningDelaroche03<projectile>& rhs) = default;
 
+  // @brief Construct using the default KD03 params
+  KoningDelaroche03();
   // @brief  Construct using params supplied in a json file
   KoningDelaroche03(json p): 
     // same for n's and p's 
@@ -116,8 +119,6 @@ public:
       }
     }
     
-  // @brief Construct using the default KD03 params
-  KoningDelaroche03();
   
   /// @brief constructs a KoningDelaroche03<p> with params refit w/ MCMC; from
   /// @brief constructs a KoningDelaroche03\<p\> with params refit w/ MCMC; from
@@ -141,6 +142,7 @@ public:
   KoningDelaroche03( 
       const KoningDelaroche03<Proj::proton>& rhs) = default;
   KoningDelaroche03();
+  KoningDelaroche03(json p);
   static KoningDelaroche03<Proj::proton> build_KDUQ();
 };
 
@@ -150,14 +152,6 @@ template<Proj proj>
 double KoningDelaroche03<proj>::Ef(int A) const {
   return e_fermi_0 + e_fermi_A * static_cast<double>(A);
 };
-
-template<Proj proj>
-double KoningDelaroche03<proj>::asym(int Z, int A) const {
-  const double n = static_cast<double>(A - Z);
-  const double a = static_cast<double>(A);
-  const double z = static_cast<double>(Z);
-  return (n - z)/a;
-}
 
 template<Proj proj>
 double KoningDelaroche03<proj>::real_cent_r(

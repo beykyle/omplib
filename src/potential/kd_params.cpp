@@ -21,6 +21,14 @@ KoningDelaroche03<Proj::neutron>::KoningDelaroche03()
   rso_A(0.647)       , aso_0(0.59)    
 {};
 
+KoningDelaroche03<Proj::proton>::KoningDelaroche03(json p) 
+  : OMParams<Proj::proton>()
+  , KoningDelaroche03<Proj::neutron>(p)
+  , rc_0(  p["KDCoulomb"]["r_C_0"] )
+  , rc_A(  p["KDCoulomb"]["r_C_A"] )
+  , rc_A2( p["KDCoulomb"]["r_C_A2"])
+{};
+
 KoningDelaroche03<Proj::proton>::KoningDelaroche03() 
   : OMParams<Proj::proton>()
   , KoningDelaroche03<Proj::neutron>()
