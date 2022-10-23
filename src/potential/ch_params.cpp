@@ -1,7 +1,6 @@
 #include "potential/ch_params.hpp"
 
 using namespace omplib;
-/
 template<>
 ChapelHill89<Proj::neutron>::ChapelHill89()
   : OMParams<Proj::neutron>()
