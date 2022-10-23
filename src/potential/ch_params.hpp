@@ -37,18 +37,14 @@ public:
   
   ChapelHill89(json param_file);
   ChapelHill89();
+
+  /// @brief constructs a ChapelHill89\<p\> with params refit w/ MCMC; from
+  /// Pruitt, C. D. et al, 
+  /// “Uncertainty-Quantified Phenomenological Optical Potentials 
+  /// for Single-Nucleon Scattering”, 
+  /// LLNL release number LLNL-JRNL-835671-DRAFT (to be published).
+  static ChapelHill89<projectile> build_KDUQ();
 };
-
-template <Proj p>
-/// @brief constructs a ChapelHill89\<p\> with params refit w/ MCMC; from
-/// Pruitt, C. D. et al, 
-/// “Uncertainty-Quantified Phenomenological Optical Potentials 
-/// for Single-Nucleon Scattering”, 
-/// LLNL release number LLNL-JRNL-835671-DRAFT (to be published).
-class CHUQ : public ChapelHill89<p> { public: CHUQ(); };
-
-template <>
-class CHUQ<Proj::proton> { public: CHUQ(); };
 
 }
 
