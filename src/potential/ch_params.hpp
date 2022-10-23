@@ -37,7 +37,7 @@ protected:
   // real spin orbit depth
   double vso_0;
 
-  double Ec(int Z, int A) const { return 0; }
+  double Ec(int Z, int A, double erg) const { return 0; }
   
   using OMParams<projectile>::asym;
 
