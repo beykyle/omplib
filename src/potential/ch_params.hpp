@@ -13,15 +13,15 @@ template <Proj projectile>
 class ChapelHill89 : public OMParams<projectile> {
 protected:
   
-  // real central radii
+  // real central shape
   double rc_0, rc_A;
   double ac;
   
-  // complex central and surface radii
+  // complex central and surface shape
   double rw_0, rw_A;
   double aw;
   
-  // real spin orbit radius
+  // real spin orbit shape
   double rso_0, rso_A;
   double aso;
   
@@ -193,5 +193,4 @@ double ChapelHill89<proj>::real_spin_V(int Z, int A, double erg) const {
 }
 
 }
-
 #endif
