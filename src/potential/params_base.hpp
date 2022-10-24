@@ -52,7 +52,7 @@ protected:
 };
 
 template<>
-struct OMParams<Proj::proton> {
+struct OMParams<Proj::proton> : public OMParams<Proj::neutron> {
   virtual double real_coul_r(int Z, int A, double erg) const = 0;
 
   /// @brief Coulomb potential w/in uniformly charge sphere or radius R
