@@ -74,5 +74,24 @@ TEST_CASE("Read WLH json params from file") {
     const auto path  = "WLH_mean.json";
     auto fstr  = std::ifstream(path);
     json pfile = json::parse(fstr);
+
+    const auto wlh = WLH21<Proj::neutron>(pfile);
+
+    const auto wlh_def = WLH21<Proj::neutron>(); 
+    
+    REQUIRE( wlh.real_cent_r(66,156,189.23 ) == wlh_def.real_cent_r(66,156,189.23));
+  }
+  
+  SECTION("proton") {
+    // read default
+    const auto path  = "WLH_mean.json";
+    auto fstr  = std::ifstream(path);
+    json pfile = json::parse(fstr);
+
+    const auto wlh = WLH21<Proj::proton>(pfile);
+
+    const auto wlh_def = WLH21<Proj::proton>(); 
+    
+    REQUIRE( wlh.real_cent_r(66,156,189.23 ) == wlh_def.real_cent_r(66,156,189.23));
   }
 }
