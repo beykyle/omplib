@@ -4,32 +4,36 @@ using namespace omplib;
 template<>
 ChapelHill89<Proj::neutron>::ChapelHill89()
   : OMParams<Proj::neutron>()
-  , v_0(52.9)
-  , v_e (-0.299)
-  , v_asym(13.1)
-  , r_0(-0.225)
-  , r_A(1.25)
+  ,  v_0(52.90)
+  ,  v_e(-0.299)
+  ,  v_asym(13.10)
+  ,  r_0(-0.225)
+  ,  r_A(1.250)
+  ,  a0(0.690)
+
+  ,  wv_0(7.8)
+  ,  wve_0(35.0)
+  ,  wv_ew(16.0)
+  ,  ws_0(10.0)
+  ,  ws_e0(36.0)
+  ,  ws_ew(37.0)
+  ,  ws_asym(18.0)
+  ,  rw_0(-0.42)
+  ,  rw_A(1.33)
+  ,  aw(0.69)
+
+  ,  vso_0(5.9)
+  ,  rso_0(-1.2)
+  ,  rso_A(1.34)
+  ,  aso(0.63)
 {};
 
 ChapelHill89<Proj::proton>::ChapelHill89()
   : OMParams<Proj::proton>()
   , ChapelHill89<Proj::neutron>()
+  , rc_0(0.12)
+  , rc_A(1.24)
 {};
-
-template<>
-ChapelHill89<Proj::neutron>
-ChapelHill89<Proj::neutron>::build_CHUQ()
-{
-  auto p = ChapelHill89<Proj::neutron>{};
-  return p;
-};
-
-ChapelHill89<Proj::proton>
-ChapelHill89<Proj::proton>::build_CHUQ() 
-{
-  auto p = ChapelHill89<Proj::proton>{};
-  return p;
-};
 
 ChapelHill89<Proj::proton>::ChapelHill89(json p)
   : OMParams<Proj::proton>()
