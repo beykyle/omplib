@@ -13,7 +13,7 @@ TEST_CASE("Read KD json params from file") {
   
   SECTION("neutron") {
     // read default
-    const auto path  = "KDGlobal.json";
+    const auto path  = "KD_default.json";
     auto fstr  = std::ifstream(path);
     json pfile = json::parse(fstr);
     const auto kdn   = KoningDelaroche03<Proj::neutron>(pfile);
@@ -26,7 +26,7 @@ TEST_CASE("Read KD json params from file") {
   
   SECTION("neutron") {
     // read default
-    const auto path  = "KDGlobal.json";
+    const auto path  = "KD_default.json";
     auto fstr  = std::ifstream(path);
     json pfile = json::parse(fstr);
     const auto kdn   = KoningDelaroche03<Proj::proton>(pfile);
@@ -64,5 +64,15 @@ TEST_CASE("Read CH json params from file") {
     const auto chn_def = ChapelHill89<Proj::proton>();
 
     REQUIRE( chn.real_cent_r(66,156,189.23 ) == chn_def.real_cent_r(66,156,189.23));
+  }
+}
+
+TEST_CASE("Read WLH json params from file") {
+  
+  SECTION("neutron") {
+    // read default
+    const auto path  = "WLH_mean.json";
+    auto fstr  = std::ifstream(path);
+    json pfile = json::parse(fstr);
   }
 }

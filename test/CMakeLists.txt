@@ -15,8 +15,9 @@ if(NOT CMAKE_TESTING_ENABLED)
   # Add unit test input files here
 # Prefixes are stripped so duplicate filenames must not appear
 set(UNIT_TEST_INPUTS
-  data/KDUQSamples/KDGlobal.json
+  data/KDUQSamples/KD_default.json
   data/CHUQSamples/CH89_default.json
+  data/WLHSamples/WLH_mean.json
   )
 
 list(TRANSFORM UNIT_TEST_INPUTS PREPEND ${CMAKE_SOURCE_DIR}/)
