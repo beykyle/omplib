@@ -137,7 +137,6 @@ protected:
 public:
   constexpr static Proj projectile = Proj::proton;
   double real_coul_r(int Z, int A, double erg) const final;
-  double real_coul_V(int Z, int A, double erg) const final;
   
   KoningDelaroche03( 
       const KoningDelaroche03<Proj::proton>& rhs) = default;
@@ -222,6 +221,7 @@ double KoningDelaroche03<proj>::cmpl_spin_a(
 
 template<Proj proj>
 double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
+  const double z = static_cast<double>(Z);
   const double a = static_cast<double>(A);
   const double alpha = asym(Z,A);
   const double dE    = erg - Ef(A); 
@@ -237,7 +237,8 @@ double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
   else if constexpr (proj == Proj::proton) {
     const double v2 = v2_0 + v2_A * a;
     const double v3 = v3_0 + v3_A * a;
-    const double vc = KoningDelaroche03<Proj::proton>::real_coul_V(Z,A,erg);
+    const double rc = KoningDelaroche03<Proj::proton>::real_coul_r(Z,A,erg);
+    const double vc = 1.73 * z * pow(a,1./3.) / rc;
 
     return v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE )
       + vc * v1 * ( v2 - 2. * v3 * dE + 3. * v4 * dE * dE);
