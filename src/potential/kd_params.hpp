@@ -225,25 +225,23 @@ double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   const double alpha = asym(Z,A);
   const double dE    = erg - Ef(A); 
+  const double v1 = v1_0 - v1_A * a + v1_asym * alpha;
+  const double v4 = v4_0;
 
   if constexpr (proj == Proj::neutron) {
-    const double v1 = v1_0 - v1_A * a - v1_asym * alpha;
     const double v2 = v2_0 - v2_A * a;
     const double v3 = v3_0 - v3_A * a;
-    const double v4 = v4_0;
 
     return v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE );
   }
   else if constexpr (proj == Proj::proton) {
-    const double v1 = v1_0 - v1_A * a + v1_asym * alpha;
     const double v2 = v2_0 + v2_A * a;
     const double v3 = v3_0 + v3_A * a;
-    const double v4 = v4_0;
     const double vc = KoningDelaroche03<Proj::proton>::real_coul_V(Z,A,erg);
 
     return v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE )
       + vc * v1 * ( v2 - 2. * v3 * dE + 3. * v4 * dE * dE);
-    }
+  }
 }
 
 template<Proj proj>
@@ -264,21 +262,11 @@ double KoningDelaroche03<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   const double alpha = asym(Z,A);
   const double dE    = erg - Ef(A); 
 
+  const double d1 = d1_0 + d1_asym * alpha;
   const double d2 = d2_0 + d2_A / (1 + exp( (a - d2_A3) / d2_A2 ) );
   const double d3 = d3_0;
 
-  auto WD = [dE](double d1, double d2, double d3){
-    return d1 * dE * dE / (dE * dE + d3 * d3) * exp( - d2 * dE);
-  };
-
-  if constexpr (proj == Proj::neutron) {
-    const double d1 = d1_0 - d1_asym * alpha;
-    return WD(d1,d2,d3);
-  }
-  else if constexpr (proj == Proj::proton) {
-    const double d1 = d1_0 + d1_asym * alpha;
-    return WD(d1,d2,d3);
-  }
+  return d1 * dE * dE / (dE * dE + d3 * d3) * exp( - d2 * dE);
 }
 
 template<Proj proj>

@@ -45,7 +45,9 @@ struct OMParams {
   virtual double cmpl_spin_V(int Z, int A, double erg) const = 0;
 
 protected:
-  double asym(int Z, int A) const;
+
+  /// @returns -(N-Z)/A  when p == neutron and +(N-Z)/A when p == proton
+  static double asym(int Z, int A);
 
 };
 
@@ -56,13 +58,14 @@ struct OMParams<Proj::proton> {
 };
 
 template<Proj proj>
-double OMParams<proj>::asym(int Z, int A) const {
+double OMParams<proj>::asym(int Z, int A) {
   const double n = static_cast<double>(A - Z);
   const double a = static_cast<double>(A);
   const double z = static_cast<double>(Z);
-  return (n - z)/a;
+  const double alpha = (n - z)/a; 
+  if constexpr      (proj == Proj::neutron) return  alpha;
+  else if constexpr (proj == Proj::proton ) return -alpha;
 }
-
 
 }
 
