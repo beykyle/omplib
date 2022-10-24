@@ -14,7 +14,7 @@ class ChapelHill89 : public OMParams<projectile> {
 protected:
   
   // real central shape
-  double rc_0, rc_A;
+  double r_0, r_A;
   double ac;
   
   // complex central and surface shape
@@ -76,8 +76,8 @@ public:
     v_0(     p["CH89RealCentral"]["V_0"] ) ,
     v_e(     p["CH89RealCentral"]["V_e"] ) ,
     v_asym(  p["CH89RealCentral"]["V_t"] ) ,
-    rc_0(    p["KDHartreeFock"]["r_o_0"] ) , 
-    rc_A(    p["KDImagVolume"]["r_o"]    ) ,
+    r_0(    p["KDHartreeFock"]["r_o_0"] ) , 
+    r_A(    p["KDImagVolume"]["r_o"]    ) ,
     ac(      p["KDImagSurface"]["a_0"]   ) , 
     
     wv_0(    p["CH89ImageCentral"]["W_v0"] ),
@@ -129,7 +129,7 @@ public:
 template<Proj proj>
 double ChapelHill89<proj>::real_cent_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return rc_0 + a * rc_A;
+  return r_0 + a * r_A;
 }
 
 template<Proj proj>

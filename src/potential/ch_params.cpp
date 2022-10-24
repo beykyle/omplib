@@ -4,6 +4,11 @@ using namespace omplib;
 template<>
 ChapelHill89<Proj::neutron>::ChapelHill89()
   : OMParams<Proj::neutron>()
+  , v_0(52.9)
+  , v_e (-0.299)
+  , v_asym(13.1)
+  , r_0(-0.225)
+  , r_A(1.25)
 {};
 
 ChapelHill89<Proj::proton>::ChapelHill89()
