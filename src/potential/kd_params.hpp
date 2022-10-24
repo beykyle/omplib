@@ -248,7 +248,6 @@ double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
 template<Proj proj>
 double KoningDelaroche03<proj>::cmpl_cent_V(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  const double alpha = asym(Z,A);
   const double dE    = erg - Ef(A); 
   
   const double w1 = w1_0 + w1_A * a;

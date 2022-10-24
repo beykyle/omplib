@@ -68,6 +68,8 @@ public:
 
   WLH21(json p);
   WLH21();
+
+  using OMParams<projectile>::asym;
 };
 
 template<>
@@ -133,7 +135,7 @@ double WLH21<proj>::real_spin_a(int Z, int A, double erg) const {
 template<Proj proj>
 double WLH21<proj>::real_cent_V(int Z, int A, double erg) const {
   // delta = +/- (N-Z)/A ; - for neutron, + for proton
-  const double delta  = OMParams<proj>::asym(Z,A);
+  const double delta  = asym(Z,A);
   const double v_erg  = v0 - v1 * erg + v2 * erg * erg + v3 * erg * erg * erg;
   const double v_asym = ( v4 - v5  * erg + v6 * erg * erg ) * delta;
   return v_erg + v_asym;
@@ -142,7 +144,7 @@ double WLH21<proj>::real_cent_V(int Z, int A, double erg) const {
 template<Proj proj>
 double WLH21<proj>::cmpl_cent_V(int Z, int A, double erg) const {
   // delta = +/- (N-Z)/A ; - for neutron, + for proton
-  const double delta  = OMParams<proj>::asym(Z,A);
+  const double delta  = asym(Z,A);
   const double v_erg = w0 + w1 * erg - w2 * erg * erg;
   if constexpr (proj == Proj::neutron)
     return v_erg + (w3 - w4 * erg ) * delta;
