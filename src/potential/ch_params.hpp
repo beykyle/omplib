@@ -147,7 +147,6 @@ protected:
 public:
   constexpr static Proj projectile = Proj::proton;
   double real_coul_r(int Z, int A, double erg) const final;
-  double real_coul_V(int Z, int A, double erg) const final;
   
   ChapelHill89( 
       const ChapelHill89<Proj::proton>& rhs) = default;
@@ -214,12 +213,13 @@ double ChapelHill89<proj>::cmpl_cent_V(int Z, int A, double erg) const {
 template<Proj proj>
 double ChapelHill89<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   const double dE = erg - Ec(Z,A,erg);
-  return (ws_0  + asym(Z,A) * ws_asym) / (1 + exp( (dE - ws_e0)/ws_ew ));
+  const double Ws = (ws_0  + asym(Z,A) * ws_asym) / (1 + exp( (dE - ws_e0)/ws_ew ));
+  return - 4 * aw * Ws;
 }
 
 template<Proj proj>
 double ChapelHill89<proj>::real_spin_V(int Z, int A, double erg) const {
-  return vso_0;
+  return 2 * vso_0;
 }
 
 }

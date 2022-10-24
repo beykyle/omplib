@@ -50,13 +50,6 @@ double omplib::ChapelHill89<Proj::proton>::Ec(int Z, int A, double erg) const {
   return 6. * z * e_sqr / (5 * real_coul_r(Z,A,erg));
 }
 
-double omplib::ChapelHill89<Proj::proton>::real_coul_V(
-    int Z, int A, double erg) const {
-  const double z = static_cast<double>(Z);
-  const double a = static_cast<double>(A);
-  return 6. * z * e_sqr / ( 5. * real_coul_r(z,a,erg) * pow(a,1./3.));
-}
-
 double omplib::ChapelHill89<Proj::proton>::real_coul_r(
     int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
