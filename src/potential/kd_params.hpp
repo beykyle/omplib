@@ -238,7 +238,7 @@ double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
     const double v2 = v2_0 + v2_A * a;
     const double v3 = v3_0 + v3_A * a;
     const double rc = KoningDelaroche03<Proj::proton>::real_coul_r(Z,A,erg);
-    const double vc = 1.73 * z * pow(a,1./3.) / rc;
+    const double vc = 6 * z * e_sqr / (5 * rc * pow(a,1./3.));
 
     return v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE )
       + vc * v1 * ( v2 - 2. * v3 * dE + 3. * v4 * dE * dE);
