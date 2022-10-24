@@ -31,7 +31,7 @@ protected:
 
   // complex surface shape
   double rs0, rs1, rs2;
-  double ad0;
+  double as0;
   
   // real spn-orbit depth
   double vso_0, vso_1;
@@ -66,6 +66,13 @@ public:
   double cmpl_spin_a(int Z, int A, double erg) const final { return 0; }
   double cmpl_spin_r(int Z, int A, double erg) const final { return 0; }
 
+  WLH21(json p);
+  WLH21();
+};
+
+template<>
+class WLH21<Proj::proton> : public WLH21<Proj::neutron> , OMParams<Proj::proton> {
+public:
   WLH21(json p);
   WLH21();
 };
@@ -115,8 +122,7 @@ double WLH21<proj>::cmpl_cent_a(int Z, int A, double erg) const {
 
 template<Proj proj>
 double WLH21<proj>::cmpl_surf_a(int Z, int A, double erg) const {
-  const double a = static_cast<double>(A);
-  return rs0 - rs1 * erg - rs2 * pow(a, -1./3.);
+  return as0;
 }
 
 template<Proj proj>

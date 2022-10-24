@@ -52,7 +52,7 @@ protected:
 };
 
 template<>
-struct OMParams<Proj::proton> : public OMParams<Proj::neutron> {
+struct OMParams<Proj::proton>  {
   virtual double real_coul_r(int Z, int A, double erg) const = 0;
 
   /// @brief Coulomb potential w/in uniformly charge sphere or radius R
@@ -68,17 +68,10 @@ struct OMParams<Proj::proton> : public OMParams<Proj::neutron> {
     const double RC = real_coul_r(Z,A,erg) * pow(a,1./3.);
     return z * e_sqr / (2 * RC)  ;
   };
+  
+  /// @returns +(N-Z)/A 
+  static double asym(int Z, int A);
 };
-
-template<Proj proj>
-double OMParams<proj>::asym(int Z, int A) {
-  const double n = static_cast<double>(A - Z);
-  const double a = static_cast<double>(A);
-  const double z = static_cast<double>(Z);
-  const double alpha = (n - z)/a; 
-  if constexpr      (proj == Proj::neutron) return  alpha;
-  else if constexpr (proj == Proj::proton ) return -alpha;
-}
 
 }
 
