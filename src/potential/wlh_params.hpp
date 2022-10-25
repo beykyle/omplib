@@ -204,6 +204,12 @@ double WLH21<proj>::cmpl_cent_V(int Z, int A, double erg) const {
 
 template<Proj proj>
 double WLH21<proj>::cmpl_surf_V(int Z, int A, double erg) const {
+  if constexpr (proj ==Proj::proton) {
+    if (erg > 20) return 0;
+  }
+  if constexpr (proj ==Proj::neutron) {
+    if (erg > 40) return 0;
+  }
   // delta = +(N-Z)/A
   const double delta = OMParams<Proj::proton>::asym(Z,A);
   const double Uso = d0 - d1 * erg - (d2  - d3 * erg) * delta;
