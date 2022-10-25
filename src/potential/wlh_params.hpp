@@ -132,26 +132,30 @@ public:
 
 template<Proj proj>
 double WLH21<proj>::real_cent_r(int Z, int A, double erg) const {
-  const double a = static_cast<double>(A);
-  return r0 - r1 * erg + r2 * erg * erg - r3 * pow(a,-1./3.);
+  const double a  = static_cast<double>(A);
+  const double a3 = pow(a,1./3.); 
+  return (r0 - r1 * erg + r2 * erg * erg)*a3  - r3;
 }
 
 template<Proj proj>
 double WLH21<proj>::cmpl_cent_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return rw0 + (rw1 + rw2 * a)/(rw3 + a + rw4 * erg) + rw5 * erg * erg;
+  const double a3 = pow(a,1./3.); 
+  return a3*(rw0 + (rw1 + rw2 * a)/(rw3 + a + rw4 * erg) + rw5 * erg * erg);
 }
 
 template<Proj proj>
 double WLH21<proj>::cmpl_surf_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return rs0 - rs1 * erg - rs2 * pow(a, -1./3.);
+  const double a3 = pow(a,1./3.); 
+  return a3*(rs0 - rs1 * erg) - rs2;
 }
 
 template<Proj proj>
 double WLH21<proj>::real_spin_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return rso_0 - rso_1 * pow(a,-1./3.);
+  const double a3 = pow(a,1./3.); 
+  return rso_0 * a3 - rso_1;
 }
 
 template<Proj proj>
