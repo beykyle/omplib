@@ -214,12 +214,13 @@ template<Proj proj>
 double ChapelHill89<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   const double dE = erg - Ec(Z,A,erg);
   const double Ws = (ws_0  + asym(Z,A) * ws_asym) / (1 + exp( (dE - ws_e0)/ws_ew ));
-  return - 4 * aw * Ws;
+  return Ws;
 }
 
 template<Proj proj>
 double ChapelHill89<proj>::real_spin_V(int Z, int A, double erg) const {
-  return 2 * vso_0;
+  //TODO should be 2*vso_0, but will be multiplied by (hbar * c /(mpi)) ~ 2 in CGMF
+  return vso_0;
 }
 
 }
