@@ -156,7 +156,7 @@ template<Proj proj>
 double KoningDelaroche03<proj>::real_cent_r(
     int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return rv_0 - rv_A * pow(A , -1./3.);
+  return rv_0 * pow(a,1./3.)- rv_A ;
 };
 
 template<Proj proj>
@@ -168,14 +168,15 @@ double KoningDelaroche03<proj>::cmpl_cent_r(
 template<Proj proj>
 double KoningDelaroche03<proj>::cmpl_surf_r(
     int Z, int A, double erg) const {
-  return rd_0 - rd_A * pow(static_cast<double>(A), 1./3.);;
+  const auto a3 = pow(static_cast<double>(A), 1./3.);
+  return rd_0 *a3- rd_A * a3*a3;
 };
 
 template<Proj proj>
 double KoningDelaroche03<proj>::real_spin_r(
     int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return rso_0 - rso_A * pow(a, -1./3.); 
+  return rso_0 * pow(a, 1./3.) - rso_A ; 
 };
 
 template<Proj proj>
