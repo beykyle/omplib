@@ -165,7 +165,7 @@ double WLH21<proj>::real_cent_a(int Z, int A, double erg) const {
   const double a_np =  a0 - a2 * erg * erg - (a3 - a4 * delta ) * delta;
   if constexpr (proj == Proj::neutron)
     return a_np + a1 * erg;
-  else if constexpr (proj == Proj::proton)
+  if constexpr (proj == Proj::proton)
     return a_np - a1 * erg;
 }
 
@@ -202,7 +202,7 @@ double WLH21<proj>::cmpl_cent_V(int Z, int A, double erg) const {
   const double v_erg = w0 + w1 * erg - w2 * erg * erg;
   if constexpr (proj == Proj::neutron)
     return v_erg + (-w3 - w4 * erg ) * delta;
-  else if constexpr (proj == Proj::proton)
+  if constexpr (proj == Proj::proton)
     return v_erg + (+w3 - w4 * erg ) * delta;
 }
 
