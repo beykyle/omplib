@@ -164,9 +164,9 @@ double WLH21<proj>::real_cent_a(int Z, int A, double erg) const {
   const double delta = OMParams<Proj::proton>::asym(Z,A);
   const double a_np =  a0 - a2 * erg * erg - (a3 - a4 * delta ) * delta;
   if constexpr (proj == Proj::neutron)
-    return a_np - a1 * erg;
-  else if constexpr (proj == Proj::proton)
     return a_np + a1 * erg;
+  else if constexpr (proj == Proj::proton)
+    return a_np - a1 * erg;
 }
 
 template<Proj proj>
@@ -201,9 +201,9 @@ double WLH21<proj>::cmpl_cent_V(int Z, int A, double erg) const {
   const double delta  = asym(Z,A);
   const double v_erg = w0 + w1 * erg - w2 * erg * erg;
   if constexpr (proj == Proj::neutron)
-    return v_erg + (w3 - w4 * erg ) * delta;
-  else if constexpr (proj == Proj::proton)
     return v_erg + (-w3 - w4 * erg ) * delta;
+  else if constexpr (proj == Proj::proton)
+    return v_erg + (+w3 - w4 * erg ) * delta;
 }
 
 template<Proj proj>
@@ -216,8 +216,7 @@ double WLH21<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   }
   // delta = +(N-Z)/A
   const double delta = OMParams<Proj::proton>::asym(Z,A);
-  const double Uso = d0 - d1 * erg - (d2  - d3 * erg) * delta;
-  return Uso;
+  return d0 - d1 * erg - (d2  - d3 * erg) * delta;
 }
 
 template<Proj proj>
