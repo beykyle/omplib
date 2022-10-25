@@ -92,8 +92,8 @@ public:
     aw(      p["CH89ImagCentral"]["a_w"]   ),
     
     vso_0(   p["CH89SpinOrbit"]["V_so"]     ),
-    rso_0(   p["CH89SpinOrbit"]["r_so"]     ),
-    rso_A(   p["CH89SpinOrbit"]["r_so_0"]   ),
+    rso_0(   p["CH89SpinOrbit"]["r_so_0"]   ),
+    rso_A(   p["CH89SpinOrbit"]["r_so"]     ),
     aso(     p["CH89SpinOrbit"]["a_so"]     )
     
   {}
@@ -158,13 +158,13 @@ public:
 template<Proj proj>
 double ChapelHill89<proj>::real_cent_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return r_0 + a * r_A;
+  return r_0 + r_A * pow(a, 1./3.);
 }
 
 template<Proj proj>
 double ChapelHill89<proj>::cmpl_cent_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return rw_0 + a * rw_A;
+  return rw_0 + rw_A * pow(a, 1./3.);
 }
 
 template<Proj proj>
@@ -175,7 +175,7 @@ double ChapelHill89<proj>::cmpl_surf_r(int Z, int A, double erg) const {
 template<Proj proj>
 double ChapelHill89<proj>::real_spin_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return rso_0 + a * rso_A;
+  return rso_0 + rso_A * pow(a, 1./3.);
 }
 
 template<Proj proj>

@@ -15,6 +15,7 @@ ChapelHill89<Proj::neutron>::ChapelHill89()
   ,  wv_0(7.8)
   ,  wve_0(35.0)
   ,  wv_ew(16.0)
+  
   ,  ws_0(10.0)
   ,  ws_e0(36.0)
   ,  ws_ew(37.0)
@@ -54,5 +55,5 @@ double omplib::ChapelHill89<Proj::proton>::Ec(int Z, int A, double erg) const {
 double omplib::ChapelHill89<Proj::proton>::real_coul_r(
     int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
-  return rc_0 + rc_A * pow(a, -1./3.);
+  return rc_0 + rc_A * pow(a, 1./3.);
 }
