@@ -2,6 +2,7 @@
 #define WLH_PARAMS_HEADER
 
 #include "potential/params_base.hpp"
+#include "util/constants.hpp"
 
 namespace omplib {
 
@@ -205,12 +206,13 @@ template<Proj proj>
 double WLH21<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   // delta = +(N-Z)/A
   const double delta = OMParams<Proj::proton>::asym(Z,A);
-  return d0 - d1 * erg - (d2  - d3 * erg) * delta;
+  const double Uso = d0 - d1 * erg - (d2  - d3 * erg) * delta;
+  return 4 * cmpl_cent_a(Z,A,erg) * Uso;
 }
 
 template<Proj proj>
 double WLH21<proj>::real_spin_V(int Z, int A, double erg) const {
-  return vso_0 - vso_1 * static_cast<double>(A);
+  return 1. / (m_pi * m_pi) * (vso_0 - vso_1 * static_cast<double>(A));
 }
 
 }
