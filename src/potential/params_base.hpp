@@ -21,6 +21,8 @@ struct OMParams {
   constexpr static Proj projectile = p;
   
   // Woods-Saxon term radii 
+  // NOTE these are not reduced radii (r/a^(1/3))
+  // they are the exact radii that get plugged into a Wood-Saxon term
   virtual double real_cent_r(int Z, int A, double erg) const = 0;
   virtual double cmpl_cent_r(int Z, int A, double erg) const = 0;
   virtual double real_surf_r(int Z, int A, double erg) const = 0;
