@@ -40,8 +40,8 @@ ChapelHill89<Proj::proton>::ChapelHill89()
 ChapelHill89<Proj::proton>::ChapelHill89(json p)
   : OMParams<Proj::proton>()
   , ChapelHill89<Proj::neutron>(p)
-  , rc_0(  p["CH89Coulomb"]["r_c_0"] )
-  , rc_A(  p["CH89Coulomb"]["r_c"] )
+  , rc_0(  p["CH89Coulomb_r_c_0"] )
+  , rc_A(  p["CH89Coulomb_r_c"] )
 {};
 
 

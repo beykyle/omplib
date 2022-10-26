@@ -73,28 +73,28 @@ public:
   ChapelHill89();
 
   ChapelHill89(json p):
-    v_0(     p["CH89RealCentral"]["V_0"]   ) ,
-    v_e(     p["CH89RealCentral"]["V_e"]   ) ,
-    v_asym(  p["CH89RealCentral"]["V_t"]   ) ,
-    r_0(     p["CH89RealCentral"]["r_o_0"] ) , 
-    r_A(     p["CH89RealCentral"]["r_o"]   ) ,
-    a0(      p["CH89RealCentral"]["a_0"]   ) , 
+    v_0(     p["CH89RealCentral_V_0"]   ) ,
+    v_e(     p["CH89RealCentral_V_e"]   ) ,
+    v_asym(  p["CH89RealCentral_V_t"]   ) ,
+    r_0(     p["CH89RealCentral_r_o_0"] ) , 
+    r_A(     p["CH89RealCentral_r_o"]   ) ,
+    a0(      p["CH89RealCentral_a_0"]   ) , 
     
-    wv_0(    p["CH89ImagCentral"]["W_v0"]  ),
-    wve_0(   p["CH89ImagCentral"]["W_ve0"] ),
-    wv_ew(   p["CH89ImagCentral"]["W_vew"] ),
-    ws_0(    p["CH89ImagCentral"]["W_s0"]  ),
-    ws_e0(   p["CH89ImagCentral"]["W_se0"] ),
-    ws_ew(   p["CH89ImagCentral"]["W_sew"] ),
-    ws_asym( p["CH89ImagCentral"]["W_st"]  ),
-    rw_0(    p["CH89ImagCentral"]["r_w0"]  ),
-    rw_A(    p["CH89ImagCentral"]["r_w"]   ),
-    aw(      p["CH89ImagCentral"]["a_w"]   ),
+    wv_0(    p["CH89ImagCentral_W_v0"]  ),
+    wve_0(   p["CH89ImagCentral_W_ve0"] ),
+    wv_ew(   p["CH89ImagCentral_W_vew"] ),
+    ws_0(    p["CH89ImagCentral_W_s0"]  ),
+    ws_e0(   p["CH89ImagCentral_W_se0"] ),
+    ws_ew(   p["CH89ImagCentral_W_sew"] ),
+    ws_asym( p["CH89ImagCentral_W_st"]  ),
+    rw_0(    p["CH89ImagCentral_r_w0"]  ),
+    rw_A(    p["CH89ImagCentral_r_w"]   ),
+    aw(      p["CH89ImagCentral_a_w"]   ),
     
-    vso_0(   p["CH89SpinOrbit"]["V_so"]     ),
-    rso_0(   p["CH89SpinOrbit"]["r_so_0"]   ),
-    rso_A(   p["CH89SpinOrbit"]["r_so"]     ),
-    aso(     p["CH89SpinOrbit"]["a_so"]     )
+    vso_0(   p["CH89SpinOrbit_V_so"]     ),
+    rso_0(   p["CH89SpinOrbit_r_so_0"]   ),
+    rso_A(   p["CH89SpinOrbit_r_so"]     ),
+    aso(     p["CH89SpinOrbit_a_so"]     )
     
   {}
 
