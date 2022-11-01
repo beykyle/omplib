@@ -39,12 +39,12 @@ protected:
   // cmplex spin orbit depth
   double wso1_0, wso2_0;
   
-  // structure and energy factors
-  double Ef(int A) const;
 
   using OMParams<projectile>::asym;
 
 public:
+  // structure and energy factors
+  double Ef(int A) const;
 
   double real_cent_r(int Z, int A, double erg) const override;
   double cmpl_cent_r(int Z, int A, double erg) const override;
