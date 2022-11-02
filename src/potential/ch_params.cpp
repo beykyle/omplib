@@ -49,7 +49,7 @@ double omplib::ChapelHill89<Proj::proton>::Ec(int Z, int A, double erg) const {
   const double z = static_cast<double>(Z);
   const double a = static_cast<double>(A);
 
-  return 6. * z * e_sqr / (5 * real_coul_r(Z,A,erg));
+  return 6. * z * constants::e_sqr / (5 * real_coul_r(Z,A,erg));
 }
 
 double omplib::ChapelHill89<Proj::proton>::real_coul_r(

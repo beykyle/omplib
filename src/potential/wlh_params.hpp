@@ -192,7 +192,7 @@ double WLH21<proj>::real_cent_V(int Z, int A, double erg) const {
   const double delta  = asym(Z,A);
   const double v_erg  = v0 - v1 * erg + v2 * erg * erg + v3 * erg * erg * erg;
   const double v_asym = ( v4 - v5  * erg + v6 * erg * erg ) * delta;
-  return v_erg + v_asym;
+  return - (v_erg + v_asym);
 }
 
 template<Proj proj>
@@ -201,9 +201,9 @@ double WLH21<proj>::cmpl_cent_V(int Z, int A, double erg) const {
   const double delta  = asym(Z,A);
   const double v_erg = w0 + w1 * erg - w2 * erg * erg;
   if constexpr (proj == Proj::neutron)
-    return v_erg + (-w3 - w4 * erg ) * delta;
+    return -(v_erg + (-w3 - w4 * erg ) * delta);
   if constexpr (proj == Proj::proton)
-    return v_erg + (+w3 - w4 * erg ) * delta;
+    return -(v_erg + (+w3 - w4 * erg ) * delta);
 }
 
 template<Proj proj>
@@ -216,12 +216,13 @@ double WLH21<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   }
   // delta = +(N-Z)/A
   const double delta = OMParams<Proj::proton>::asym(Z,A);
-  return d0 - d1 * erg - (d2  - d3 * erg) * delta;
+  return 4 * cmpl_surf_a(Z,A,erg) * 
+    (d0 - d1 * erg - (d2  - d3 * erg) * delta);
 }
 
 template<Proj proj>
 double WLH21<proj>::real_spin_V(int Z, int A, double erg) const {
-  return vso_0 - vso_1 * static_cast<double>(A);
+  return constants::csp * (vso_0 - vso_1 * static_cast<double>(A));
 }
 
 }

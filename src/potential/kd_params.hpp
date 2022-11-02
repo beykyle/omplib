@@ -233,16 +233,16 @@ double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
     const double v2 = v2_0 - v2_A * a;
     const double v3 = v3_0 - v3_A * a;
 
-    return v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE );
+    return -v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE );
   }
   else if constexpr (proj == Proj::proton) {
     const double v2 = v2_0 + v2_A * a;
     const double v3 = v3_0 + v3_A * a;
     const double rc = KoningDelaroche03<Proj::proton>::real_coul_r(Z,A,erg);
-    const double vc = 6 * z * e_sqr / (5 * rc * pow(a,1./3.));
+    const double vc = 6 * z * constants::e_sqr / (5 * rc * pow(a,1./3.));
 
-    return v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE )
-      + vc * v1 * ( v2 - 2. * v3 * dE + 3. * v4 * dE * dE);
+    return -(v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE )
+      + vc * v1 * ( v2 - 2. * v3 * dE + 3. * v4 * dE * dE));
   }
 }
 
@@ -254,7 +254,7 @@ double KoningDelaroche03<proj>::cmpl_cent_V(int Z, int A, double erg) const {
   const double w1 = w1_0 + w1_A * a;
   const double w2 = w2_0 + w2_A * a;
 
-  return w1 * dE * dE / ( dE * dE + w2 * w2);
+  return -w1 * dE * dE / ( dE * dE + w2 * w2);
 }
 
 template<Proj proj>
@@ -267,7 +267,8 @@ double KoningDelaroche03<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   const double d2 = d2_0 + d2_A / (1 + exp( (a - d2_A3) / d2_A2 ) );
   const double d3 = d3_0;
 
-  return d1 * dE * dE / (dE * dE + d3 * d3) * exp( - d2 * dE);
+  return 4 * cmpl_surf_a(Z,A,erg) * 
+    d1 * dE * dE / (dE * dE + d3 * d3) * exp( - d2 * dE);
 }
 
 template<Proj proj>
@@ -278,7 +279,7 @@ double KoningDelaroche03<proj>::real_spin_V(int Z, int A, double erg) const {
   const double vso1 = vso1_0 + vso1_A * a;
   const double vso2 = vso2_0;
 
-  return vso1 * exp( - vso2 * dE);
+  return constants::csp * vso1 * exp( -vso2 * dE );
 }
 
 template<Proj proj>
@@ -289,7 +290,7 @@ double KoningDelaroche03<proj>::cmpl_spin_V(int Z, int A, double erg) const {
   const double wso1 = wso1_0;
   const double wso2 = wso2_0;
 
-  return wso1 * dE * dE / ( dE * dE + wso2 * wso2 );
+  return constants::csp * wso1 * dE * dE / ( dE * dE + wso2 * wso2 );
 }
 
 }

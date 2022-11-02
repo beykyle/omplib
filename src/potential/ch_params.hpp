@@ -201,26 +201,25 @@ double ChapelHill89<proj>::real_spin_a(int Z, int A, double erg) const {
 template<Proj proj>
 double ChapelHill89<proj>::real_cent_V(int Z, int A, double erg) const {
   const double dE = erg - Ec(Z,A,erg);
-  return v_0 + v_e * dE + asym(Z,A) * v_asym;
+  return -(v_0 + v_e * dE + asym(Z,A) * v_asym);
 }
 
 template<Proj proj>
 double ChapelHill89<proj>::cmpl_cent_V(int Z, int A, double erg) const {
   const double dE = erg - Ec(Z,A,erg);
-  return wv_0 / (1 + exp( (wve_0 - dE)/wv_ew ));
+  return -wv_0 / (1 + exp( (wve_0 - dE)/wv_ew ));
 }
 
 template<Proj proj>
 double ChapelHill89<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   const double dE = erg - Ec(Z,A,erg);
   const double Ws = (ws_0  + asym(Z,A) * ws_asym) / (1 + exp( (dE - ws_e0)/ws_ew ));
-  return Ws;
+  return 4 * cmpl_surf_a(Z,A,erg) * Ws;
 }
 
 template<Proj proj>
 double ChapelHill89<proj>::real_spin_V(int Z, int A, double erg) const {
-  //TODO should be 2*vso_0, but will be multiplied by (hbar * c /(mpi)) ~ 2 in CGMF
-  return vso_0;
+  return 2. * vso_0;
 }
 
 }

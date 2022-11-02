@@ -60,7 +60,7 @@ struct OMParams<Proj::proton>  {
   /// @brief Coulomb potential w/in uniformly charge sphere or radius R
   /// v(r) = q^2/(2*R)(3 - r/R)
   virtual double real_coul_V_outer(int Z, int A, double erg) const {
-    return static_cast<double>(Z) * e_sqr;
+    return static_cast<double>(Z) * constants::e_sqr;
   }
   /// @brief Coulomb potential outside uniformly charge sphere or radius R
   /// v(r) = q^2/r
@@ -68,7 +68,7 @@ struct OMParams<Proj::proton>  {
     const double a = static_cast<double>(A);
     const double z = static_cast<double>(Z);
     const double RC = real_coul_r(Z,A,erg) * pow(a,1./3.);
-    return z * e_sqr / (2 * RC)  ;
+    return z * constants::e_sqr / (2 * RC)  ;
   };
   
   /// @returns +(N-Z)/A 
