@@ -67,6 +67,26 @@ public:
   };
 };
 
+template<size_t N>
+class NGaussian : Potential {
+private:
+  std::array<Gaussian,N> gaussians;
+
+public:
+  NGaussian(std::array<Gaussian,N> gaussians):
+    gaussians(gaussians) {};
+  
+  double eval(double r) const final {
+    double v = 0;
+    for (int i = 0; i < N; ++i) {
+      v += gaussians[i].eval(r);
+    }
+  };
+};
+
+using DoubleGaussian = NGaussian<2>;
+
+
 }
 
 #endif 
