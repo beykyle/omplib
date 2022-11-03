@@ -34,6 +34,7 @@ template<Proj p>
 /// W_so(r,erg) = cmpl_spin_V(Z,A,erg) * 1/r  d/dr f(r,cmpl_spin_R(Z,A,erg), cmpl_spin_a(Z,A,erg))
 /// The typical factor of inverse pion mass squared is absorbed into *_spin_V.
 /// All depth terms have units of MeV, and r and a terms of fm
+/// See the function omplib::OMP::eval for how these parameters are used.
 struct OMParams {
   constexpr static Proj projectile = p;
   
