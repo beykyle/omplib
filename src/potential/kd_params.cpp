@@ -24,9 +24,9 @@ KoningDelaroche03<Proj::neutron>::KoningDelaroche03()
 KoningDelaroche03<Proj::proton>::KoningDelaroche03(json p) 
   : OMParams<Proj::proton>()
   , KoningDelaroche03<Proj::neutron>(p)
-  , rc_0(  p["KDCoulomb"]["r_C_0"] )
-  , rc_A(  p["KDCoulomb"]["r_C_A"] )
-  , rc_A2( p["KDCoulomb"]["r_C_A2"])
+  , rc_0(  p["KDCoulomb_r_C_0"] )
+  , rc_A(  p["KDCoulomb_r_C_A"] )
+  , rc_A2( p["KDCoulomb_r_C_A2"])
 {};
 
 KoningDelaroche03<Proj::proton>::KoningDelaroche03() 

@@ -76,46 +76,46 @@ public:
   // @brief  Construct using params supplied in a json file
   KoningDelaroche03(json p): 
     // same for n's and p's 
-    v1_0(   p["KDHartreeFock"]["V1_0"]     ) , v1_asym(  p["KDHartreeFock"]["V1_asymm"]   ),
-    v1_A(   p["KDHartreeFock"]["V1_A"]     ) , v4_0(     p["KDHartreeFock"]["V4_0"]       ),
-    rv_0(   p["KDHartreeFock"]["r_0"]      ) , rv_A(     p["KDHartreeFock"]["r_A"]        ),
-    av_0(   p["KDHartreeFock"]["a_0"]      ) , av_A(     p["KDHartreeFock"]["a_A"]        ),
-    w2_0(   p["KDImagVolume"]["W2_0"]      ) , w2_A(     p["KDImagVolume"]["W2_A"]        ),
-    d1_0(   p["KDImagSurface"]["D1_0"]     ) , d1_asym(  p["KDImagSurface"]["D1_asymm"]   ),
-    d2_0(   p["KDImagSurface"]["D2_0"]     ) , d2_A(     p["KDImagSurface"]["D2_A"]       ),
-    d2_A2(  p["KDImagSurface"]["D2_A2"]    ) , d2_A3(    p["KDImagSurface"]["D2_A3"]      ),
-    d3_0(   p["KDImagSurface"]["D3_0"]     ) , rd_0(     p["KDImagSurface"]["r_0"]        ),
-    rd_A(   p["KDImagSurface"]["r_A"]      ) , vso1_0(   p["KDRealSpinOrbit"]["V1_0"]     ),
-    vso1_A( p["KDRealSpinOrbit"]["V1_A"]   ) , rso_0(    p["KDRealSpinOrbit"]["r_0"]      ),
-    vso2_0( p["KDRealSpinOrbit"]["V2_0"]   ) , aso_0(    p["KDRealSpinOrbit"]["a_0"]      ), 
-    rso_A(  p["KDRealSpinOrbit"]["r_A"]    ) , wso2_0(   p["KDImagSpinOrbit"]["W2_0"]     ), 
-    wso1_0( p["KDImagSpinOrbit"]["W1_0"]   ) 
+    v1_0(   p["KDHartreeFock_V1_0"]     ) , v1_asym(  p["KDHartreeFock_V1_asymm"]   ),
+    v1_A(   p["KDHartreeFock_V1_A"]     ) , v4_0(     p["KDHartreeFock_V4_0"]       ),
+    rv_0(   p["KDHartreeFock_r_0"]      ) , rv_A(     p["KDHartreeFock_r_A"]        ),
+    av_0(   p["KDHartreeFock_a_0"]      ) , av_A(     p["KDHartreeFock_a_A"]        ),
+    w2_0(   p["KDImagVolume_W2_0"]      ) , w2_A(     p["KDImagVolume_W2_A"]        ),
+    d1_0(   p["KDImagSurface_D1_0"]     ) , d1_asym(  p["KDImagSurface_D1_asymm"]   ),
+    d2_0(   p["KDImagSurface_D2_0"]     ) , d2_A(     p["KDImagSurface_D2_A"]       ),
+    d2_A2(  p["KDImagSurface_D2_A2"]    ) , d2_A3(    p["KDImagSurface_D2_A3"]      ),
+    d3_0(   p["KDImagSurface_D3_0"]     ) , rd_0(     p["KDImagSurface_r_0"]        ),
+    rd_A(   p["KDImagSurface_r_A"]      ) , vso1_0(   p["KDRealSpinOrbit_V1_0"]     ),
+    vso1_A( p["KDRealSpinOrbit_V1_A"]   ) , rso_0(    p["KDRealSpinOrbit_r_0"]      ),
+    vso2_0( p["KDRealSpinOrbit_V2_0"]   ) , aso_0(    p["KDRealSpinOrbit_a_0"]      ), 
+    rso_A(  p["KDRealSpinOrbit_r_A"]    ) , wso2_0(   p["KDImagSpinOrbit_W2_0"]     ), 
+    wso1_0( p["KDImagSpinOrbit_W1_0"]   ) 
 
     // different for neutrons and protons
     {
       if constexpr (projectile == Proj::neutron) {
         e_fermi_0 = -11.2814;
         e_fermi_A =  0.02646;
-        ad_0 =  p["KDImagSurface"]["a_0_n" ];
-        ad_A =  p["KDImagSurface"]["a_A_n" ]; 
-        v2_0 =  p["KDHartreeFock"]["V2_0_n"];
-        v2_A =  p["KDHartreeFock"]["V2_A_n"]; 
-        v3_0 =  p["KDHartreeFock"]["V3_0_n"];
-        v3_A =  p["KDHartreeFock"]["V3_A_n"]; 
-        w1_0 =  p["KDImagVolume" ]["W1_0_n"]; 
-        w1_A =  p["KDImagVolume" ]["W1_A_n"];
+        ad_0 =  p["KDImagSurface_a_0_n" ];
+        ad_A =  p["KDImagSurface_a_A_n" ]; 
+        v2_0 =  p["KDHartreeFock_V2_0_n"];
+        v2_A =  p["KDHartreeFock_V2_A_n"]; 
+        v3_0 =  p["KDHartreeFock_V3_0_n"];
+        v3_A =  p["KDHartreeFock_V3_A_n"]; 
+        w1_0 =  p["KDImagVolume_W1_0_n"]; 
+        w1_A =  p["KDImagVolume_W1_A_n"];
       }
       else if constexpr (projectile == Proj::proton) {
         e_fermi_0 = -8.4075;
         e_fermi_A = 0.01378;
-        ad_0 =  p["KDImagSurface"]["a_0_p" ];
-        ad_A =  p["KDImagSurface"]["a_A_p" ]; 
-        v2_0 =  p["KDHartreeFock"]["V2_0_p"];
-        v2_A =  p["KDHartreeFock"]["V2_A_p"]; 
-        v3_0 =  p["KDHartreeFock"]["V3_0_p"];
-        v3_A =  p["KDHartreeFock"]["V3_A_p"]; 
-        w1_0 =  p["KDImagVolume" ]["W1_0_p"]; 
-        w1_A =  p["KDImagVolume" ]["W1_A_p"];
+        ad_0 =  p["KDImagSurface_a_0_p" ];
+        ad_A =  p["KDImagSurface_a_A_p" ]; 
+        v2_0 =  p["KDHartreeFock_V2_0_p"];
+        v2_A =  p["KDHartreeFock_V2_A_p"]; 
+        v3_0 =  p["KDHartreeFock_V3_0_p"];
+        v3_A =  p["KDHartreeFock_V3_A_p"]; 
+        w1_0 =  p["KDImagVolume_W1_0_p"]; 
+        w1_A =  p["KDImagVolume_W1_A_p"];
       }
     }
     
