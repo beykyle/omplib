@@ -19,22 +19,30 @@ template<Proj p>
 /// @brief  Pure abstract base class for OM potential parameters, where the potential 
 /// takes the common global phenomenological form:
 /// V(r,E) + V_s(r,E) + V_so(r,E) * L.S + i*W_v(r,E) + i*W_s(r,E) + i W_so(r,E) * L.S
+///
 /// Here, V,W_v refer to real and an imaginary volume terms, which are typically 
 /// negative/attractive, and take Woods-Saxon form factors f(r,R,a) = 1/(1+exp((r-R)/a))
 /// V(r,erg) = real_cent_V(Z,A,erg) * f(r,real_cent_R(Z,A,erg), real_cent_a(Z,A,erg))
 /// W(r,erg) = cmpl_cent_V(Z,A,erg) * f(r,cmpl_cent_R(Z,A,erg), cmpl_cent_a(Z,A,erg))
+///
 /// V_s, and W_s refer to surface peaked potentials, typically positive/repulsive, and take
 /// derivative of Woods-Saxon form factors.
 /// V_s(r,erg) = real_surf_V(Z,A,erg) * d/dr f(r,real_surf_R(Z,A,erg), real_surf_a(Z,A,erg))
 /// W_s(r,erg) = cmpl_surf_V(Z,A,erg) * d/dr f(r,cmpl_surf_R(Z,A,erg), cmpl_surf_a(Z,A,erg))
 /// The typical factor of -4*a_s is absorbed into *_surf_V.
+///
 /// V_so, and W_so refer to spin orbit potentials, typically positive/repulsive, and take
 /// derivative of Woods-Saxon form factors, modulated by 1/e.
 /// V_so(r,erg) = real_spin_V(Z,A,erg) * 1/r d/dr f(r,real_spin_R(Z,A,erg), real_spin_a(Z,A,erg))
 /// W_so(r,erg) = cmpl_spin_V(Z,A,erg) * 1/r  d/dr f(r,cmpl_spin_R(Z,A,erg), cmpl_spin_a(Z,A,erg))
+///
 /// The typical factor of inverse pion mass squared is absorbed into *_spin_V.
-/// All depth terms have units of MeV, and r and a terms of fm
+/// All depth terms have units of MeV, and r and a terms of fm.
+///
 /// See the function omplib::OMP::eval for how these parameters are used.
+///
+/// NOTE: radii are NOT reduced - they are the exact radii R that get plugged into f(r,R,a).
+/// To get reduced radii, divide by A^(1/3)
 struct OMParams {
   constexpr static Proj projectile = p;
   
