@@ -4,31 +4,30 @@ if(NOT CMAKE_TESTING_ENABLED)
     catch_download
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
     GIT_TAG v3.0.1
-    DOWNLOAD_EXTRACT_TIMESTAMP true
     )
   FetchContent_MakeAvailable(catch_download)
 
-# add new unit test source files here
+  # add new unit test source files here
   set(UNIT_TEST_SOURCES
     test_read_json.cpp
     )
   # Add unit test input files here
-# Prefixes are stripped so duplicate filenames must not appear
-set(UNIT_TEST_INPUTS
-  data/KDUQSamples/KD_default.json
-  data/CHUQSamples/CH89_default.json
-  data/WLHSamples/WLH_mean.json
-  )
+  # Prefixes are stripped so duplicate filenames must not appear
+  set(UNIT_TEST_INPUTS
+    data/KDUQSamples/KD_default.json
+    data/CHUQSamples/CH89_default.json
+    data/WLHSamples/WLH_mean.json
+    )
 
-list(TRANSFORM UNIT_TEST_INPUTS PREPEND ${CMAKE_SOURCE_DIR}/)
-add_custom_target(
-  copy_ut_inputs ALL
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${UNIT_TEST_INPUTS} ${CMAKE_CURRENT_BINARY_DIR}
-  )
+  list(TRANSFORM UNIT_TEST_INPUTS PREPEND ${CMAKE_SOURCE_DIR}/)
+  add_custom_target(
+    copy_ut_inputs ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${UNIT_TEST_INPUTS} ${CMAKE_CURRENT_BINARY_DIR}
+    )
 
-# https://github.com/catchorg/Catch2/blob/devel/docs/slow-compiles.md
+  # https://github.com/catchorg/Catch2/blob/devel/docs/slow-compiles.md
   add_executable(all_tests ${UNIT_TEST_SOURCES})
-  target_link_libraries(all_tests Catch2::Catch2WithMain omplib)
+  target_link_libraries(all_tests nlohmann_json::nlohmann_json Catch2::Catch2WithMain omplib)
   add_custom_target(test
     COMMAND all_tests
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
