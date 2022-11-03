@@ -2,6 +2,7 @@
 #define POTENTIAL_HEADER
 
 #include "potential/params_base.hpp"
+#include "potential/params.hpp"
 
 namespace omplib {
 
@@ -86,6 +87,9 @@ public:
 
 using DoubleGaussian = NGaussian<2>;
 
+class KoningDelaroche03 : Potential {};
+class ChapelHill89 : Potential {};
+class WLH21 : Potential {};
 
 }
 

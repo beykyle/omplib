@@ -16,10 +16,10 @@ TEST_CASE("Read KD json params from file") {
     const auto path  = "KD_default.json";
     auto fstr  = std::ifstream(path);
     json pfile = json::parse(fstr);
-    const auto kdn   = KoningDelaroche03<Proj::neutron>(pfile);
+    const auto kdn   = KD03Params<Proj::neutron>(pfile);
 
     // built in default
-    const auto kdn_def = KoningDelaroche03<Proj::neutron>();
+    const auto kdn_def = KD03Params<Proj::neutron>();
 
     REQUIRE( kdn.real_cent_r(66,156,189.23 ) == kdn_def.real_cent_r(66,156,189.23));
   }
@@ -29,10 +29,10 @@ TEST_CASE("Read KD json params from file") {
     const auto path  = "KD_default.json";
     auto fstr  = std::ifstream(path);
     json pfile = json::parse(fstr);
-    const auto kdn   = KoningDelaroche03<Proj::proton>(pfile);
+    const auto kdn   = KD03Params<Proj::proton>(pfile);
 
     // built in default
-    const auto kdn_def = KoningDelaroche03<Proj::proton>();
+    const auto kdn_def = KD03Params<Proj::proton>();
 
     REQUIRE( kdn.real_cent_r(66,156,189.23 ) == kdn_def.real_cent_r(66,156,189.23));
   }
@@ -45,10 +45,10 @@ TEST_CASE("Read CH json params from file") {
     const auto path  = "CH89_default.json";
     auto fstr  = std::ifstream(path);
     json pfile = json::parse(fstr);
-    const auto chn   = ChapelHill89<Proj::neutron>(pfile);
+    const auto chn   = CH89Params<Proj::neutron>(pfile);
 
     // built in default
-    const auto chn_def = ChapelHill89<Proj::neutron>();
+    const auto chn_def = CH89Params<Proj::neutron>();
 
     REQUIRE( chn.real_cent_r(66,156,189.23 ) == chn_def.real_cent_r(66,156,189.23));
   }
@@ -58,10 +58,10 @@ TEST_CASE("Read CH json params from file") {
     const auto path  = "CH89_default.json";
     auto fstr  = std::ifstream(path);
     json pfile = json::parse(fstr);
-    const auto chn   = ChapelHill89<Proj::proton>(pfile);
+    const auto chn   = CH89Params<Proj::proton>(pfile);
 
     // built in default
-    const auto chn_def = ChapelHill89<Proj::proton>();
+    const auto chn_def = CH89Params<Proj::proton>();
 
     REQUIRE( chn.real_cent_r(66,156,189.23 ) == chn_def.real_cent_r(66,156,189.23));
   }
@@ -75,9 +75,9 @@ TEST_CASE("Read WLH json params from file") {
     auto fstr  = std::ifstream(path);
     json pfile = json::parse(fstr);
 
-    const auto wlh = WLH21<Proj::neutron>(pfile);
+    const auto wlh = WLH21Params<Proj::neutron>(pfile);
 
-    const auto wlh_def = WLH21<Proj::neutron>(); 
+    const auto wlh_def = WLH21Params<Proj::neutron>(); 
     
     REQUIRE( wlh.real_cent_r(66,156,189.23 ) == wlh_def.real_cent_r(66,156,189.23));
   }
@@ -88,9 +88,9 @@ TEST_CASE("Read WLH json params from file") {
     auto fstr  = std::ifstream(path);
     json pfile = json::parse(fstr);
 
-    const auto wlh = WLH21<Proj::proton>(pfile);
+    const auto wlh = WLH21Params<Proj::proton>(pfile);
 
-    const auto wlh_def = WLH21<Proj::proton>(); 
+    const auto wlh_def = WLH21Params<Proj::proton>(); 
     
     REQUIRE( wlh.real_cent_r(66,156,189.23 ) == wlh_def.real_cent_r(66,156,189.23));
   }

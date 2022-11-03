@@ -10,7 +10,7 @@ namespace omplib {
 /// Physics Reports 201, 57 (1991), ISSN 0370-1573, 
 /// URL https://www.sciencedirect.com/science/article/pii/037015739190039O
 template <Proj projectile>
-class ChapelHill89 : public OMParams<projectile> {
+class CH89Params : public OMParams<projectile> {
 protected:
   
   // real central shape
@@ -67,12 +67,12 @@ public:
   double real_surf_V(int Z, int A, double erg) const override { return 0; }
   double real_surf_r(int Z, int A, double erg) const override { return 0; }
   
-  ChapelHill89( const ChapelHill89<projectile>& rhs ) = default;
+  CH89Params( const CH89Params<projectile>& rhs ) = default;
   
   // construct using default CH89 params
-  ChapelHill89();
+  CH89Params();
 
-  ChapelHill89(json p):
+  CH89Params(json p):
     v_0(     p["CH89RealCentral_V_0"]   ) ,
     v_e(     p["CH89RealCentral_V_e"]   ) ,
     v_asym(  p["CH89RealCentral_V_t"]   ) ,
@@ -98,14 +98,14 @@ public:
     
   {}
 
-  /// @brief constructs a ChapelHill89\<p\> with params refit w/ MCMC; from
+  /// @brief constructs a CH89Params\<p\> with params refit w/ MCMC; from
   /// Pruitt, C. D. et al, 
   /// “Uncertainty-Quantified Phenomenological Optical Potentials 
   /// for Single-Nucleon Scattering”, 
   /// LLNL release number LLNL-JRNL-835671-DRAFT (to be published).
-  static ChapelHill89<projectile> build_CHUQ()
+  static CH89Params<projectile> build_CHUQ()
   {
-    auto p = ChapelHill89<projectile>{};
+    auto p = CH89Params<projectile>{};
     
     p.v_0     = 56.19;
     p.v_asym  = 13.82;
@@ -138,8 +138,8 @@ public:
 };
 
 template<>
-class ChapelHill89<Proj::proton> : 
-  public ChapelHill89<Proj::neutron> , OMParams<Proj::proton> {
+class CH89Params<Proj::proton> : 
+  public CH89Params<Proj::neutron> , OMParams<Proj::proton> {
 protected: 
   double rc_0, rc_A;
   double Ec(int Z, int A, double erg) const;
@@ -148,77 +148,77 @@ public:
   constexpr static Proj projectile = Proj::proton;
   double real_coul_r(int Z, int A, double erg) const final;
   
-  ChapelHill89( 
-      const ChapelHill89<Proj::proton>& rhs) = default;
-  ChapelHill89();
-  ChapelHill89(json p);
+  CH89Params( 
+      const CH89Params<Proj::proton>& rhs) = default;
+  CH89Params();
+  CH89Params(json p);
 };
 
 
 template<Proj proj>
-double ChapelHill89<proj>::real_cent_r(int Z, int A, double erg) const {
+double CH89Params<proj>::real_cent_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   return r_0 + r_A * pow(a, 1./3.);
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::cmpl_cent_r(int Z, int A, double erg) const {
+double CH89Params<proj>::cmpl_cent_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   return rw_0 + rw_A * pow(a, 1./3.);
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::cmpl_surf_r(int Z, int A, double erg) const {
+double CH89Params<proj>::cmpl_surf_r(int Z, int A, double erg) const {
   return cmpl_cent_r(Z,A,erg);
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::real_spin_r(int Z, int A, double erg) const {
+double CH89Params<proj>::real_spin_r(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   return rso_0 + rso_A * pow(a, 1./3.);
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::real_cent_a(int Z, int A, double erg) const {
+double CH89Params<proj>::real_cent_a(int Z, int A, double erg) const {
   return a0;
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::cmpl_cent_a(int Z, int A, double erg) const {
+double CH89Params<proj>::cmpl_cent_a(int Z, int A, double erg) const {
   return aw;
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::cmpl_surf_a(int Z, int A, double erg) const {
+double CH89Params<proj>::cmpl_surf_a(int Z, int A, double erg) const {
   return aw;
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::real_spin_a(int Z, int A, double erg) const {
+double CH89Params<proj>::real_spin_a(int Z, int A, double erg) const {
   return aso;
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::real_cent_V(int Z, int A, double erg) const {
+double CH89Params<proj>::real_cent_V(int Z, int A, double erg) const {
   const double dE = erg - Ec(Z,A,erg);
   return -(v_0 + v_e * dE + asym(Z,A) * v_asym);
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::cmpl_cent_V(int Z, int A, double erg) const {
+double CH89Params<proj>::cmpl_cent_V(int Z, int A, double erg) const {
   const double dE = erg - Ec(Z,A,erg);
   return -wv_0 / (1 + exp( (wve_0 - dE)/wv_ew ));
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::cmpl_surf_V(int Z, int A, double erg) const {
+double CH89Params<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   const double dE = erg - Ec(Z,A,erg);
   const double Ws = (ws_0  + asym(Z,A) * ws_asym) / (1 + exp( (dE - ws_e0)/ws_ew ));
   return 4 * cmpl_surf_a(Z,A,erg) * Ws;
 }
 
 template<Proj proj>
-double ChapelHill89<proj>::real_spin_V(int Z, int A, double erg) const {
+double CH89Params<proj>::real_spin_V(int Z, int A, double erg) const {
   return 2. * vso_0;
 }
 

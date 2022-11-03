@@ -2,7 +2,7 @@
 
 using namespace omplib;
 
-WLH21<Proj::proton>::WLH21(json p) {
+WLH21Params<Proj::proton>::WLH21Params(json p) {
   v0 = p["WLHReal_V0_p"];
   v1 = p["WLHReal_V1_p"];
   v2 = p["WLHReal_V2_p"];
@@ -52,7 +52,7 @@ WLH21<Proj::proton>::WLH21(json p) {
 }
 
 template<>
-WLH21<Proj::neutron>::WLH21(json p):
+WLH21Params<Proj::neutron>::WLH21Params(json p):
   v0(p["WLHReal_V0_n"]),
   v1(p["WLHReal_V1_n"]),
   v2(p["WLHReal_V2_n"]),
@@ -101,8 +101,8 @@ WLH21<Proj::neutron>::WLH21(json p):
   aso_1(p["WLHRealSpinOrbit_a1_n"])
 {}
 
-WLH21<Proj::proton>::WLH21()
-  : WLH21<Proj::neutron>(), OMParams<Proj::proton>()
+WLH21Params<Proj::proton>::WLH21Params()
+  : WLH21Params<Proj::neutron>(), OMParams<Proj::proton>()
 {
   v0     = 53.6540319643;
   v1     = 0.300042293;

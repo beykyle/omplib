@@ -13,8 +13,8 @@ constexpr auto p = omplib::Proj::neutron;
 
 int main(int argc, char** argv) {
   
-  auto kdn_uq   = omplib::KoningDelaroche03<n>::build_KDUQ();
-  auto wlh_mean = omplib::WLH21<n>();
+  auto kdn_uq   = omplib::KD03Params<n>::build_KDUQ();
+  auto wlh_mean = omplib::WLH21Params<n>();
   
   constexpr auto erg_min = 0.01;
   constexpr auto erg_max = 10.;

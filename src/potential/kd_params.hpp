@@ -10,7 +10,7 @@ namespace omplib {
 /// Nuclear Physics A 713, 231 (2003), ISSN 0375-9474, 
 /// URL https://www.sciencedirect.com/science/article/pii/S0375947402013210.
 template <Proj projectile>
-class KoningDelaroche03 : public OMParams<projectile> {
+class KD03Params : public OMParams<projectile> {
 protected:
   // fermi energy
   double e_fermi_0, e_fermi_A;
@@ -69,12 +69,12 @@ public:
   double real_surf_V(int Z, int A, double erg) const override { return 0; }
   double real_surf_r(int Z, int A, double erg) const override { return 0; }
 
-  KoningDelaroche03( const KoningDelaroche03<projectile>& rhs) = default;
+  KD03Params( const KD03Params<projectile>& rhs) = default;
 
   // @brief Construct using the default KD03 params
-  KoningDelaroche03();
+  KD03Params();
   // @brief  Construct using params supplied in a json file
-  KoningDelaroche03(json p): 
+  KD03Params(json p): 
     // same for n's and p's 
     v1_0(   p["KDHartreeFock_V1_0"]     ) , v1_asym(  p["KDHartreeFock_V1_asymm"]   ),
     v1_A(   p["KDHartreeFock_V1_A"]     ) , v4_0(     p["KDHartreeFock_V4_0"]       ),
@@ -120,17 +120,17 @@ public:
     }
     
   
-  /// @brief constructs a KoningDelaroche03<p> with params refit w/ MCMC; from
-  /// @brief constructs a KoningDelaroche03\<p\> with params refit w/ MCMC; from
+  /// @brief constructs a KD03Params<p> with params refit w/ MCMC; from
+  /// @brief constructs a KD03Params\<p\> with params refit w/ MCMC; from
   /// Pruitt, C. D. et al, 
   /// “Uncertainty-Quantified Phenomenological Optical Potentials 
   /// for Single-Nucleon Scattering”, 
-  static KoningDelaroche03<projectile> build_KDUQ();
+  static KD03Params<projectile> build_KDUQ();
 };
 
 template<>
-class KoningDelaroche03<Proj::proton> : 
-  public KoningDelaroche03<Proj::neutron> , OMParams<Proj::proton> {
+class KD03Params<Proj::proton> : 
+  public KD03Params<Proj::neutron> , OMParams<Proj::proton> {
 protected: 
   double rc_0, rc_A, rc_A2;
 
@@ -138,68 +138,68 @@ public:
   constexpr static Proj projectile = Proj::proton;
   double real_coul_r(int Z, int A, double erg) const final;
   
-  KoningDelaroche03( 
-      const KoningDelaroche03<Proj::proton>& rhs) = default;
-  KoningDelaroche03();
-  KoningDelaroche03(json p);
-  static KoningDelaroche03<Proj::proton> build_KDUQ();
+  KD03Params( 
+      const KD03Params<Proj::proton>& rhs) = default;
+  KD03Params();
+  KD03Params(json p);
+  static KD03Params<Proj::proton> build_KDUQ();
 };
 
 
 // potential terms
 template<Proj proj>
-double KoningDelaroche03<proj>::Ef(int A) const {
+double KD03Params<proj>::Ef(int A) const {
   return e_fermi_0 + e_fermi_A * static_cast<double>(A);
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::real_cent_r(
+double KD03Params<proj>::real_cent_r(
     int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   return rv_0 * pow(a,1./3.)- rv_A ;
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::cmpl_cent_r(
+double KD03Params<proj>::cmpl_cent_r(
     int Z, int A, double erg) const {
   return real_cent_r(Z,A,erg); // complex and real centme terms share geometry
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::cmpl_surf_r(
+double KD03Params<proj>::cmpl_surf_r(
     int Z, int A, double erg) const {
   const auto a3 = pow(static_cast<double>(A), 1./3.);
   return rd_0 *a3- rd_A * a3*a3;
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::real_spin_r(
+double KD03Params<proj>::real_spin_r(
     int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   return rso_0 * pow(a, 1./3.) - rso_A ; 
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::cmpl_spin_r(
+double KD03Params<proj>::cmpl_spin_r(
     int Z, int A, double erg) const {
   return real_spin_r(Z,A,erg);// complex and real SO terms share geometry
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::real_cent_a(
+double KD03Params<proj>::real_cent_a(
     int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   return av_0 - av_A * a;
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::cmpl_cent_a(
+double KD03Params<proj>::cmpl_cent_a(
     int Z, int A, double erg) const {
   return real_cent_a(Z,A,erg); // complex and real centme terms share geometry
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::cmpl_surf_a(
+double KD03Params<proj>::cmpl_surf_a(
     int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   if constexpr (proj == Proj::neutron)
@@ -209,19 +209,19 @@ double KoningDelaroche03<proj>::cmpl_surf_a(
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::real_spin_a(
+double KD03Params<proj>::real_spin_a(
     int Z, int A, double erg) const {
   return aso_0;
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::cmpl_spin_a(
+double KD03Params<proj>::cmpl_spin_a(
     int Z, int A, double erg) const {
   return real_spin_a(Z,A,erg); // complex and real SO term share geometry
 };
 
 template<Proj proj>
-double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
+double KD03Params<proj>::real_cent_V(int Z, int A, double erg) const {
   const double z = static_cast<double>(Z);
   const double a = static_cast<double>(A);
   const double alpha = asym(Z,A);
@@ -238,7 +238,7 @@ double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
   else if constexpr (proj == Proj::proton) {
     const double v2 = v2_0 + v2_A * a;
     const double v3 = v3_0 + v3_A * a;
-    const double rc = KoningDelaroche03<Proj::proton>::real_coul_r(Z,A,erg);
+    const double rc = KD03Params<Proj::proton>::real_coul_r(Z,A,erg);
     const double vc = 6 * z * constants::e_sqr / (5 * rc * pow(a,1./3.));
 
     return -(v1 * (1. - v2 * dE + v3 * dE * dE - v4 * dE * dE * dE )
@@ -247,7 +247,7 @@ double KoningDelaroche03<proj>::real_cent_V(int Z, int A, double erg) const {
 }
 
 template<Proj proj>
-double KoningDelaroche03<proj>::cmpl_cent_V(int Z, int A, double erg) const {
+double KD03Params<proj>::cmpl_cent_V(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   const double dE    = erg - Ef(A); 
   
@@ -258,7 +258,7 @@ double KoningDelaroche03<proj>::cmpl_cent_V(int Z, int A, double erg) const {
 }
 
 template<Proj proj>
-double KoningDelaroche03<proj>::cmpl_surf_V(int Z, int A, double erg) const {
+double KD03Params<proj>::cmpl_surf_V(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   const double alpha = asym(Z,A);
   const double dE    = erg - Ef(A); 
@@ -272,7 +272,7 @@ double KoningDelaroche03<proj>::cmpl_surf_V(int Z, int A, double erg) const {
 }
 
 template<Proj proj>
-double KoningDelaroche03<proj>::real_spin_V(int Z, int A, double erg) const {
+double KD03Params<proj>::real_spin_V(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   const double dE    = erg - Ef(A); 
 
@@ -283,7 +283,7 @@ double KoningDelaroche03<proj>::real_spin_V(int Z, int A, double erg) const {
 }
 
 template<Proj proj>
-double KoningDelaroche03<proj>::cmpl_spin_V(int Z, int A, double erg) const {
+double KD03Params<proj>::cmpl_spin_V(int Z, int A, double erg) const {
   const double a = static_cast<double>(A);
   const double dE    = erg - Ef(A); 
 
