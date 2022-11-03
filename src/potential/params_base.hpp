@@ -14,7 +14,8 @@ enum class Proj : bool {
   neutron,
 };
  
-/// @tparam  incident neutron or proton 
+/// @tparam p incident neutron or proton 
+///
 template<Proj p>
 /// @brief  Pure abstract base class for OM potential parameters, where the potential 
 /// takes the common global phenomenological form:
