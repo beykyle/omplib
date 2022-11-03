@@ -284,7 +284,6 @@ double KD03Params<proj>::real_spin_V(int Z, int A, double erg) const {
 
 template<Proj proj>
 double KD03Params<proj>::cmpl_spin_V(int Z, int A, double erg) const {
-  const double a = static_cast<double>(A);
   const double dE    = erg - Ef(A); 
 
   const double wso1 = wso1_0;

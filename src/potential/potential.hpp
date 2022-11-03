@@ -167,8 +167,11 @@ private:
   /// @brief Determines the parameterization used for calculating 
   /// term depths, radii, and diffusivities
   Params params;
-  int A;
-  int Z;
+
+
+  /// @brief target
+  int A, Z;
+
 public:
   OMP(int A, int Z)
     : A(A), Z(Z), params(Params()) {};
