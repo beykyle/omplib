@@ -13,8 +13,6 @@ if(NOT CMAKE_TESTING_ENABLED)
   # add new unit test source files here
   set(UNIT_TEST_SOURCES
     test_read_json.cpp
-    test_spherical_harmonics.cpp
-    test_factorial.cpp
     )
   # Add unit test input files here
   # Prefixes are stripped so duplicate filenames must not appear
