@@ -8,7 +8,7 @@ namespace omplib {
 /// @brief Number of basis functions
 template<unsigned int N>
 /// @brief  weights and abscissacissa of basis polynomials for use in 
-/// Gauss-Legendre quadrature integration for x on [-1,1]
+/// Gauss-Legendre quadrature integration for x on shifted domain [0,1]
 /// https://en.wikipedia.org/wiki/Gauss%E2%80%93Legendre_quadrature
 struct GaussLegendre {
   std::array<double,N> weights;
@@ -17,6 +17,9 @@ struct GaussLegendre {
   GaussLegendre() {
     static_assert(N >= 2);
     static_assert(N < 20);
+
+    // hard coded values for typical domain 
+    // x on [-1,1]
     if constexpr (N == 2){
       abscissa = {
         -0.5773502691896257645092,
@@ -546,7 +549,15 @@ struct GaussLegendre {
         0.0176140071391521183119
       };
     }
+    
+    // shift to domain x on [0,1]
+    for( int i =0; i < N; ++i ) {
+      abscissa[i] = 0.5*(abscissa[i] + 1);
+      weights[i] *= 0.5;;
+    }
   }
+  
+
 };
 
 }
