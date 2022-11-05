@@ -10,7 +10,7 @@
 
 namespace omplib {
 
-enum class : bool Parity {
+enum class Parity : bool {
   odd,
   even
 };
@@ -22,7 +22,7 @@ struct Channel {
   double energy;
   /// @brief channel radius [fm]
   double radius;
-  /// @brief scattering system reduced mass [MeV]
+  /// @brief scattering system reduced mass [amu]
   double reduced_mass;
   
   /// @brief CMS momentum sqrt( 2 * E * reduced_mass * c^2)/hbar 
@@ -76,13 +76,17 @@ struct Channel {
 
     //TODO use confluent hypergeometrics for asymptotics
     // for now, assume neutral projectile and use Hankel fxns
+    // if asym wavefunction = r*h_n(kr)
+    // derivative = d/dr (r * h_n(kr)) = h_n(kr) + kr d/d(kr) h_n(kr)
     assert(Zp == 0);
 
-    asymptotic_wvfxn_out       = h_out{l}(kr);
-    asymptotic_wvfxn_deriv_out = hp_out{l}(kr);
+    const auto kr = k*radius;
+
+    asymptotic_wvfxn_out       = radius * h_out{l}(kr);
+    asymptotic_wvfxn_deriv_out = kr * h_out{l-1}(kr) - (double)l * h_out{l}(kr);
     
-    asymptotic_wvfxn_in        = h_in{l}(kr);
-    asymptotic_wvfxn_deriv_in  = hp_in{l}(kr);
+    asymptotic_wvfxn_in        = radius * h_in{l}(k*radius);
+    asymptotic_wvfxn_deriv_in  = kr * h_in{l-1}(kr) - (double)l * h_in{l}(kr);
   }
   
 };
