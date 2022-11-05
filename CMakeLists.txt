@@ -54,6 +54,7 @@ set(EIGEN_BUILD_DOC OFF)
 set(EIGEN_BUILD_PKGCONFIG OFF)
 Message("fetching Eigen")
 FetchContent_MakeAvailable(Eigen)
+set(EIGEN3_INCLUDE_DIR ${eigen_SOURCE_DIR})
 
 ## SUBDIRECTORIES
 add_subdirectory(src)
