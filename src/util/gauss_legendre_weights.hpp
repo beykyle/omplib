@@ -14,7 +14,7 @@ struct GaussLegendre {
   std::array<double,N> weights;
   std::array<double,N> abscissa;
 
-  GaussLegendre() {
+  constexpr GaussLegendre() {
     static_assert(N >= 2);
     static_assert(N < 20);
 
