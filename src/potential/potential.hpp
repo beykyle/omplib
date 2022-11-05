@@ -171,52 +171,71 @@ private:
   /// @brief target
   int A, Z;
 
+  /// @brief dimension of SU(2) repr for orbital angular momentum, 
+  /// projectile intrinsic spin, and total projectile angular momentum.
+  /// J = L + S, respectvely. 
+  /// Dimensions of SU(2) representation w/ spin j is j2 = 2*j+1
+  int l2, s2, j2;
+
+  /// @returns projection of spin along axis of orbital ang. mom.; e.g. L * S
+  double spin_orbit() const {
+    const double L = (l2 - 1.)/2.;
+    const double S = (s2 - 1.)/2.;
+    const double J = (l2 - 1.)/2.;
+
+    return 0.5*(J*(J+1) - L*(L+1) - S*(S+1));
+  }
+
 public:
-  OMP(int A, int Z)
-    : A(A), Z(Z), params(Params()) {};
-  OMP(int A, int Z, Params params)
-    : A(A), Z(Z), params(params) {};
-  OMP(int A, int Z, Params&& params)
-    : A(A), Z(Z), params(params) {};
+  OMP(int A, int Z, int l2, int s2, int j2)
+    : A(A), Z(Z), l2(l2), s2(s2), j2(j2), params(Params()) {};
+  OMP(int A, int Z, int l2, int s2, int j2, Params params)
+    : A(A), Z(Z), l2(l2), s2(s2), j2(j2), params(params) {};
+  OMP(int A, int Z, int l2, int s2, int j2, Params&& params)
+    : A(A), Z(Z), l2(l2), s2(s2), j2(j2), params(params) {};
 
   OMP(const OMP<Params>& rhs) = default;
-  OMP(OMP<Params>&& rhs) = default;
+  OMP(OMP<Params>&& rhs)      = default;
 
   void reset_target(int An, int Zn) {
     A = An;
     Z = An;
   }
 
+  void set_proj_spin(int s2n)   { s2 = s2n; }
+  void set_orb_am(int l2n)      { l2 = l2n; }
+  void set_proj_tot_am(int j2n) { j2 = j2n; }
+
   std::complex<double> eval(double r, double erg) const final {
     
     const auto V = WoodsSaxon{ 
       std::complex<double>{params.real_cent_V(Z,A,erg),0},
-      params.real_cent_R(Z,A,erg),
-      params.real_cent_A(Z,A,erg) };
+      params.real_cent_r(Z,A,erg),
+      params.real_cent_a(Z,A,erg) };
     const auto Vs = DerivWoodsSaxon{ 
       std::complex<double>{params.real_surf_V(Z,A,erg),0},
-      params.real_surf_R(Z,A,erg),
-      params.real_surf_A(Z,A,erg) };
+      params.real_surf_r(Z,A,erg),
+      params.real_surf_a(Z,A,erg) };
     const auto Vso = Thomas{ 
       std::complex<double>{params.real_spin_V(Z,A,erg),0},
-      params.real_spin_R(Z,A,erg),
-      params.real_spin_A(Z,A,erg) };
+      params.real_spin_r(Z,A,erg),
+      params.real_spin_a(Z,A,erg) };
     
     const auto W = WoodsSaxon{ 
       std::complex<double>{0,params.cmpl_cent_V(Z,A,erg)},
-      params.cmpl_cent_R(Z,A,erg),
-      params.cmpl_cent_A(Z,A,erg) };
+      params.cmpl_cent_r(Z,A,erg),
+      params.cmpl_cent_a(Z,A,erg) };
     const auto Ws = DerivWoodsSaxon{ 
       std::complex<double>{0,params.cmpl_surf_V(Z,A,erg)},
-      params.cmpl_surf_R(Z,A,erg),
-      params.cmpl_surf_A(Z,A,erg) };
+      params.cmpl_surf_r(Z,A,erg),
+      params.cmpl_surf_a(Z,A,erg) };
     const auto Wso = Thomas{ 
       std::complex<double>{0,params.cmpl_spin_V(Z,A,erg)},
-      params.cmpl_spin_R(Z,A,erg),
-      params.cmpl_spin_A(Z,A,erg) };
+      params.cmpl_spin_r(Z,A,erg),
+      params.cmpl_spin_a(Z,A,erg) };
 
-    return V.eval(r,erg) + Vs.eval(r,erg) + Vso.eval(r,erg)  // Re
-         + W.eval(r,erg) + Ws.eval(r,erg) + Wso.eval(r,erg); // Im
+    return V.eval(r,erg) + Vs.eval(r,erg) + Vso.eval(r,erg) * spin_orbit()  // R
+         + W.eval(r,erg) + Ws.eval(r,erg) + Wso.eval(r,erg) * spin_orbit(); // Im
   };
 };
 
