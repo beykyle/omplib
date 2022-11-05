@@ -32,9 +32,9 @@ public:
   /// @param r is a radial distance in fm on [0,a]
   /// @param a is the chanel radius in fm
   /// @param N is the total number of basis functions
-  double lagrange_legendre(unsigned int n, double r) {
+  double f(unsigned int n, double r) const {
     
-    static_assert(n < N);
+    assert(n < N);
     assert(r < a);
     
     const double f = (N+n)%2==0 ? 1. : -1.;
@@ -50,9 +50,9 @@ public:
   /// approximated using Gauss-Legendre quadrature
   /// @param n is the order of the Lagrange-Legendre bra
   /// @param m is the order of the Lagrange-Legendre ket
-  double local_matrix_element(Potential p, unsigned int n, unsigned int m ) {
-    static_assert(n < N);
-    static_assert(m < N);
+  double local_matrix_element(Potential p, unsigned int n, unsigned int m ) const {
+    assert(n < N);
+    assert(m < N);
     
     if (n != m) return 0;
     
@@ -67,9 +67,9 @@ public:
   /// approximated using Gauss-Legendre quadrature
   /// @param n is the order of the Lagrange-Legendre bra
   /// @param m is the order of the Lagrange-Legendre ket
-  double non_local_matrix_element(Potential p, unsigned int n, unsigned int m) {
-    static_assert(n < N);
-    static_assert(m < N);
+  double non_local_matrix_element(Potential p, unsigned int n, unsigned int m) const {
+    assert(n < N);
+    assert(m < N);
 
     const double xn       = g.abscissa[n];
     const double xm       = g.abscissa[m];
@@ -85,9 +85,9 @@ public:
   /// @param l partial wave channel
   /// @param n is the order of the Lagrange-Legendre bra
   /// @param m is the order of the Lagrange-Legendre ket
-  double KE_Bloch_matrix_element(double mu, unsigned int l, unsigned int n, unsigned int m) {
-    static_assert(n < N);
-    static_assert(m < N);
+  double KE_Bloch_matrix_element(double mu, unsigned int l, unsigned int n, unsigned int m) const {
+    assert(n < N);
+    assert(m < N);
     
     using constants::hbar;
     
@@ -103,6 +103,7 @@ public:
     const double xm = g.abscissa[m];
     const double f  = (n+m)%2==0 ? 1. : -1.;
     
+    // centrifugal only on diag
     return hbar*hbar/(2.*mu) * f / (xn * xm  * (1. - xn) *(1. - xm)) 
       * (
           N*N + N + 1. + (xn + xm - 2 * xn * xm)/( ( xn - xm ) * ( xn - xm ) ) 
@@ -111,7 +112,6 @@ public:
   }
 
 };
-
-
 }
+
 #endif 
