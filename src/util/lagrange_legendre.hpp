@@ -27,11 +27,9 @@ private:
 public:
   LagrangeLegendreBasis(int a): a(a) {};
 
-  /// @brief computes the ith Lagrange-Legendre function of order n
-  /// @param n referrs to the ith Lagrange Legendre function
+  /// @brief computes the Lagrange-Legendre function of order n
+  /// @param n referrs to the nth Lagrange Legendre function
   /// @param r is a radial distance in fm on [0,a]
-  /// @param a is the chanel radius in fm
-  /// @param N is the total number of basis functions
   double f(unsigned int n, double r) const {
     
     assert(n < N);
