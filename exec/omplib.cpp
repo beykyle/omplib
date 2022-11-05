@@ -4,48 +4,108 @@
 #include "potential/wlh_params.hpp"
 
 #include "potential/potential.hpp"
-
 #include "solver/rmatrix.hpp"
+#include "util/constants.hpp"
 
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include <fstream>
 
+// this file is a loose collection of examples of things you can do with this library
+
+// nice shorthand
 constexpr auto n = omplib::Proj::neutron;
-constexpr auto p = omplib::Proj::neutron;
+constexpr auto p = omplib::Proj::proton;
 
-int main(int argc, char** argv) {
+// l-wave scattering on 0+ ground state
+void rmatrix_neutron_scatter(int Z, int A, int l) {
   
-  auto kdn_uq   = omplib::KD03Params<n>::build_KDUQ();
-  auto wlh_mean = omplib::WLH21Params<n>();
-
-  // R-Matrix
-  const auto p = OMP(96,142,wlh_mean);
-
-  const auto ch     = Channel(0., 1., 12, 10., 96, 0, 0, 0, Parity::even);
-  const auto solver = RmatrixSolverSingleChannel<10>(ch, p);
-  const auto soln   = solver.solve();
+  using namespace omplib;
+  using namespace omplib::constants;
   
-  // print pot stuff on energy grid
-  constexpr auto erg_min = 0.01;
-  constexpr auto erg_max = 10.;
-  constexpr auto range = erg_max - erg_min;
+  // constants
+  constexpr double n_spin          = 1./2.;
+  constexpr double projectile_mass = n_mass_amu; 
+  const double target_mass         = A; 
+  
+  constexpr double threshold = 0.; // MeV
+  constexpr double erg_cms   = 1.; // MeV
+  constexpr double ch_radius = 12; // fm
+  
+  const double mu =  projectile_mass * target_mass 
+                  / (projectile_mass + target_mass); // amu
+  
+  // on 0+ ground state
+  constexpr int J2  = 1; // J2 == (2*J +1) == dimension of SU(2) representation
+  constexpr auto pi = Parity::even;
+
+  // build potentials and define scattering channel
+  auto wlh_mean   = WLH21Params<n>();
+  auto pwlh = OMP(Z, A, (2*l+1), (2*n_spin + 1), (2*(l+n_spin) + 1), wlh_mean);
+  const auto ch   = Channel(threshold, erg_cms, ch_radius, mu, Z, 0, l, J2, Parity::even);
+  
+  // build radial grid to print the wavefunction
+  constexpr auto r_grid_sz = 200;
+  std::vector<double> r_grid(r_grid_sz,0.);
+  for (int i = 0; i < r_grid_sz; ++i) {
+    r_grid[i] = ch.radius * static_cast<double>(i) / static_cast<double>(r_grid_sz);
+  }
+  
+  // run the R-Matrix solver with N basis functions
+  constexpr unsigned int N = 10;
+
+  // spin down
+  // J = L+1/2
+  // j2 = 2*J+1
+  auto solver = RMatrixSolverSingleChannel<N>(ch, 
+      [&pwlh, &ch](double r, double rp) -> std::complex<double> {
+        if ( r != rp ) return 0.;
+        return pwlh.eval(r, ch.energy);
+      } 
+      );
+  const auto [Rp, Sp, Tp, Kp, wvfxnp] = solver.solve( r_grid );
+
+  if ( l > 0 ) {
+    // spin down
+    // J = L-1/2
+    // j2 = 2*J+1
+    pwlh.set_proj_tot_am(2*(l-n_spin) + 1);
+    solver = RMatrixSolverSingleChannel<N>(ch, 
+        [&pwlh, &ch](double r, double rp) -> std::complex<double> {
+          if ( r != rp ) return 0.;
+          return pwlh.eval(r, ch.energy);
+        } 
+      );
+    const auto [Rm, Sm, Tm, Km, wvfxnm] = solver.solve( r_grid );
+  }
+
+  //TODO tot, el, rxn xs, analyzing powers, differential el xs
+}
+
+void print_potential_vals() {
+  
+  using namespace omplib;
+  auto kdn_uq     = KD03Params<n>::build_KDUQ();
+  auto wlh_mean   = WLH21Params<n>();
+  
+  // let's look at potnetial values for various isotopes on an energy grid
+  constexpr auto erg_min   = 0.01;
+  constexpr auto erg_max   = 10.;
+  constexpr auto e_range   = erg_max - erg_min;
   constexpr auto e_grid_sz = 500;
-  
   auto e_grid = std::array<double,e_grid_sz> {};
   for (int i = 0; i < e_grid_sz; ++i) {
     e_grid[i] = erg_min 
-      + range * static_cast<double>(i) / static_cast<double>(e_grid_sz);
+      + e_range * static_cast<double>(i) / static_cast<double>(e_grid_sz);
   }
 
   // mass 144 isotopes
   using Isotope = std::pair<int,int>;
   constexpr size_t niso = 6;
-  
   constexpr auto isotopes =  std::array<Isotope,niso>{
-    Isotope{58,86},Isotope{57,87},Isotope{56,88},
-    Isotope{55,89},Isotope{54,90},Isotope{53,91}
+    Isotope{58,144},Isotope{57,144},Isotope{56,144},
+    Isotope{55,144},Isotope{54,144},Isotope{53,144}
   };
 
   std::cout << "Calculating surface potential depths for " << niso << " isotopes.\n" << std::flush;
@@ -81,6 +141,10 @@ int main(int argc, char** argv) {
     out_wlh << "\n";
     out_kd  << "\n";
   }
+}
 
+int main(int argc, char** argv) {
+  rmatrix_neutron_scatter(54,139,0); // s-wave scatter on 139-Xe
+  print_potential_vals();
   return 0;
 };
