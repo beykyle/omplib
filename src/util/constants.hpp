@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_HEADER
 #define CONSTANTS_HEADER
 
+#include <complex>
+
 namespace omplib {
 namespace constants {
   ///@brief square of elementary charge [ Mev fm ]
@@ -15,6 +17,8 @@ namespace constants {
   constexpr static double eps_permitiviyty = 5.60958617e+37;
   /// @brief zoom fast light speed [fm/s]
   constexpr static double c = 2.99792458e+23;
+  /// @brief sqrt(-1)
+  constexpr static std::complex<double> i = {0,1};
   
   // dimensionless
   /// @brief hbar^2/(m_pion * c)^2 
