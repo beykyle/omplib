@@ -43,14 +43,14 @@ public:
       * std::legendre(N, 2 * r / a - 1) / (r - a*xn); 
   }
 
-  /// @tparam callable (double) -> double evaluating a radially weighted potential in the lth partial wave 
-  /// channel: r * V(r), for a potential V(r) in MeV
+  /// @tparam callable (double) -> complex<double> evaluating a radially weighted potential in 
+  /// the lth partial wave channel: r * V(r), for a potential V(r) in MeV
   template<class Potential>
   /// @brief matrix element of an arbitrary local potential in the Lagrange Legendre basis, 
   /// approximated using Gauss-Legendre quadrature
   /// @param n is the order of the Lagrange-Legendre bra
   /// @param m is the order of the Lagrange-Legendre ket
-  double local_matrix_element(Potential p, unsigned int n, unsigned int m ) const {
+  std::complex<double> local_matrix_element(Potential p, unsigned int n, unsigned int m ) const {
     assert(n < N);
     assert(m < N);
     
@@ -60,14 +60,14 @@ public:
     return p(a*xn);
   }
 
-  /// @tparam callable (double) -> double evaluating a radially weighted potential in the lth partial wave 
-  /// channel: r * V(r,r') * r' , for a potential V(r,r') in MeV
+  /// @tparam callable (double) -> complex<double> evaluating a radially weighted potential in 
+  /// the lth partial wave channel: r * V(r,r') * r' , for a potential V(r,r') in MeV
   template<class Potential>
   /// @brief matrix element of an arbitrary non-local potential in the Lagrange Legendre basis, 
   /// approximated using Gauss-Legendre quadrature
   /// @param n is the order of the Lagrange-Legendre bra
   /// @param m is the order of the Lagrange-Legendre ket
-  double non_local_matrix_element(Potential p, unsigned int n, unsigned int m) const {
+  std::complex<double> non_local_matrix_element(Potential p, unsigned int n, unsigned int m) const {
     assert(n < N);
     assert(m < N);
 
