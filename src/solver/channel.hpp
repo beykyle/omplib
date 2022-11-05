@@ -1,7 +1,12 @@
 #ifndef CHANNEL_HEADER
 #define CHANNEL_HEADER
 
+#include <cmath>
 #include <complex>
+#include <cassert>
+
+#include "util/asymptotics.hpp"
+#include "util/constants.hpp"
 
 namespace omplib {
 
@@ -49,7 +54,7 @@ struct Channel {
   Parity pi;
 
   Channel(double threshold, double energy, double radius, double reduced_mass, 
-          int Z_t, int Z_p, int l, int J2, Parity pi )
+          int Zt, int Zp, int l, int J2, Parity pi )
     : threshold(threshold)
     , energy(energy)
     , radius(radius)
@@ -64,10 +69,10 @@ struct Channel {
 
     k = sqrt(2 * reduced_mass * energy) * c / hbar;
     
-    const double Zz = Z_t * Z_p
+    const double Zz = Zt * Zp;
     const double ab = hbar * hbar / (reduced_mass * e_sqr * abs(Zz));
 
-    sommerfield_param = sgn(Zz) / (ab * k);
+    sommerfield_param = std::copysign(1, Zz) / (ab * k);
 
     //TODO use confluent hypergeometrics for asymptotics
     // for now, assume neutral projectile and use Hankel fxns
@@ -83,3 +88,5 @@ struct Channel {
 };
 
 };
+
+#endif

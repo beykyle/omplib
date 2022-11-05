@@ -4,7 +4,6 @@
 #include <memory>
 #include <complex>
 
-
 #include "potential/params_base.hpp"
 #include "potential/params.hpp"
 

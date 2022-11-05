@@ -3,6 +3,10 @@
 #include "potential/params.hpp"
 #include "potential/wlh_params.hpp"
 
+#include "potential/potential.hpp"
+
+#include "solver/rmatrix.hpp"
+
 #include <iomanip>
 #include <ios>
 #include <iostream>
@@ -15,7 +19,15 @@ int main(int argc, char** argv) {
   
   auto kdn_uq   = omplib::KD03Params<n>::build_KDUQ();
   auto wlh_mean = omplib::WLH21Params<n>();
+
+  // R-Matrix
+  const auto p = OMP(96,142,wlh_mean);
+
+  const auto ch     = Channel(0., 1., 12, 10., 96, 0, 0, 0, Parity::even);
+  const auto solver = RmatrixSolverSingleChannel<10>(ch, p);
+  const auto soln   = solver.solve();
   
+  // print pot stuff on energy grid
   constexpr auto erg_min = 0.01;
   constexpr auto erg_max = 10.;
   constexpr auto range = erg_max - erg_min;

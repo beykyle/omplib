@@ -7,7 +7,7 @@
 
 #include "solver/channel.hpp"
 
-#include "Eigen/Dense"
+#include <Eigen/LU>
 
 namespace omplib {
 
