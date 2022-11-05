@@ -6,7 +6,7 @@ if(NOT CMAKE_TESTING_ENABLED)
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
     GIT_TAG        v3.0.1 # or a later release
   )
-
+  Message("fetching Catch2")
   FetchContent_MakeAvailable(Catch2)
 
 
@@ -37,7 +37,6 @@ if(NOT CMAKE_TESTING_ENABLED)
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Run Catch2 tests")
   add_dependencies(test all_tests copy_ut_inputs)
-
 
 endif()
 
