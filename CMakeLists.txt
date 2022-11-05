@@ -41,11 +41,19 @@ include(FetchContent)
 
 FetchContent_Declare(
   json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+Message("fetching nlohmann/json")
 FetchContent_MakeAvailable(json)
 
-#FetchContent_Declare(
-#  eigen URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz)
-#FetchContent_MakeAvailable(eigen)
+FetchContent_Declare(
+  Eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG master
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE)
+set(EIGEN_BUILD_DOC OFF)
+set(EIGEN_BUILD_PKGCONFIG OFF)
+Message("fetching Eigen")
+FetchContent_MakeAvailable(Eigen)
 
 ## SUBDIRECTORIES
 add_subdirectory(src)
