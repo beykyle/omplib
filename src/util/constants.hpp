@@ -5,6 +5,7 @@
 
 namespace omplib {
 namespace constants {
+  using namespace std::complex_literals;
   ///@brief square of elementary charge [ Mev fm ]
   constexpr static double e_sqr = 1.4399764;
   ///@brief pion mass [ Mev ]
@@ -18,7 +19,7 @@ namespace constants {
   /// @brief zoom fast light speed [fm/s]
   constexpr static double c = 2.99792458e+23;
   /// @brief sqrt(-1)
-  constexpr static std::complex<double> i = {0,1};
+  constexpr static std::complex<double> i = 1i;
   
   // dimensionless
   /// @brief hbar^2/(m_pion * c)^2 
