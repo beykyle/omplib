@@ -79,11 +79,10 @@ public:
 
   /// @brief matrix elements of the radial kinetic energy for partial wave l
   /// plus the Bloch operator. These are symnmetric in n and m.
-  /// @param mu reduced mass of the system in MeV
   /// @param l partial wave channel
   /// @param n is the order of the Lagrange-Legendre bra
   /// @param m is the order of the Lagrange-Legendre ket
-  double KE_Bloch_matrix_element(double mu, unsigned int l, unsigned int n, unsigned int m) const {
+  double KE_Bloch_matrix_element(unsigned int l, unsigned int n, unsigned int m) const {
     assert(n < N);
     assert(m < N);
     
@@ -93,8 +92,7 @@ public:
 
     if (n == m) {
       return 1/(a*a*xn*xn) // centrifugal
-        + hbar*hbar/(2.*mu) // kinetic
-        * (4. * N * N + 4. * N + 3.) * (xn * (1. - xn) - 6. * xn + 1.) 
+        * (4. * N * N + 4. * N + 3.) * (xn * (1. - xn) - 6. * xn + 1.)  // kinetic
         / (3. * a * a * xn * xn * (1. - xn) * (1. - xn) );
     }
     
@@ -102,7 +100,7 @@ public:
     const double f  = (n+m)%2==0 ? 1. : -1.;
     
     // centrifugal only on diag
-    return hbar*hbar/(2.*mu) * f / (xn * xm  * (1. - xn) *(1. - xm)) 
+    return f / (xn * xm  * (1. - xn) *(1. - xm)) 
       * (
           N*N + N + 1. + (xn + xm - 2 * xn * xm)/( ( xn - xm ) * ( xn - xm ) ) 
           - 1. / ( 1 - xn ) - 1 / ( 1 - xm ) 
