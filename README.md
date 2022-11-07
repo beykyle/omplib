@@ -1,7 +1,7 @@
 # omplib
 Optical Model Potential LIBrary
 
-This is primarily a library to be integrated into other code, but can be used as a framework for standalone applications. For more information and references, build the documentation as shown below.
+This is primarily a library to be integrated into other projects, but can be used as a framework for standalone applications. For more information and references, build the documentation as shown below.
 
 ## quickstart
 
