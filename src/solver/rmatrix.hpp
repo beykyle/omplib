@@ -131,10 +131,10 @@ public:
     const auto mu = channel.reduced_mass;
     const auto hm =  hbar*hbar / (2 * mu * a);
     
-    assert(r.front() >  0);
-    assert(r.back() <= a);
+    assert(r.front() >= 0);
+    assert(r.back()  <= a);
     
-    std::vector<std::complex<double>> w;
+    std::vector<std::complex<double>> w (r.size(), std::complex<double>{0,0});
 
     for (unsigned int i = 0; i < r.size(); ++ i) {
       for (unsigned int n = 0; n < N; ++n) {
