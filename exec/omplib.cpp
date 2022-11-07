@@ -3,9 +3,12 @@
 #include "potential/params.hpp"
 #include "potential/wlh_params.hpp"
 
+#include "util/constants.hpp"
+#include "util/types.hpp"
+
 #include "potential/potential.hpp"
 #include "solver/rmatrix.hpp"
-#include "util/constants.hpp"
+
 
 #include <iomanip>
 #include <ios>
@@ -25,16 +28,13 @@ void rmatrix_neutron_scatter(int Z, int A, int l) {
   using namespace omplib::constants;
   
   // constants
-  constexpr double n_spin          = 1./2.;
-  constexpr double projectile_mass = n_mass_amu; 
-  const double target_mass         = A; 
+  constexpr real n_spin          = 1./2.;
+  constexpr real projectile_mass = n_mass_amu; 
+  const real target_mass         = A; 
   
-  constexpr double threshold = 0.; // MeV
-  constexpr double erg_cms   = 1.; // MeV
-  constexpr double ch_radius = 12; // fm
-  
-  const double mu =  projectile_mass * target_mass 
-                  / (projectile_mass + target_mass); // amu
+  constexpr real threshold = 0.; // MeV
+  constexpr real erg_cms   = 1.; // MeV
+  constexpr real ch_radius = 12; // fm
   
   // on 0+ ground state
   constexpr int J2  = 1; // J2 == (2*J +1) == dimension of SU(2) representation
@@ -43,13 +43,14 @@ void rmatrix_neutron_scatter(int Z, int A, int l) {
   // build potentials and define scattering channel
   auto wlh_mean   = WLH21Params<n>();
   auto pwlh = OMP(Z, A, (2*l+1), (2*n_spin + 1), (2*(l+n_spin) + 1), wlh_mean);
-  const auto ch   = Channel(threshold, erg_cms, ch_radius, mu, Z, 0, l, J2, pi);
+  const auto ch   = Channel(threshold, erg_cms, ch_radius, 
+                            projectile_mass, target_mass, Z, 0, l, J2, pi);
   
   // build radial grid to print the wavefunction
   constexpr auto r_grid_sz = 200;
-  std::vector<double> r_grid(r_grid_sz,0.);
+  std::vector<real> r_grid(r_grid_sz,0.);
   for (int i = 0; i < r_grid_sz; ++i) {
-    r_grid[i] = ch.radius * static_cast<double>(i) / (static_cast<double>(r_grid_sz) +1);
+    r_grid[i] = ch.radius * static_cast<real>(i) / (static_cast<real>(r_grid_sz) +1);
   }
   
   // run the R-Matrix solver with N basis functions
@@ -59,7 +60,7 @@ void rmatrix_neutron_scatter(int Z, int A, int l) {
   // J = L+1/2
   // j2 = 2*J+1
   auto solver = RMatrixSolverSingleChannel<N>(ch, 
-      [&pwlh, &ch](double r, double rp) -> std::complex<double> {
+      [&pwlh, &ch](real r, real rp) -> cmpl {
         if ( r != rp ) return 0.;
         return pwlh.eval(r, ch.energy);
       } 
@@ -72,7 +73,7 @@ void rmatrix_neutron_scatter(int Z, int A, int l) {
     // j2 = 2*J+1
     pwlh.set_proj_tot_am(2*(l-n_spin) + 1);
     solver = RMatrixSolverSingleChannel<N>(ch, 
-        [&pwlh, &ch](double r, double rp) -> std::complex<double> {
+        [&pwlh, &ch](real r, real rp) -> cmpl {
           if ( r != rp ) return 0.;
           return pwlh.eval(r, ch.energy);
         } 
@@ -94,10 +95,10 @@ void print_potential_vals() {
   constexpr auto erg_max   = 10.;
   constexpr auto e_range   = erg_max - erg_min;
   constexpr auto e_grid_sz = 500;
-  auto e_grid = std::array<double,e_grid_sz> {};
+  auto e_grid = std::array<real,e_grid_sz> {};
   for (int i = 0; i < e_grid_sz; ++i) {
     e_grid[i] = erg_min 
-      + e_range * static_cast<double>(i) / static_cast<double>(e_grid_sz);
+      + e_range * static_cast<real>(i) / static_cast<real>(e_grid_sz);
   }
 
   // mass 144 isotopes
