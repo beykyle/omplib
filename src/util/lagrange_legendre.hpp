@@ -32,8 +32,8 @@ public:
   /// @param r is a radial distance in fm on [0,a]
   double f(unsigned int n, double r) const {
     
-    assert(n < N);
-    assert(r < a);
+    assert(n <  N);
+    assert(r <= a);
     
     const double f = (N+n)%2==0 ? 1. : -1.;
     const double xn = g.abscissa[n];

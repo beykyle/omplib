@@ -130,7 +130,7 @@ public:
   
   std::complex<double> eval(double r, double erg) const final {
     std::complex<double> v = 0;
-    for (int i = 0; i < N; ++i) {
+    for (unsigned int i = 0; i < N; ++i) {
       v += gaussians[i].eval(r, erg);
     }
     return v;
@@ -163,11 +163,6 @@ public:
 template<class Params>
 class OMP : public Potential {
 private:
-  /// @brief Determines the parameterization used for calculating 
-  /// term depths, radii, and diffusivities
-  Params params;
-
-
   /// @brief target
   int A, Z;
 
@@ -176,6 +171,10 @@ private:
   /// J = L + S, respectvely. 
   /// Dimensions of SU(2) representation w/ spin j is j2 = 2*j+1
   int l2, s2, j2;
+  
+  /// @brief Determines the parameterization used for calculating 
+  /// term depths, radii, and diffusivities
+  Params params;
 
   /// @returns projection of spin along axis of orbital ang. mom.; e.g. L * S
   double spin_orbit() const {

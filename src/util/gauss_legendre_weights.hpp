@@ -551,7 +551,7 @@ struct GaussLegendre {
     }
     
     // shift to domain x on [0,1]
-    for( int i =0; i < N; ++i ) {
+    for(unsigned int i =0; i < N; ++i ) {
       abscissa[i] = 0.5*(abscissa[i] + 1);
       weights[i] *= 0.5;;
     }

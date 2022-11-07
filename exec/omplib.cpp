@@ -43,13 +43,13 @@ void rmatrix_neutron_scatter(int Z, int A, int l) {
   // build potentials and define scattering channel
   auto wlh_mean   = WLH21Params<n>();
   auto pwlh = OMP(Z, A, (2*l+1), (2*n_spin + 1), (2*(l+n_spin) + 1), wlh_mean);
-  const auto ch   = Channel(threshold, erg_cms, ch_radius, mu, Z, 0, l, J2, Parity::even);
+  const auto ch   = Channel(threshold, erg_cms, ch_radius, mu, Z, 0, l, J2, pi);
   
   // build radial grid to print the wavefunction
   constexpr auto r_grid_sz = 200;
   std::vector<double> r_grid(r_grid_sz,0.);
   for (int i = 0; i < r_grid_sz; ++i) {
-    r_grid[i] = ch.radius * static_cast<double>(i) / static_cast<double>(r_grid_sz);
+    r_grid[i] = ch.radius * static_cast<double>(i) / (static_cast<double>(r_grid_sz) +1);
   }
   
   // run the R-Matrix solver with N basis functions
@@ -102,7 +102,7 @@ void print_potential_vals() {
 
   // mass 144 isotopes
   using Isotope = std::pair<int,int>;
-  constexpr size_t niso = 6;
+  constexpr auto niso = 6;
   constexpr auto isotopes =  std::array<Isotope,niso>{
     Isotope{58,144},Isotope{57,144},Isotope{56,144},
     Isotope{55,144},Isotope{54,144},Isotope{53,144}
@@ -130,7 +130,7 @@ void print_potential_vals() {
     out_kd  << std::scientific << std::setprecision(5)
             << erg << "\t";
     
-    for (int i = 0; i <  niso; ++i) {
+    for (int i = 0; i < niso; ++i) {
       const auto& [Z,A] = isotopes[i];
       
       out_wlh << std::scientific << std::setprecision(5)
