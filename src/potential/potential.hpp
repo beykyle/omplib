@@ -4,6 +4,8 @@
 #include <memory>
 #include <complex>
 
+#include "util/types.hpp"
+
 #include "potential/params_base.hpp"
 #include "potential/params.hpp"
 
@@ -16,8 +18,8 @@ struct Potential {
   using cptr = std::unique_ptr<const Potential>;
 
   /// @brief r is the distance between the projectile and target
-  virtual std::complex<double> eval(double r, double erg) const = 0;
-  std::complex<double> operator () (double r, double erg) const { return eval(r, erg); }
+  virtual cmpl eval(real r, real erg) const = 0;
+  cmpl operator () (real r, real erg) const { return eval(r, erg); }
 };
 
 ///@brief Base class for an instance of a non-local potential between
@@ -28,27 +30,27 @@ struct NonLocalPotential {
 
   /// @brief r is a distance between the projectile and target
   /// @brief rp is another distance between the projectile and target
-  virtual std::complex<double> eval(double r, double rp, double erg) const = 0;
-  std::complex<double> operator () (double r, double rp, double erg) const { 
+  virtual cmpl eval(real r, real rp, real erg) const = 0;
+  cmpl operator () (real r, real rp, real erg) const { 
     return eval(r,rp, erg); }
 };
 
 /// @brief Common phenomenological potential form used for central potentials
 class WoodsSaxon : public Potential {
 private:
-  std::complex<double> V;
-  double R, a;
+  cmpl V;
+  real R, a;
 public:
-  WoodsSaxon(double V, double R, double a)
+  WoodsSaxon(real V, real R, real a)
     : V(V), R(R), a(a) {};
-  WoodsSaxon(std::complex<double> V, double R, double a)
+  WoodsSaxon(cmpl V, real R, real a)
     : V(V), R(R), a(a) {};
   
   WoodsSaxon(const WoodsSaxon& rhs) = default;
   WoodsSaxon(WoodsSaxon&& rhs) = default;
   WoodsSaxon() = default;
   
-  std::complex<double> eval(double r, double erg) const final {
+  cmpl eval(real r, real erg) const final {
     return V/(1. + exp((r-R)/a));
   };
 };
@@ -57,19 +59,19 @@ public:
 /// The derivative in r of a Woods-Saxon
 class DerivWoodsSaxon : public Potential {
 private:
-  std::complex<double> V;
-  double R, a;
+  cmpl V;
+  real R, a;
 public:
-  DerivWoodsSaxon(double V, double R, double a)
+  DerivWoodsSaxon(real V, real R, real a)
     : V(V), R(R), a(a) {};
-  DerivWoodsSaxon(std::complex<double> V, double R, double a)
+  DerivWoodsSaxon(cmpl V, real R, real a)
     : V(V), R(R), a(a) {};
   
   DerivWoodsSaxon(const DerivWoodsSaxon& rhs) = default;
   DerivWoodsSaxon(DerivWoodsSaxon&& rhs) = default;
   DerivWoodsSaxon() = default;
   
-  std::complex<double> eval(double r, double erg) const final {
+  cmpl eval(real r, real erg) const final {
     const auto y = exp((r-R))/a;
     return - V / a * ( y / ( (1. + y) * (1+y) ));
   };
@@ -79,38 +81,38 @@ public:
 /// the derivative in r of a Woods-Saxon, times 1/r
 class Thomas : public Potential {
 private:
-  std::complex<double> V;
-  double R, a;
+  cmpl V;
+  real R, a;
 public:
-  Thomas(double V, double R, double a)
+  Thomas(real V, real R, real a)
     : V(V), R(R), a(a) {};
-  Thomas(std::complex<double> V, double R, double a)
+  Thomas(cmpl V, real R, real a)
     : V(V), R(R), a(a) {};
   
   Thomas(const Thomas& rhs) = default;
   Thomas(Thomas&& rhs) = default;
   Thomas() = default;
   
-  std::complex<double> eval(double r, double erg) const final {
+  cmpl eval(real r, real erg) const final {
     return DerivWoodsSaxon(V,R,a).eval(r,erg)/r;
   };
 };
 
 class Gaussian : public Potential {
 private:
-  std::complex<double> V;
-  double R, sigma;
+  cmpl V;
+  real R, sigma;
 public:
-  Gaussian(double V, double R, double sigma)
+  Gaussian(real V, real R, real sigma)
     : V(V), R(R), sigma(sigma) {};
-  Gaussian(std::complex<double> V, double R, double sigma)
+  Gaussian(cmpl V, real R, real sigma)
     : V(V), R(R), sigma(sigma) {};
   
   Gaussian(const Gaussian& rhs) = default;
   Gaussian(Gaussian&& rhs) = default;
   Gaussian() = default;
   
-  std::complex<double> eval(double r, double erg) const final {
+  cmpl eval(real r, real erg) const final {
     return exp( (r-R)*(r-R)/(sigma*sigma) );
   };
 };
@@ -128,8 +130,8 @@ public:
   NGaussian(NGaussian&& rhs) = default;
   
   
-  std::complex<double> eval(double r, double erg) const final {
-    std::complex<double> v = 0;
+  cmpl eval(real r, real erg) const final {
+    cmpl v = 0;
     for (unsigned int i = 0; i < N; ++i) {
       v += gaussians[i].eval(r, erg);
     }
@@ -137,12 +139,12 @@ public:
   };
 };
 
-using DoubleGaussian = NGaussian<2>;
+using realGaussian = NGaussian<2>;
 
 ///@brief Thompson, D. R., LeMere, M., & Tang, Y. C. (1977). 
 /// Systematic investigation of scattering problems with the resonating-group method. 
 /// Nuclear Physics A, 286(1), 53-66.
-class Minnesota : public DoubleGaussian {
+class Minnesota : public realGaussian {
 public:
   static Minnesota build_1S0() {
     return Minnesota(200, -98.15, 1.487, 0.465);
@@ -154,8 +156,8 @@ public:
   Minnesota(const Minnesota& rhs) = default;
   Minnesota(Minnesota&& rhs) = default;
 
-  Minnesota(double V01, double V02, double k1, double k2):
-    DoubleGaussian({Gaussian(V01, 0., 1/sqrt(k1) ), Gaussian(V02, 0., 1/sqrt(k2) )}) {}
+  Minnesota(real V01, real V02, real k1, real k2):
+    realGaussian({Gaussian(V01, 0., 1/sqrt(k1) ), Gaussian(V02, 0., 1/sqrt(k2) )}) {}
 };
 
 
@@ -177,10 +179,10 @@ private:
   Params params;
 
   /// @returns projection of spin along axis of orbital ang. mom.; e.g. L * S
-  double spin_orbit() const {
-    const double L = (l2 - 1.)/2.;
-    const double S = (s2 - 1.)/2.;
-    const double J = (l2 - 1.)/2.;
+  real spin_orbit() const {
+    const real L = (l2 - 1.)/2.;
+    const real S = (s2 - 1.)/2.;
+    const real J = (l2 - 1.)/2.;
 
     return 0.5*(J*(J+1) - L*(L+1) - S*(S+1));
   }
@@ -205,31 +207,31 @@ public:
   void set_orb_am(int l2n)      { l2 = l2n; }
   void set_proj_tot_am(int j2n) { j2 = j2n; }
 
-  std::complex<double> eval(double r, double erg) const final {
+  cmpl eval(real r, real erg) const final {
     
     const auto V = WoodsSaxon{ 
-      std::complex<double>{params.real_cent_V(Z,A,erg),0},
+      cmpl{params.real_cent_V(Z,A,erg),0},
       params.real_cent_r(Z,A,erg),
       params.real_cent_a(Z,A,erg) };
     const auto Vs = DerivWoodsSaxon{ 
-      std::complex<double>{params.real_surf_V(Z,A,erg),0},
+      cmpl{params.real_surf_V(Z,A,erg),0},
       params.real_surf_r(Z,A,erg),
       params.real_surf_a(Z,A,erg) };
     const auto Vso = Thomas{ 
-      std::complex<double>{params.real_spin_V(Z,A,erg),0},
+      cmpl{params.real_spin_V(Z,A,erg),0},
       params.real_spin_r(Z,A,erg),
       params.real_spin_a(Z,A,erg) };
     
     const auto W = WoodsSaxon{ 
-      std::complex<double>{0,params.cmpl_cent_V(Z,A,erg)},
+      cmpl{0,params.cmpl_cent_V(Z,A,erg)},
       params.cmpl_cent_r(Z,A,erg),
       params.cmpl_cent_a(Z,A,erg) };
     const auto Ws = DerivWoodsSaxon{ 
-      std::complex<double>{0,params.cmpl_surf_V(Z,A,erg)},
+      cmpl{0,params.cmpl_surf_V(Z,A,erg)},
       params.cmpl_surf_r(Z,A,erg),
       params.cmpl_surf_a(Z,A,erg) };
     const auto Wso = Thomas{ 
-      std::complex<double>{0,params.cmpl_spin_V(Z,A,erg)},
+      cmpl{0,params.cmpl_spin_V(Z,A,erg)},
       params.cmpl_spin_r(Z,A,erg),
       params.cmpl_spin_a(Z,A,erg) };
 
@@ -248,11 +250,11 @@ private:
   Potential::cptr local_potential;
   Gaussian        non_local_factor;
 public:
-  PereyBuck(Potential::cptr&& potential, double beta)
+  PereyBuck(Potential::cptr&& potential, real beta)
     : local_potential(std::move(potential))
     , non_local_factor(1/(pow(constants::pi, 3./2.)) * beta*beta*beta, 0, beta) {}
 
-  std::complex<double> eval(double r, double rp, double erg) const final {
+  cmpl eval(real r, real rp, real erg) const final {
     return local_potential->eval(r, erg) * non_local_factor( (r-rp), erg);
   };
 };

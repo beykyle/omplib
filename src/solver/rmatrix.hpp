@@ -4,6 +4,7 @@
 #include "util/constants.hpp"
 #include "util/asymptotics.hpp"
 #include "util/lagrange_legendre.hpp"
+#include "util/types.hpp"
 
 #include "solver/channel.hpp"
 
@@ -22,14 +23,14 @@ template<unsigned int N>
 /// wavefunction in the channel.
 class RMatrixSolverSingleChannel {
 private:
-  using Matrix = Eigen::Matrix<std::complex<double>,N,N>;
+  using Matrix = Eigen::Matrix<cmpl,N,N>;
   Matrix Cinv;
   
   const Channel& channel;
   LagrangeLegendreBasis<N> basis;
 
 public:
-  /// @tparam callable (double) -> coomplex<double> evaluating a 
+  /// @tparam callable (real) -> coomplex<real> evaluating a 
   /// radially weighted potential in the lth partial wave channel: 
   /// r * V(r,r') * r' , for a potential V(r,r') in MeV.
   /// If potential is local, V(r,r') should return 0 when r != r' 
@@ -70,18 +71,18 @@ public:
 
   struct Solution {
     /// @brief Matrices of solving the scatter problem
-    std::complex<double> R, S, T, K;
+    cmpl R, S, T, K;
     /// @brief coefficients of the reduced wavefunction in the basis
-    std::array<std::complex<double>,N> wvfxn;
+    std::array<cmpl,N> wvfxn;
   };
 
   /// @brief R-Matrix element for channel
-  std::complex<double> rmatrix() const {
+  cmpl rmatrix() const {
     using constants::hbar;
     const auto a = channel.radius;
     const auto mu = channel.reduced_mass;
     
-    std::complex<double> R = 0;
+    cmpl R = 0;
     
     for (unsigned int n = 0; n < N; ++n) {
       for (unsigned int m = 0; m < N; ++m) {
@@ -92,58 +93,58 @@ public:
   }
   
   /// @brief S-Matrix element for channel
-  std::complex<double> smatrix(std::complex<double> R) const {
+  cmpl smatrix(cmpl R) const {
     const auto k = channel.k;
-    const std::complex<double> in   = channel.asymptotic_wvfxn_in;
-    const std::complex<double> inp  = channel.asymptotic_wvfxn_deriv_in;
-    const std::complex<double> out  = channel.asymptotic_wvfxn_out;
-    const std::complex<double> outp = channel.asymptotic_wvfxn_deriv_out;
+    const cmpl in   = channel.asymptotic_wvfxn_in;
+    const cmpl inp  = channel.asymptotic_wvfxn_deriv_in;
+    const cmpl out  = channel.asymptotic_wvfxn_out;
+    const cmpl outp = channel.asymptotic_wvfxn_deriv_out;
 
     return (in - k * R * inp )/(out - k * R * outp);
   }
   
   /// @brief S-Matrix element for channel
-  std::complex<double> smatrix() const {
+  cmpl smatrix() const {
     return smatrix(rmatrix());
   }
   
   /// @brief T-Matrix element for channel
-  std::complex<double> tmatrix(std::complex<double> S) const {
+  cmpl tmatrix(cmpl S) const {
     using constants::i;
     return i*S - i;
   }
-  std::complex<double> tmatrix() const {
+  cmpl tmatrix() const {
     return tmatrix(smatrix());
   }
 
   /// @brief K-matrix element of  channel
   /// defined as Caley transform of S-Matrix
-  std::complex<double> kmatrix(std::complex<double> S) const {
+  cmpl kmatrix(cmpl S) const {
     using constants::i;
     return i*(1.-S)/(1.+S);
   }
-  std::complex<double> kmatrix() const {
+  cmpl kmatrix() const {
     return kmatrix(smatrix());
   }
 
   /// @brief calculate the reduced wavefunction u(r) = r*R(r), within the scattering radius
   /// @param r radial grid, must be strictly increasing, and within [0,a]
   /// @param S the S-Matrix
-  std::vector<std::complex<double>> wvfxn_rbasis(
-      const std::vector<double>& r, std::complex<double> S ) const {
+  std::vector<cmpl> wvfxn_rbasis(
+      const std::vector<real>& r, cmpl S ) const {
     return wvfxn_rbasis(r, wvfxn(S));
   }
   
   /// @brief calculate the reduced wavefunction u(r) = r*R(r), within the scattering radius
   /// @param r radial grid, must be strictly increasing, and within [0,a]
   /// @param c coefficients of the reduced wavefunction in the basis
-  std::vector<std::complex<double>> wvfxn_rbasis(
-      const std::vector<double>& r, std::array<std::complex<double>,N> c ) const {
+  std::vector<cmpl> wvfxn_rbasis(
+      const std::vector<real>& r, std::array<cmpl,N> c ) const {
 
     assert(r.front() >= 0);
     assert(r.back()  <= channel.radius);
     
-    std::vector<std::complex<double>> w (r.size(), std::complex<double>{0,0});
+    std::vector<cmpl> w (r.size(), cmpl{0,0});
 
     for (unsigned int i = 0; i < r.size(); ++ i) {
       for (unsigned int m = 0; m < N; ++m) {
@@ -157,9 +158,9 @@ public:
   /// that uniquely determine the solution for the reduced wavefunction:
   /// u(r) = sum_m=0^N c_m basis.f(m,r)
   /// @param S the S-Matrix
-  std::array<std::complex<double>,N> wvfxn( std::complex<double> S ) const {
+  std::array<cmpl,N> wvfxn( cmpl S ) const {
     
-    std::array<std::complex<double>,N> c{N, std::complex<double>{0,0}};
+    std::array<cmpl,N> c{N, cmpl{0,0}};
     
     using constants::hbar;
     using constants::i;

@@ -45,15 +45,15 @@ CH89Params<Proj::proton>::CH89Params(json p)
 {};
 
 
-double omplib::CH89Params<Proj::proton>::Ec(int Z, int A, double erg) const {
-  const double z = static_cast<double>(Z);
-  const double a = static_cast<double>(A);
+real omplib::CH89Params<Proj::proton>::Ec(int Z, int A, real erg) const {
+  const real z = static_cast<real>(Z);
+  const real a = static_cast<real>(A);
 
   return 6. * z * constants::e_sqr / (5 * real_coul_r(Z,A,erg));
 }
 
-double omplib::CH89Params<Proj::proton>::real_coul_r(
-    int Z, int A, double erg) const {
-  const double a = static_cast<double>(A);
+real omplib::CH89Params<Proj::proton>::real_coul_r(
+    int Z, int A, real erg) const {
+  const real a = static_cast<real>(A);
   return rc_0 + rc_A * pow(a, 1./3.);
 }

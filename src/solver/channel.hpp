@@ -7,6 +7,7 @@
 
 #include "util/asymptotics.hpp"
 #include "util/constants.hpp"
+#include "util/types.hpp"
 
 namespace omplib {
 
@@ -17,33 +18,33 @@ enum class Parity : bool {
 
 struct Channel {
   /// @brief channel energy threshold [MeV]
-  double threshold;
+  real threshold;
   /// @brief CMS energy [MeV]
-  double energy;
+  real energy;
   /// @brief channel radius [fm]
-  double radius;
+  real radius;
   /// @brief scattering system reduced mass [amu]
-  double reduced_mass;
+  real reduced_mass;
   
   /// @brief CMS momentum sqrt( 2 * E * reduced_mass )/hbar 
-  double k;
+  real k;
 
   /// @brief Sommerfield parameter: sgn(Z_t * Z_p)/(a_B * k) [dimensionless]
   /// ab is the Bohr radius, Z_t and Z_p are the target and product charges
-  double sommerfield_param;
+  real sommerfield_param;
   
   /// @brief value of the outgoing asymptotic wavefunction at 
   /// the channel radius
-  std::complex<double> asymptotic_wvfxn_out;
+  cmpl asymptotic_wvfxn_out;
   /// @brief value of the derivative of the outgoing asymptotic 
   /// wavefunction at the channel radius
-  std::complex<double> asymptotic_wvfxn_deriv_out;
+  cmpl asymptotic_wvfxn_deriv_out;
   /// @brief value of the incoming asymptotic wavefunction at 
   /// the channel radius
-  std::complex<double> asymptotic_wvfxn_in;
+  cmpl asymptotic_wvfxn_in;
   /// @brief value of the derivative of the incoming asymptotic 
   /// wavefunction at the channel radius
-  std::complex<double> asymptotic_wvfxn_deriv_in;
+  cmpl asymptotic_wvfxn_deriv_in;
   
   /// @brief orbital angular momentum of scattering system [hbar]
   int l;
@@ -53,7 +54,7 @@ struct Channel {
   /// @brief spatial parity of channel state
   Parity pi;
 
-  Channel(double threshold, double energy, double radius, double reduced_mass, 
+  Channel(real threshold, real energy, real radius, real reduced_mass, 
           int Zt, int Zp, int l, int J2, Parity pi )
     : threshold(threshold)
     , energy(energy)
@@ -69,8 +70,8 @@ struct Channel {
 
     k = sqrt(2 * reduced_mass * constants::MeV_per_amu * energy) / (hbar * c);
     
-    const double Zz = Zt * Zp;
-    const double ab = hbar * hbar / (reduced_mass * e_sqr * fabs(Zz));
+    const real Zz = Zt * Zp;
+    const real ab = hbar * hbar / (reduced_mass * e_sqr * fabs(Zz));
 
     sommerfield_param = std::copysign(1, Zz) / (ab * k);
 

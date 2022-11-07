@@ -47,9 +47,9 @@ KD03Params<Proj::proton>::KD03Params()
   av_A = 5.21E-4;
 };
 
-double omplib::KD03Params<Proj::proton>::real_coul_r(
-    int Z, int A, double erg) const {
-  const double a = static_cast<double>(A);
+real omplib::KD03Params<Proj::proton>::real_coul_r(
+    int Z, int A, real erg) const {
+  const real a = static_cast<real>(A);
   return rc_0 + rc_A * pow(a, -1./3.) + rc_A2 * pow(a, -5./3.);
 }
 

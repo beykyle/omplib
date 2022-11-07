@@ -3,6 +3,8 @@
 
 #include <array>
 
+#include "util/types.hpp"
+
 namespace omplib {
 
 /// @brief Number of basis functions
@@ -11,8 +13,8 @@ template<unsigned int N>
 /// Gauss-Legendre quadrature integration for x on shifted domain [0,1]
 /// https://en.wikipedia.org/wiki/Gauss%E2%80%93Legendre_quadrature
 struct GaussLegendre {
-  std::array<double,N> weights;
-  std::array<double,N> abscissa;
+  std::array<real,N> weights;
+  std::array<real,N> abscissa;
 
   constexpr GaussLegendre() {
     static_assert(N >= 2);

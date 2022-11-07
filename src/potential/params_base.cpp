@@ -2,15 +2,15 @@
 
 using namespace omplib;
 
-double OMParams<Proj::proton>::asym(int Z, int A) {
-  const double n = static_cast<double>(A - Z);
-  const double a = static_cast<double>(A);
-  const double z = static_cast<double>(Z);
-  const double alpha = (n - z)/a; 
+real OMParams<Proj::proton>::asym(int Z, int A) {
+  const real n = static_cast<real>(A - Z);
+  const real a = static_cast<real>(A);
+  const real z = static_cast<real>(Z);
+  const real alpha = (n - z)/a; 
   return alpha;
 }
 
 template<>
-double OMParams<Proj::neutron>::asym(int Z, int A) {
+real OMParams<Proj::neutron>::asym(int Z, int A) {
   return -OMParams<Proj::proton>::asym(Z,A);
 }

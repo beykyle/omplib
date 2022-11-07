@@ -6,6 +6,7 @@
 #include <complex>
 
 #include "util/constants.hpp"
+#include "util/types.hpp"
 
 namespace omplib {
 
@@ -13,35 +14,35 @@ namespace omplib {
 struct j {
   int l;
   j(int l) : l(l) {};
-  std::complex<double> operator () (double kr) {
+  cmpl operator () (real kr) {
     return std::sph_bessel(l,kr);
   }
 };
 
-///@brief Spherical Bessel function double
+///@brief Spherical Bessel function real
 struct eta {
   int l;
   eta(int l) : l(l) {};
-  std::complex<double> operator () (double kr) {
+  cmpl operator () (real kr) {
     return std::sph_neumann(l,kr);
   }
 };
 
-///@brief Spherical Hankel function double
+///@brief Spherical Hankel function real
 struct h_out {
   int l;
   h_out(int l) : l(l) {};
-  std::complex<double> operator () (double kr) {
+  cmpl operator () (real kr) {
     using constants::i;
     return j{l}(kr) + i * eta{l}(kr);
   }
 };
 
-///@brief Spherical Hankel function double
+///@brief Spherical Hankel function real
 struct h_in {
   int l;
   h_in(int l) : l(l) {};
-  std::complex<double> operator () (double kr) {
+  cmpl operator () (real kr) {
     using constants::i;
     return j{l}(kr) - i * eta{l}(kr);
   }
