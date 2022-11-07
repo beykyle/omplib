@@ -25,7 +25,7 @@ struct Channel {
   /// @brief scattering system reduced mass [amu]
   double reduced_mass;
   
-  /// @brief CMS momentum sqrt( 2 * E * reduced_mass * c^2)/hbar 
+  /// @brief CMS momentum sqrt( 2 * E * reduced_mass )/hbar 
   double k;
 
   /// @brief Sommerfield parameter: sgn(Z_t * Z_p)/(a_B * k) [dimensionless]
@@ -67,7 +67,7 @@ struct Channel {
     using constants::c;
     using constants::e_sqr;
 
-    k = sqrt(2 * reduced_mass * energy) * c / hbar;
+    k = sqrt(2 * reduced_mass * constants::MeV_per_amu * energy) / (hbar * c);
     
     const double Zz = Zt * Zp;
     const double ab = hbar * hbar / (reduced_mass * e_sqr * abs(Zz));
@@ -83,10 +83,10 @@ struct Channel {
     const auto kr = k*radius;
 
     asymptotic_wvfxn_out       = radius * h_out{l}(kr);
-    asymptotic_wvfxn_deriv_out = kr * h_out{l-1}(kr) - (double)l * h_out{l}(kr);
+    asymptotic_wvfxn_deriv_out = (1.+l) * h_out{l}(kr) -  kr * h_out{l+1}(kr);
     
     asymptotic_wvfxn_in        = radius * h_in{l}(k*radius);
-    asymptotic_wvfxn_deriv_in  = kr * h_in{l-1}(kr) - (double)l * h_in{l}(kr);
+    asymptotic_wvfxn_deriv_in  = (1.+l) * h_in{l}(kr) -  kr * h_in{l+1}(kr);
   }
   
 };
