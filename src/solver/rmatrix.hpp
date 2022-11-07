@@ -24,9 +24,15 @@ template<unsigned int N>
 class RMatrixSolverSingleChannel {
 private:
   using Matrix = Eigen::Matrix<cmpl,N,N>;
+
+  /// @brief Matrix on C^(NXN), define by H-E = (T + L + l*(l+1)/r^2 + V(r,r') - E)^-1 in the basis,
+  /// where T is the 2nd derivative component of the kinetic energy, and L is the Bloch operator
   Matrix Cinv;
   
+  /// @brief channel information
   const Channel& channel;
+  
+  /// @brief projected basis in which (H-E) is inverted using Gauss-Legendre quadrature
   LagrangeLegendreBasis<N> basis;
 
 public:
