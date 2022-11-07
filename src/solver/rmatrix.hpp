@@ -37,27 +37,28 @@ public:
   RMatrixSolverSingleChannel(const Channel& channel, Potential potential)
     : Cinv(), channel(channel), basis(channel.radius)
     { 
-
-      // set forward matrix C
-      Matrix C;
-
-      const auto mu = channel.reduced_mass;
-      const auto l  = channel.l;
+      using constants::hbar;
+      const auto a    = channel.radius;
+      const auto mu   = channel.reduced_mass;
+      const auto l    = channel.l;
+      const auto h2ma = hbar*hbar/(2* mu * a * a); 
       
-      // Eq. (6.10) in Descouvemont, 2016
+      // Eq. (6.10) in Baye, Daniel. 
+      // "The Lagrange-mesh method." Physics reports 565 (2015): 1-107.
+      // e.g. Cinv = (C-I*E)^-1
       for (unsigned int n = 0; n < N; ++n) {
         for (unsigned int m = 0; m < N; ++m) {
-          C(n,m) = basis.KE_Bloch_matrix_element(mu,l,n,m) 
-                 + basis.non_local_matrix_element(potential,n,m) 
-                 - channel.energy;
+          Cinv(n,m) = h2ma * basis.KE_Bloch_matrix_element(l,n,m) 
+                    + basis.non_local_matrix_element(potential,n,m);
         }
+        Cinv(n,n) -= channel.energy;
       }
       
       // invert C to solve the system 
-      Cinv = C.inverse();  
+      //TODO should be symmetric - probably more efficient inversion
+      Cinv = Cinv.inverse();  
     }
 
-  
   RMatrixSolverSingleChannel& operator=(const RMatrixSolverSingleChannel<N>&) {
     return *this;
   };
@@ -68,8 +69,10 @@ public:
   RMatrixSolverSingleChannel(RMatrixSolverSingleChannel<N>&&)      = default;
 
   struct Solution {
+    /// @brief Matrices of solving the scatter problem
     std::complex<double> R, S, T, K;
-    std::vector<std::complex<double>>  wvfxn;
+    /// @brief coefficients of the reduced wavefunction in the basis
+    std::array<std::complex<double>,N> wvfxn;
   };
 
   /// @brief R-Matrix element for channel
@@ -85,7 +88,7 @@ public:
         R += basis.f(n,a) * Cinv(n,m) * basis.f(m,a);
       }
     }
-    return hbar*hbar / (2 * mu * a) * R;
+    return hbar*hbar / (2 * mu * a ) * R;
   }
   
   /// @brief S-Matrix element for channel
@@ -123,33 +126,65 @@ public:
     return kmatrix(smatrix());
   }
 
-  /// @brief calculate the wavefunction within the scattering radius
+  /// @brief calculate the reduced wavefunction u(r) = r*R(r), within the scattering radius
   /// @param r radial grid, must be strictly increasing, and within [0,a]
-  std::vector<std::complex<double>> wvfxn(const std::vector<double>& r ) const {
-    using constants::hbar;
-    const auto a = channel.radius;
-    const auto mu = channel.reduced_mass;
-    const auto hm =  hbar*hbar / (2 * mu * a);
-    
+  /// @param S the S-Matrix
+  std::vector<std::complex<double>> wvfxn_rbasis(
+      const std::vector<double>& r, std::complex<double> S ) const {
+    return wvfxn_rbasis(r, wvfxn(S));
+  }
+  
+  /// @brief calculate the reduced wavefunction u(r) = r*R(r), within the scattering radius
+  /// @param r radial grid, must be strictly increasing, and within [0,a]
+  /// @param c coefficients of the reduced wavefunction in the basis
+  std::vector<std::complex<double>> wvfxn_rbasis(
+      const std::vector<double>& r, std::array<std::complex<double>,N> c ) const {
+
     assert(r.front() >= 0);
-    assert(r.back()  <= a);
+    assert(r.back()  <= channel.radius);
     
     std::vector<std::complex<double>> w (r.size(), std::complex<double>{0,0});
 
     for (unsigned int i = 0; i < r.size(); ++ i) {
-      for (unsigned int n = 0; n < N; ++n) {
-        for (unsigned int m = 0; m < N; ++m) {
-          w[i] = hm * basis.f(n,a) * Cinv(n,m) * basis.f(m,r[i]);
-        }
+      for (unsigned int m = 0; m < N; ++m) {
+        w[i] += c[m] * basis.f(m,r);
       }
     }
     return w;
   }
 
-  Solution solve(const std::vector<double>& r) const {
+  /// @brief Determine the N coefficients for the basis functions
+  /// that uniquely determine the solution for the reduced wavefunction:
+  /// u(r) = sum_m=0^N c_m basis.f(m,r)
+  /// @param S the S-Matrix
+  std::array<std::complex<double>,N> wvfxn( std::complex<double> S ) const {
+    
+    std::array<std::complex<double>,N> c{N, std::complex<double>{0,0}};
+    
+    using constants::hbar;
+    using constants::i;
+    const auto a     = channel.radius;
+    const auto mu    = channel.reduced_mass;
+    const auto h2ma  = hbar*hbar / (2 * mu * a);
+    const auto wvext_deriv = 
+      (
+        channel.asymptotic_wvfxn_deriv_in 
+        + S * channel.asymptotic_wvfxn_deriv_out
+      ) / (2 * channel.k * i * a);
+    
+    for (unsigned int m = 0; m < N; ++m) {
+      for (unsigned int n = 0; n < N; ++n) {
+        c[m] += h2ma * wvext_deriv * basis.f(n,a) * Cinv(n,m);
+      }
+    }
+
+    return c;
+  }
+
+  Solution solve() const {
     const auto R = rmatrix();
     const auto S = smatrix(R);
-    return Solution{ R, S, tmatrix(S), kmatrix(S), wvfxn(r)  };
+    return Solution{ R, S, tmatrix(S), kmatrix(S), wvfxn(S) };
   }
 
 };
