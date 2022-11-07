@@ -26,7 +26,10 @@ struct Channel {
   /// @brief scattering system reduced mass [amu]
   real reduced_mass;
   
-  /// @brief CMS momentum sqrt( 2 * E * reduced_mass )/hbar 
+  /// @brief CMS momentum  w/ relativistic correction according to 
+  /// Eq. 17 of Ingemarsson, A. 
+  /// "Some notes on optical model calculations at medium energies." 
+  /// Physica Scripta 9.3 (1974): 156.
   real k;
 
   /// @brief Sommerfield parameter: sgn(Z_t * Z_p)/(a_B * k) [dimensionless]
@@ -54,12 +57,13 @@ struct Channel {
   /// @brief spatial parity of channel state
   Parity pi;
 
-  Channel(real threshold, real energy, real radius, real reduced_mass, 
+  Channel(real threshold, real energy, real radius, 
+          real proj_mass, real targ_mass,
           int Zt, int Zp, int l, int J2, Parity pi )
     : threshold(threshold)
     , energy(energy)
     , radius(radius)
-    , reduced_mass(reduced_mass)
+    , reduced_mass( targ_mass * proj_mass / (targ_mass + proj_mass) )
     , l(l)
     , J2(J2)
     , pi(pi)
@@ -67,9 +71,21 @@ struct Channel {
     using constants::hbar;
     using constants::c;
     using constants::e_sqr;
+    
+    const auto m1   = proj_mass * constants::MeV_per_amu / c / c;
+    const auto m2   = targ_mass * constants::MeV_per_amu / c / c;
 
+    // non-relativistic
     k = sqrt(2 * reduced_mass * constants::MeV_per_amu * energy) / (hbar * c);
     
+    // relativistic correction
+    const auto Tlab = energy * (m1 + m2) / m2; // Eq. 4 Inermarsson, 1974
+    // Eq. 17 of Ingemarsson, 1974
+    k = m2 * c * c 
+      * sqrt(Tlab * (Tlab + 2 * m1 * c * c)) 
+      / sqrt((m1 + m2)*(m1 + m2) * c * c * c * c + 2 * m2 * c * c * Tlab)
+      / (hbar * c);
+
     const real Zz = Zt * Zp;
     const real ab = hbar * hbar / (reduced_mass * e_sqr * fabs(Zz));
 
