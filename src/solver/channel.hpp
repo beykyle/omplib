@@ -70,7 +70,7 @@ struct Channel {
     k = sqrt(2 * reduced_mass * constants::MeV_per_amu * energy) / (hbar * c);
     
     const double Zz = Zt * Zp;
-    const double ab = hbar * hbar / (reduced_mass * e_sqr * abs(Zz));
+    const double ab = hbar * hbar / (reduced_mass * e_sqr * fabs(Zz));
 
     sommerfield_param = std::copysign(1, Zz) / (ab * k);
 
