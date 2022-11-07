@@ -64,7 +64,7 @@ void rmatrix_neutron_scatter(int Z, int A, int l) {
         return pwlh.eval(r, ch.energy);
       } 
       );
-  const auto [Rp, Sp, Tp, Kp, wvfxnp] = solver.solve( r_grid );
+  const auto [Rp, Sp, Tp, Kp, wvfxnp] = solver.solve();
 
   if ( l > 0 ) {
     // spin down
@@ -77,7 +77,7 @@ void rmatrix_neutron_scatter(int Z, int A, int l) {
           return pwlh.eval(r, ch.energy);
         } 
       );
-    const auto [Rm, Sm, Tm, Km, wvfxnm] = solver.solve( r_grid );
+    const auto [Rm, Sm, Tm, Km, wvfxnm] = solver.solve();
   }
 
   //TODO tot, el, rxn xs, analyzing powers, differential el xs
