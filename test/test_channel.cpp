@@ -28,7 +28,7 @@ TEST_CASE("Build simple channel") {
 
   SECTION("neutron 1MeV") {
     const auto chn   = Channel(threshold, erg_cms, ch_radius, 
-                              projectile_mass, target_mass, Z, 0, 0, J2, pi);
+                              projectile_mass, 0, target_mass, Z, 0, 0, 2);
     
     REQUIRE(chn.Tlab         == Approx(1.00725658212791));
     REQUIRE(chn.k            == Approx(0.2189449404));
@@ -51,7 +51,7 @@ TEST_CASE("Build simple channel") {
   
   SECTION("neutron 100MeV") {
     const auto chn   = Channel(threshold, 100, ch_radius, 
-                              projectile_mass, target_mass, Z, 0, 0, J2, pi);
+                              projectile_mass, 0, target_mass, Z, 0, 0, 2);
     
     REQUIRE(chn.Tlab         == Approx(100.725658212791));
     REQUIRE(chn.k            == Approx(2.24505752889899));
@@ -67,7 +67,7 @@ TEST_CASE("Build simple channel") {
     
     REQUIRE(chn.asymptotic_wvfxn_out.real()        == Approx(0.432955865628073));
     REQUIRE(chn.asymptotic_wvfxn_out.imag()        == Approx(0.104645899583040));
-                                                                                    
+    
     REQUIRE(chn.asymptotic_wvfxn_deriv_out.real()  == Approx(-0.234936064727312));
     REQUIRE(chn.asymptotic_wvfxn_deriv_out.imag()  == Approx(0.972010825809283));
   }

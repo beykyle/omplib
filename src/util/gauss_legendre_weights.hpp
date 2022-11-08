@@ -18,7 +18,7 @@ struct GaussLegendre {
 
   constexpr GaussLegendre() {
     static_assert(N >= 2);
-    static_assert(N < 20);
+    static_assert(N <= 20);
 
     // hard coded values for typical domain 
     // x on [-1,1]

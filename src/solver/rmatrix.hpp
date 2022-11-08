@@ -51,6 +51,11 @@ public:
       using constants::hbar;
       const auto l    = channel.l;
       const auto h2ma = channel.h2ma;
+
+      // pass channel info into the potential callable
+      auto p = [&potential, &channel](real r, real rp) -> cmpl {
+        return potential(r, rp, channel);
+      };
       
       // Eq. (6.10) in Baye, Daniel. 
       // "The Lagrange-mesh method." Physics reports 565 (2015): 1-107.
@@ -58,7 +63,7 @@ public:
       for (unsigned int n = 0; n < N; ++n) {
         for (unsigned int m = 0; m < N; ++m) {
           Cinv(n,m) = h2ma * basis.KE_Bloch_matrix_element(l,n,m) 
-                    + basis.non_local_matrix_element(potential,n,m);
+                    + basis.non_local_matrix_element(p,n,m);
         }
         Cinv(n,n) -= channel.energy;
       }

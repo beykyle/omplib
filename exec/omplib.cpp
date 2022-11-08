@@ -7,7 +7,7 @@
 #include "util/types.hpp"
 
 #include "potential/potential.hpp"
-#include "solver/rmatrix.hpp"
+#include "solver/scatter.hpp"
 
 
 #include <iomanip>
@@ -20,58 +20,6 @@
 // nice shorthand
 constexpr auto n = omplib::Proj::neutron;
 constexpr auto p = omplib::Proj::proton;
-
-// l-wave scattering on 0+ ground state
-void rmatrix_neutron_scatter(int Z, int A, int l) {
-  
-  using namespace omplib;
-  using namespace omplib::constants;
-  
-  // constants
-  constexpr real n_spin          = 1./2.;
-  constexpr real projectile_mass = n_mass_amu; 
-  const real target_mass         = A; 
-  
-  constexpr real threshold = 0.; // MeV
-  constexpr real erg_cms   = 1.; // MeV
-  constexpr real ch_radius = 12; // fm
-  
-  // on 0+ ground state
-  constexpr int J2  = 1; // J2 == (2*J +1) == dimension of SU(2) representation
-  constexpr auto pi = Parity::even;
-
-  // build potentials and define scattering channel
-  auto wlh_mean   = WLH21Params<n>();
-  auto pwlh = OMP(Z, A, (2*l+1), (2*n_spin + 1), (2*(l+n_spin) + 1), wlh_mean);
-
-  const auto ch   = Channel(threshold, erg_cms, ch_radius, 
-                            projectile_mass, target_mass, Z, 0, l, J2, pi);
-  
-  auto reduced_pot = [&pwlh, &ch](real r, real rp) -> cmpl {
-    if ( r != rp ) return 0.;
-      return pwlh.eval(r, ch.Tlab) * r;
-  }; 
-  
-  // run the R-Matrix solver with N basis functions
-  constexpr unsigned int N = 10;
-
-  // spin up
-  // J = L+1/2
-  // j2 = 2*J+1
-  auto solver = RMatrixSolverSingleChannel<N>(ch, reduced_pot);
-  const auto [Rp, Sp, Tp, Kp, wvfxnp] = solver.calculate();
-
-  if ( l > 0 ) {
-    // spin down
-    // J = L-1/2
-    // j2 = 2*J+1
-    pwlh.set_proj_tot_am(2*(l-n_spin) + 1);
-    solver = RMatrixSolverSingleChannel<N>(ch, reduced_pot);
-    const auto [Rm, Sm, Tm, Km, wvfxn] = solver.calculate();
-  }
-
-  //TODO tot, el, rxn xs, analyzing powers, differential el xs
-}
 
 void print_potential_vals() {
   
@@ -133,8 +81,24 @@ void print_potential_vals() {
   }
 }
 
-int main(int argc, char** argv) {
-  rmatrix_neutron_scatter(54,139,0); // s-wave scatter on 139-Xe
+int main(int, char**) {
+
+  using namespace omplib;
+  
+  constexpr Isotope Xe144 {54, 144, 143.93851};
+
+  const auto erg = 12.3;
+  const auto wlh = WLH21Params<n>();
+  const auto pot = OMP(Xe144.A, Xe144.Z, wlh); 
+  
+  const auto solver = NAScatter<n>(Xe144); 
+
+  auto p = [&pot](double r, double rp, const Channel& ch) -> cmpl { 
+    return pot.eval_reduced(r, rp, ch); 
+  };
+  
+  const auto m = solver.solve(erg, p);
+
   print_potential_vals();
   return 0;
 };

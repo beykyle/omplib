@@ -57,9 +57,21 @@ struct Channel {
   int l;
   /// @brief (2J+1), where J is the total angular 
   /// momentum of the channel [hbar]
-  int    J2;
+  int J2;
+  /// @brief (2S+1), where S is the intrinsic angular momentum of
+  /// the proprojectile
+  int S2;
   /// @brief spatial parity of channel state
   Parity pi;
+  
+  /// @returns projection of spin along axis of orbital ang. mom.; e.g. L * S
+  real spin_orbit() const {
+    const real L = l;
+    const real S = (S2 - 1.)/2.;
+    const real J = (J2 - 1.)/2.;
+
+    return 0.5*(J*(J+1) - L*(L+1) - S*(S+1));
+  }
 
   /// @param threshold [Mev]
   /// @param energy (cms) [Mev]
@@ -72,14 +84,16 @@ struct Channel {
   /// @param J2 total angular momentum  [hbar]
   /// @param pi parity [hbar]
   Channel(real threshold, real erg_cms, real radius, 
-          real proj_mass, real targ_mass,
-          int Zt, int Zp, int l, int J2, Parity pi )
+          real proj_mass,  int Zp,
+          real targ_mass,  int Zt, 
+          int l, int J2, int S2)
     : threshold(threshold)
     , energy(erg_cms)
     , radius(radius)
     , l(l)
     , J2(J2)
-    , pi(pi)
+    , S2(S2)
+    , pi( l % 2 == 0 ? Parity::even : Parity::odd)
   {
     using constants::hbar;
     using constants::c;
