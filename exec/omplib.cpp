@@ -43,42 +43,31 @@ void rmatrix_neutron_scatter(int Z, int A, int l) {
   // build potentials and define scattering channel
   auto wlh_mean   = WLH21Params<n>();
   auto pwlh = OMP(Z, A, (2*l+1), (2*n_spin + 1), (2*(l+n_spin) + 1), wlh_mean);
+
   const auto ch   = Channel(threshold, erg_cms, ch_radius, 
                             projectile_mass, target_mass, Z, 0, l, J2, pi);
   
-  // build radial grid to print the wavefunction
-  constexpr auto r_grid_sz = 200;
-  std::vector<real> r_grid(r_grid_sz,0.);
-  for (int i = 0; i < r_grid_sz; ++i) {
-    r_grid[i] = ch.radius * static_cast<real>(i) / (static_cast<real>(r_grid_sz) +1);
-  }
+  auto reduced_pot = [&pwlh, &ch](real r, real rp) -> cmpl {
+    if ( r != rp ) return 0.;
+      return pwlh.eval(r, ch.Tlab) * r;
+  }; 
   
   // run the R-Matrix solver with N basis functions
   constexpr unsigned int N = 10;
 
-  // spin down
+  // spin up
   // J = L+1/2
   // j2 = 2*J+1
-  auto solver = RMatrixSolverSingleChannel<N>(ch, 
-      [&pwlh, &ch](real r, real rp) -> cmpl {
-        if ( r != rp ) return 0.;
-        return pwlh.eval(r, ch.energy);
-      } 
-      );
-  const auto [Rp, Sp, Tp, Kp, wvfxnp] = solver.solve();
+  auto solver = RMatrixSolverSingleChannel<N>(ch, reduced_pot);
+  const auto [Rp, Sp, Tp, Kp, wvfxnp] = solver.calculate();
 
   if ( l > 0 ) {
     // spin down
     // J = L-1/2
     // j2 = 2*J+1
     pwlh.set_proj_tot_am(2*(l-n_spin) + 1);
-    solver = RMatrixSolverSingleChannel<N>(ch, 
-        [&pwlh, &ch](real r, real rp) -> cmpl {
-          if ( r != rp ) return 0.;
-          return pwlh.eval(r, ch.energy);
-        } 
-      );
-    const auto [Rm, Sm, Tm, Km, wvfxnm] = solver.solve();
+    solver = RMatrixSolverSingleChannel<N>(ch, reduced_pot);
+    const auto [Rm, Sm, Tm, Km, wvfxn] = solver.calculate();
   }
 
   //TODO tot, el, rxn xs, analyzing powers, differential el xs

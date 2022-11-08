@@ -19,7 +19,7 @@ struct j {
   }
 };
 
-///@brief Spherical Bessel function real
+///@brief Spherical Bessel function of 2nd kind
 struct eta {
   int l;
   eta(int l) : l(l) {};
@@ -28,7 +28,7 @@ struct eta {
   }
 };
 
-///@brief Spherical Hankel function real
+///@brief Spherical outgoing Hankel function
 struct h_out {
   int l;
   h_out(int l) : l(l) {};
@@ -38,7 +38,7 @@ struct h_out {
   }
 };
 
-///@brief Spherical Hankel function real
+///@brief Spherical incoming Hankel function
 struct h_in {
   int l;
   h_in(int l) : l(l) {};

@@ -23,8 +23,12 @@ struct Channel {
   real energy;
   /// @brief channel radius [fm]
   real radius;
-  /// @brief scattering system reduced mass [amu]
+  /// @brief scattering system reduced mass [MeV]
   real reduced_mass;
+  /// @brief hbar^2 * c^2/(2 * reduced mass  * radius) [Mev fm]
+  real h2ma;
+  /// @brief Bombarding kinetic energy in the lab frame [MeV]
+  real Tlab;
   
   /// @brief CMS momentum  w/ relativistic correction according to 
   /// Eq. 17 of Ingemarsson, A. 
@@ -57,13 +61,22 @@ struct Channel {
   /// @brief spatial parity of channel state
   Parity pi;
 
-  Channel(real threshold, real energy, real radius, 
+  /// @param threshold [Mev]
+  /// @param energy (cms) [Mev]
+  /// @param radius [fm]
+  /// @param proj_mass [amu] 
+  /// @param targ_mass [amu]
+  /// @param Zt proton number of target 
+  /// @param Zp proton number of projectile 
+  /// @param l orbital angular momentum [hbar]
+  /// @param J2 total angular momentum  [hbar]
+  /// @param pi parity [hbar]
+  Channel(real threshold, real erg_cms, real radius, 
           real proj_mass, real targ_mass,
           int Zt, int Zp, int l, int J2, Parity pi )
     : threshold(threshold)
-    , energy(energy)
+    , energy(erg_cms)
     , radius(radius)
-    , reduced_mass( targ_mass * proj_mass / (targ_mass + proj_mass) )
     , l(l)
     , J2(J2)
     , pi(pi)
@@ -71,25 +84,45 @@ struct Channel {
     using constants::hbar;
     using constants::c;
     using constants::e_sqr;
+    using constants::MeV_per_amu;
     
-    const auto m1   = proj_mass * constants::MeV_per_amu / c / c;
-    const auto m2   = targ_mass * constants::MeV_per_amu / c / c;
+    const auto energy = erg_cms - threshold;
+    const auto m1     = proj_mass * MeV_per_amu;
+    const auto m2     = targ_mass * MeV_per_amu;
 
-    // non-relativistic
+    // for debugging relativistic corrections
+    // non-relativistic wave number [1/fm]
     k = sqrt(2 * reduced_mass * constants::MeV_per_amu * energy) / (hbar * c);
+    // non-relativistic reduced mass [MeV]
+    reduced_mass = targ_mass * proj_mass / (targ_mass + proj_mass) 
+                 * MeV_per_amu;
     
-    // relativistic correction
-    const auto Tlab = energy * (m1 + m2) / m2; // Eq. 4 Inermarsson, 1974
+    // [Mev]
+    Tlab = energy * (m1 + m2) / m2; // Eq. 4 Inermarsson, 1974
+    
+    // relativistic-corrected wavenumber [1/fm]
     // Eq. 17 of Ingemarsson, 1974
-    k = m2 * c * c 
-      * sqrt(Tlab * (Tlab + 2 * m1 * c * c)) 
-      / sqrt((m1 + m2)*(m1 + m2) * c * c * c * c + 2 * m2 * c * c * Tlab)
+    k = m2 * sqrt(Tlab * ( Tlab + 2 * m1 )) 
+      / sqrt( (m1 + m2)*(m1 + m2)  + 2 * m2 * Tlab)
       / (hbar * c);
 
-    const real Zz = Zt * Zp;
-    const real ab = hbar * hbar / (reduced_mass * e_sqr * fabs(Zz));
 
-    sommerfield_param = std::copysign(1, Zz) / (ab * k);
+    // relativistic-corrected reduced mass [MeV]
+    // Eq. 21 of Ingemarsson, 1974
+    const auto Ep = m1 + energy;
+    reduced_mass  = hbar * hbar * c * c * k * k * Ep / (Ep*Ep - m1*m1);
+    
+    // [MeV fm]
+    h2ma = hbar * hbar * c * c / (2* reduced_mass * radius); 
+
+    // product of charges 
+    const real Zz = Zt * Zp;
+    
+    // Bohr radius [fm]
+    const real ab = hbar * hbar * c * c / (reduced_mass * e_sqr * fabs(Zz));
+    
+    // dimensionless
+    sommerfield_param = std::copysign(1., Zz) / (ab * k);
 
     //TODO use confluent hypergeometrics for asymptotics
     // for now, assume neutral projectile and use Hankel fxns
@@ -105,7 +138,6 @@ struct Channel {
     asymptotic_wvfxn_in        = radius * h_in{l}(k*radius);
     asymptotic_wvfxn_deriv_in  = (1.+l) * h_in{l}(kr) -  kr * h_in{l+1}(kr);
   }
-  
 };
 
 };

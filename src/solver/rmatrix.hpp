@@ -21,6 +21,10 @@ template<unsigned int N>
 /// Computer physics communications 200 (2016): 199-219. 
 /// Calculates the on-shell R, S, T and K-matrices, as well as the scattering 
 /// wavefunction in the channel.
+/// This type follows RAII; the system is initialized and inverted (solved) during 
+/// construction. Once an instance has been constructed, the system has been solved,
+/// and derived quantities (e.g. R/S/T/K-Matrices and the wavefunction in the basis)
+/// can be calculated at little computational cost, using the calculate() function
 class RMatrixSolverSingleChannel {
 private:
   using Matrix = Eigen::Matrix<cmpl,N,N>;
@@ -36,19 +40,17 @@ private:
   LagrangeLegendreBasis<N> basis;
 
 public:
-  /// @tparam callable (real) -> coomplex<real> evaluating a 
+  /// @tparam callable (real) -> cmpl evaluating a 
   /// radially weighted potential in the lth partial wave channel: 
   /// r * V(r,r') * r' , for a potential V(r,r') in MeV.
-  /// If potential is local, V(r,r') should return 0 when r != r' 
+  /// If potential is local, r * V(r,r') * r'  = r V(r) * delta(r - r') 
   template<class Potential>
   RMatrixSolverSingleChannel(const Channel& channel, Potential potential)
     : Cinv(), channel(channel), basis(channel.radius)
     { 
       using constants::hbar;
-      const auto a    = channel.radius;
-      const auto mu   = channel.reduced_mass;
       const auto l    = channel.l;
-      const auto h2ma = hbar*hbar/(2* mu * a * a); 
+      const auto h2ma = channel.h2ma;
       
       // Eq. (6.10) in Baye, Daniel. 
       // "The Lagrange-mesh method." Physics reports 565 (2015): 1-107.
@@ -76,17 +78,20 @@ public:
   RMatrixSolverSingleChannel(RMatrixSolverSingleChannel<N>&&)      = default;
 
   struct Solution {
-    /// @brief Matrices of solving the scatter problem
+    /// \defgroup Matrices 
+    /// matrices solving the scatter problem
     cmpl R, S, T, K;
+
     /// @brief coefficients of the reduced wavefunction in the basis
     std::array<cmpl,N> wvfxn;
   };
 
   /// @brief R-Matrix element for channel
+  /// O(N^2)
   cmpl rmatrix() const {
     using constants::hbar;
-    const auto a = channel.radius;
-    const auto mu = channel.reduced_mass;
+    const auto a    = channel.radius;
+    const auto h2ma = channel.h2ma;
     
     cmpl R = 0;
     
@@ -95,7 +100,7 @@ public:
         R += basis.f(n,a) * Cinv(n,m) * basis.f(m,a);
       }
     }
-    return hbar*hbar / (2 * mu * a ) * R;
+    return h2ma * R;
   }
   
   /// @brief S-Matrix element for channel
@@ -170,9 +175,9 @@ public:
     
     using constants::hbar;
     using constants::i;
-    const auto a     = channel.radius;
-    const auto mu    = channel.reduced_mass;
-    const auto h2ma  = hbar*hbar / (2 * mu * a);
+    const auto h2ma = channel.h2ma;
+    const auto a    = channel.radius;
+    
     const auto wvext_deriv = 
       (
         channel.asymptotic_wvfxn_deriv_in 
@@ -188,7 +193,7 @@ public:
     return c;
   }
 
-  Solution solve() const {
+  Solution calculate() const {
     const auto R = rmatrix();
     const auto S = smatrix(R);
     return Solution{ R, S, tmatrix(S), kmatrix(S), wvfxn(S) };
