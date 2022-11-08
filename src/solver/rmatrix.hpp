@@ -65,7 +65,7 @@ public:
           Cinv(n,m) = h2ma * basis.KE_Bloch_matrix_element(l,n,m) 
                     + basis.non_local_matrix_element(p,n,m);
         }
-        Cinv(n,n) -= channel.energy;
+        Cinv(n,n) -= channel.erg_cms;
       }
       
       // invert C to solve the system 

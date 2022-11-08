@@ -22,17 +22,19 @@ TEST_CASE("Build simple channel") {
   constexpr real erg_cms   = 1.; // MeV
   constexpr real ch_radius = 12; // fm
   
+  /// s-wave
+  constexpr int l = 0;
+  constexpr int S2 = 2; // S2 == (2*(1/2) +1) == dimension of spin 1/2 SU(2) representation
   // on 0+ ground state
   constexpr int J2  = 1; // J2 == (2*J +1) == dimension of SU(2) representation
-  constexpr auto pi = Parity::even;
 
   SECTION("neutron 1MeV") {
     const auto chn   = Channel(threshold, erg_cms, ch_radius, 
-                              projectile_mass, 0, target_mass, Z, 0, 0, 2);
+                              projectile_mass, 0, target_mass, Z, l, J2, S2);
     
-    REQUIRE(chn.Tlab         == Approx(1.00725658212791));
-    REQUIRE(chn.k            == Approx(0.2189449404));
-    REQUIRE(chn.h2ma         == Approx(1.7374714662639255));
+    REQUIRE(chn.erg_lab           == Approx(1.00725658212791));
+    REQUIRE(chn.k                 == Approx(0.2189449404));
+    REQUIRE(chn.h2ma              == Approx(1.7374714662639255));
     REQUIRE(chn.reduced_mass      == Approx(933.7788172169));
     REQUIRE(chn.sommerfield_param == Approx(0.));
     
@@ -51,11 +53,11 @@ TEST_CASE("Build simple channel") {
   
   SECTION("neutron 100MeV") {
     const auto chn   = Channel(threshold, 100, ch_radius, 
-                              projectile_mass, 0, target_mass, Z, 0, 0, 2);
+                              projectile_mass, 0, target_mass, Z, l, J2, S2);
     
-    REQUIRE(chn.Tlab         == Approx(100.725658212791));
-    REQUIRE(chn.k            == Approx(2.24505752889899));
-    REQUIRE(chn.h2ma         == Approx(1.57382520561950));
+    REQUIRE(chn.erg_lab           == Approx(100.725658212791));
+    REQUIRE(chn.k                 == Approx(2.24505752889899));
+    REQUIRE(chn.h2ma              == Approx(1.57382520561950));
     REQUIRE(chn.reduced_mass      == Approx(1030.87383743656));
     REQUIRE(chn.sommerfield_param == Approx(0.));
     

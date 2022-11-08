@@ -78,15 +78,15 @@ public:
     
     // higher OAM states must account for spin up and down
     for (l = 1; l < MAXL; ++l) {
-      ch.l  = l;
+      ch.reset_l(l); // re-calculate asymptotics
       
       // spin up
       ch.J2 = 2*l + S2; // 2*(l+1/2) +1 = 2l + (2*1/2+1)
-      Splus = Solver(ch, p).tmatrix();
+      Splus = Solver(ch, p).smatrix();
       
       // spin down
       ch.J2 = 2*l; // 2*(l-1/2)  +1 = 2l
-      Sminus = Solver(ch, p).tmatrix();
+      Sminus = Solver(ch, p).smatrix();
 
       A[l] = (real)(2*l+1) - (real)(l+1) * Splus - (real)l * Sminus;
       B[l] = Sminus - Splus;
