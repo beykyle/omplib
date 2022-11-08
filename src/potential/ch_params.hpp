@@ -39,7 +39,7 @@ protected:
   // real spin orbit depth
   real vso_0;
 
-  real Ec(int Z, int A, real erg) const { return 0; }
+  real Ec(int, int, real) const { return 0; }
   
   using OMParams<projectile>::asym;
 
@@ -61,13 +61,13 @@ public:
   real real_spin_V(int Z, int A, real erg) const final;
 
   // CH89 does not have real surface or complex spin terms
-  real cmpl_spin_r(int Z, int A, real erg) const final { return 0; }
-  real cmpl_spin_V(int Z, int A, real erg) const final { return 0; }
-  real cmpl_spin_a(int Z, int A, real erg) const final { return 0; }
+  real cmpl_spin_r(int, int, real) const final { return 0; }
+  real cmpl_spin_V(int, int, real) const final { return 0; }
+  real cmpl_spin_a(int, int, real) const final { return 0; }
   
-  real real_surf_a(int Z, int A, real erg) const override { return 0; }
-  real real_surf_V(int Z, int A, real erg) const override { return 0; }
-  real real_surf_r(int Z, int A, real erg) const override { return 0; }
+  real real_surf_a(int, int, real) const override { return 0; }
+  real real_surf_V(int, int, real) const override { return 0; }
+  real real_surf_r(int, int, real) const override { return 0; }
   
   CH89Params( const CH89Params<projectile>& rhs ) = default;
   
@@ -158,13 +158,13 @@ public:
 
 
 template<Proj proj>
-real CH89Params<proj>::real_cent_r(int Z, int A, real erg) const {
+real CH89Params<proj>::real_cent_r(int, int A, real) const {
   const real a = static_cast<real>(A);
   return r_0 + r_A * pow(a, 1./3.);
 }
 
 template<Proj proj>
-real CH89Params<proj>::cmpl_cent_r(int Z, int A, real erg) const {
+real CH89Params<proj>::cmpl_cent_r(int, int A, real) const {
   const real a = static_cast<real>(A);
   return rw_0 + rw_A * pow(a, 1./3.);
 }
@@ -175,28 +175,28 @@ real CH89Params<proj>::cmpl_surf_r(int Z, int A, real erg) const {
 }
 
 template<Proj proj>
-real CH89Params<proj>::real_spin_r(int Z, int A, real erg) const {
+real CH89Params<proj>::real_spin_r(int, int A, real) const {
   const real a = static_cast<real>(A);
   return rso_0 + rso_A * pow(a, 1./3.);
 }
 
 template<Proj proj>
-real CH89Params<proj>::real_cent_a(int Z, int A, real erg) const {
+real CH89Params<proj>::real_cent_a(int, int, real) const {
   return a0;
 }
 
 template<Proj proj>
-real CH89Params<proj>::cmpl_cent_a(int Z, int A, real erg) const {
+real CH89Params<proj>::cmpl_cent_a(int, int, real) const {
   return aw;
 }
 
 template<Proj proj>
-real CH89Params<proj>::cmpl_surf_a(int Z, int A, real erg) const {
+real CH89Params<proj>::cmpl_surf_a(int, int, real) const {
   return aw;
 }
 
 template<Proj proj>
-real CH89Params<proj>::real_spin_a(int Z, int A, real erg) const {
+real CH89Params<proj>::real_spin_a(int, int, real) const {
   return aso;
 }
 
@@ -220,7 +220,7 @@ real CH89Params<proj>::cmpl_surf_V(int Z, int A, real erg) const {
 }
 
 template<Proj proj>
-real CH89Params<proj>::real_spin_V(int Z, int A, real erg) const {
+real CH89Params<proj>::real_spin_V(int, int, real) const {
   return 2. * vso_0;
 }
 

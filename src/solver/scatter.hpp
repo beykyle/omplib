@@ -1,35 +1,16 @@
 #ifndef SCATTER_HEADER
 #define SCATTER_HEADER
 
+#include <vector>
+#include <array>
+
 #include "util/constants.hpp"
 #include "util/config.hpp"
 
 #include "solver/rmatrix.hpp"
 #include "potential/potential.hpp"
 
-#include <vector>
-#include <array>
-
 namespace omplib {
-
-struct Isotope {
-  int A;
-  int Z;
-  //TODO load a mass table
-  real mass;
-};
-
-template<Proj p>
-constexpr real mass() {
-  if constexpr (p == Proj::neutron) return constants::n_mass_amu;
-  if constexpr (p == Proj::proton ) return constants::p_mass_amu;
-}
-
-template<Proj p>
-constexpr int charge() {
-  if constexpr (p == Proj::neutron) return 0;
-  if constexpr (p == Proj::proton ) return 1;
-}
 
 template<Proj proj>
 class NAScatter {
@@ -49,19 +30,19 @@ public:
     , ch_radius(ch_radius)
     , ch_threshold(ch_threshold) {};
 
-  struct Matrix {
+  struct TMatrix {
     std::array<cmpl, MAXL> A;
     std::array<cmpl, MAXL> B;
   };
 
   /// @tparam Potential callable (real r [fm], real rp [fm], Channel ch) -> cmpl [Mev]
   template<class Potential>
-  Matrix solve(real erg_cms, Potential p) const {
+  TMatrix solve(real erg_cms, Potential p) const {
 
     // TODO for now just neutrons
     static_assert(charge<proj>() == 0);
   
-    Matrix soln;
+    TMatrix soln;
     auto& [A, B] = soln;
 
     int l   = 0;
@@ -92,6 +73,7 @@ public:
       B[l] = Sminus - Splus;
     } 
     
+    //TODO units
     return soln; 
   } 
 };

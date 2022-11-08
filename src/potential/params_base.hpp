@@ -3,18 +3,13 @@
 
 #include "util/constants.hpp"
 #include "util/types.hpp"
+#include "util/nuc_data.hpp"
 
 #include "nlohmann/json.hpp"
 using nlohmann::json;
 
 namespace omplib {
 
-/// @brief incident particle type
-enum class Proj : bool {
-  proton,
-  neutron,
-};
- 
 /// @tparam p incident neutron or proton 
 ///
 template<Proj p>
@@ -87,7 +82,7 @@ struct OMParams<Proj::proton>  {
 
   /// @brief Coulomb potential w/in uniformly charge sphere or radius R
   /// v(r) = q^2/(2*R)(3 - r/R)
-  virtual real real_coul_V_outer(int Z, int A, real erg) const {
+  virtual real real_coul_V_outer(int Z, int, real) const {
     return static_cast<real>(Z) * constants::e_sqr;
   }
   /// @brief Coulomb potential outside uniformly charge sphere or radius R

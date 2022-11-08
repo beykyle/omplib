@@ -225,12 +225,12 @@ private:
 
 
 public:
-  OMP(int A, int Z)
-    : A(A), Z(Z), params(Params()) {};
-  OMP(int A, int Z,  Params params)
-    : A(A), Z(Z),  params(params) {};
-  OMP(int A, int Z,  Params&& params)
-    : A(A), Z(Z), params(params) {};
+  OMP(Isotope isotope)
+    : A(isotope.A), Z(isotope.Z), params(Params()) {};
+  OMP(Isotope isotope,  Params params)
+    : A(isotope.A), Z(isotope.Z),  params(params) {};
+  OMP(Isotope isotope,  Params&& params)
+    : A(isotope.A), Z(isotope.Z), params(params) {};
 
   OMP(const OMP<Params>& rhs) = default;
   OMP(OMP<Params>&& rhs)      = default;

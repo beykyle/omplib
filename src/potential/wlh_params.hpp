@@ -61,13 +61,13 @@ public:
   real real_spin_V(int Z, int A, real erg) const final;
   
   // WLH does not have a real surface or complex SO term
-  real real_surf_V(int Z, int A, real erg) const final { return 0; }
-  real real_surf_a(int Z, int A, real erg) const final { return 0; }
-  real real_surf_r(int Z, int A, real erg) const final { return 0; }
+  real real_surf_V(int, int, real) const final { return 0; }
+  real real_surf_a(int, int, real) const final { return 0; }
+  real real_surf_r(int, int, real) const final { return 0; }
 
-  real cmpl_spin_V(int Z, int A, real erg) const final { return 0; }
-  real cmpl_spin_a(int Z, int A, real erg) const final { return 0; }
-  real cmpl_spin_r(int Z, int A, real erg) const final { return 0; }
+  real cmpl_spin_V(int, int, real) const final { return 0; }
+  real cmpl_spin_a(int, int, real) const final { return 0; }
+  real cmpl_spin_r(int, int, real) const final { return 0; }
 
   WLH21Params(json p);
   WLH21Params():
@@ -126,35 +126,35 @@ template<>
 class WLH21Params<Proj::proton> : public WLH21Params<Proj::neutron> , OMParams<Proj::proton> {
 public:
   //TODO what is the Coulomb contribution to WLH
-  real real_coul_r(int Z, int A, real erg) const final { return 0; }
+  real real_coul_r(int, int, real) const final { return 0; }
   WLH21Params(json p);
   WLH21Params();
 };
 
 
 template<Proj proj>
-real WLH21Params<proj>::real_cent_r(int Z, int A, real erg) const {
+real WLH21Params<proj>::real_cent_r(int, int A, real erg) const {
   const real a  = static_cast<real>(A);
   const real a3 = pow(a,1./3.); 
   return (r0 - r1 * erg + r2 * erg * erg)*a3  - r3;
 }
 
 template<Proj proj>
-real WLH21Params<proj>::cmpl_cent_r(int Z, int A, real erg) const {
+real WLH21Params<proj>::cmpl_cent_r(int, int A, real erg) const {
   const real a = static_cast<real>(A);
   const real a3 = pow(a,1./3.); 
   return a3*(rw0 + (rw1 + rw2 * a)/(rw3 + a + rw4 * erg) + rw5 * erg * erg);
 }
 
 template<Proj proj>
-real WLH21Params<proj>::cmpl_surf_r(int Z, int A, real erg) const {
+real WLH21Params<proj>::cmpl_surf_r(int, int A, real erg) const {
   const real a = static_cast<real>(A);
   const real a3 = pow(a,1./3.); 
   return a3*(rs0 - rs1 * erg) - rs2;
 }
 
 template<Proj proj>
-real WLH21Params<proj>::real_spin_r(int Z, int A, real erg) const {
+real WLH21Params<proj>::real_spin_r(int, int A, real) const {
   const real a = static_cast<real>(A);
   const real a3 = pow(a,1./3.); 
   return rso_0 * a3 - rso_1;
@@ -179,12 +179,12 @@ real WLH21Params<proj>::cmpl_cent_a(int Z, int A, real erg) const {
 }
 
 template<Proj proj>
-real WLH21Params<proj>::cmpl_surf_a(int Z, int A, real erg) const {
+real WLH21Params<proj>::cmpl_surf_a(int, int, real) const {
   return as0;
 }
 
 template<Proj proj>
-real WLH21Params<proj>::real_spin_a(int Z, int A, real erg) const {
+real WLH21Params<proj>::real_spin_a(int, int A, real) const {
   return aso_0 - aso_1 * static_cast<real>(A);
 }
 
@@ -223,7 +223,7 @@ real WLH21Params<proj>::cmpl_surf_V(int Z, int A, real erg) const {
 }
 
 template<Proj proj>
-real WLH21Params<proj>::real_spin_V(int Z, int A, real erg) const {
+real WLH21Params<proj>::real_spin_V(int, int A, real) const {
   return constants::csp * (vso_0 - vso_1 * static_cast<real>(A));
 }
 

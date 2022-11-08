@@ -5,8 +5,14 @@ using namespace omplib;
 template<>
 KD03Params<Proj::neutron>::KD03Params() 
   : OMParams<Proj::neutron>(),
-
+  
   e_fermi_0(-11.2814), e_fermi_A(0.02646),
+
+  rv_0(1.3039)       , rv_A(0.4054)      , av_0(6.778e-1) ,
+  av_A(1.487e-4)     , rd_0(1.3424)      , rd_A(0.01585)  , 
+  ad_0(0.5446)       , ad_A(1.656e-4)    , rso_0(1.1854)  ,
+  rso_A(0.647)       , aso_0(0.59)       ,
+  
   v1_0(5.93e1)       , v1_asym(2.10e1)   , v1_A(0.024)    ,
   v2_0(7.228e-3)     , v2_A(1.48e-6)     , v3_0(1.994e-5) ,
   v3_A(2.0e-8)       , v4_0(7.00e-9)     , w1_0(12.195)   ,  
@@ -14,11 +20,7 @@ KD03Params<Proj::neutron>::KD03Params()
   d1_0(16.0)         , d1_asym(16.0)     , d2_0(0.0180)   ,
   d2_A(0.003802)     , d2_A2(8)          , d2_A3(156)     ,       
   d3_0(1.15e1)       , vso1_0(5.922)     , vso1_A(0.0030) , 
-  vso2_0(0.0040)     , wso1_0(-3.1)      , wso2_0(160)    ,
-  rv_0(1.3039)       , rv_A(0.4054)      , av_0(6.778e-1) ,
-  av_A(1.487e-4)     , rd_0(1.3424)      , rd_A(0.01585)  , 
-  ad_0(0.5446)       , ad_A(1.656e-4)    , rso_0(1.1854)  ,
-  rso_A(0.647)       , aso_0(0.59)    
+  vso2_0(0.0040)     , wso1_0(-3.1)      , wso2_0(160)    
 {};
 
 KD03Params<Proj::proton>::KD03Params(json p) 
@@ -48,7 +50,7 @@ KD03Params<Proj::proton>::KD03Params()
 };
 
 real omplib::KD03Params<Proj::proton>::real_coul_r(
-    int Z, int A, real erg) const {
+    int, int A, real) const {
   const real a = static_cast<real>(A);
   return rc_0 + rc_A * pow(a, -1./3.) + rc_A2 * pow(a, -5./3.);
 }

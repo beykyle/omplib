@@ -19,7 +19,6 @@
 
 // nice shorthand
 constexpr auto n = omplib::Proj::neutron;
-constexpr auto p = omplib::Proj::proton;
 
 void print_potential_vals() {
   
@@ -89,7 +88,7 @@ int main(int, char**) {
 
   const auto erg = 12.3;
   const auto wlh = WLH21Params<n>();
-  const auto pot = OMP(Xe144.A, Xe144.Z, wlh); 
+  const auto pot = OMP(Xe144, wlh); 
   
   const auto solver = NAScatter<n>(Xe144); 
 
@@ -97,7 +96,9 @@ int main(int, char**) {
     return pot.eval_reduced(r, rp, ch); 
   };
   
-  const auto m = solver.solve(erg, p);
+  // spin-flipping and spin-preserving components of S-Matrix
+  // for each partial wave
+  const auto [H,G] = solver.solve(erg, p);
 
   print_potential_vals();
   return 0;

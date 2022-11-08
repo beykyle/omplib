@@ -19,6 +19,9 @@ enum class Parity : bool {
 
 /// @brief  all information relevant to a specific initial/final state 
 struct Channel {
+  class Energetics {};
+  class Asymptotics {};
+
   /// @brief channel energy threshold [MeV]
   real threshold;
   /// @brief CMS energy [MeV]

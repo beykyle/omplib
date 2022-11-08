@@ -92,7 +92,7 @@ public:
     const real xn = g.abscissa[n];
 
     if (n == m) {
-      return 1/(a*a*xn*xn) // centrifugal
+      return l*(l+1)/(a*a*xn*xn) // centrifugal
         * (4. * N * N + 4. * N + 3.) * (xn * (1. - xn) - 6. * xn + 1.)  // kinetic
         / (3. * a * a * xn * xn * (1. - xn) * (1. - xn) );
     }

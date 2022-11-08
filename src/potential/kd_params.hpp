@@ -67,9 +67,9 @@ public:
   real cmpl_spin_V(int Z, int A, real erg) const override;
   
   // KD03 does not have a real surface term
-  real real_surf_a(int Z, int A, real erg) const override { return 0; }
-  real real_surf_V(int Z, int A, real erg) const override { return 0; }
-  real real_surf_r(int Z, int A, real erg) const override { return 0; }
+  real real_surf_a(int, int, real) const override { return 0; }
+  real real_surf_V(int, int, real) const override { return 0; }
+  real real_surf_r(int, int, real) const override { return 0; }
 
   KD03Params( const KD03Params<projectile>& rhs) = default;
 
@@ -156,7 +156,7 @@ real KD03Params<proj>::Ef(int A) const {
 
 template<Proj proj>
 real KD03Params<proj>::real_cent_r(
-    int Z, int A, real erg) const {
+    int, int A, real) const {
   const real a = static_cast<real>(A);
   return rv_0 * pow(a,1./3.)- rv_A ;
 };
@@ -169,14 +169,14 @@ real KD03Params<proj>::cmpl_cent_r(
 
 template<Proj proj>
 real KD03Params<proj>::cmpl_surf_r(
-    int Z, int A, real erg) const {
+    int, int A, real) const {
   const auto a3 = pow(static_cast<real>(A), 1./3.);
   return rd_0 *a3- rd_A * a3*a3;
 };
 
 template<Proj proj>
 real KD03Params<proj>::real_spin_r(
-    int Z, int A, real erg) const {
+    int, int A, real) const {
   const real a = static_cast<real>(A);
   return rso_0 * pow(a, 1./3.) - rso_A ; 
 };
@@ -189,7 +189,7 @@ real KD03Params<proj>::cmpl_spin_r(
 
 template<Proj proj>
 real KD03Params<proj>::real_cent_a(
-    int Z, int A, real erg) const {
+    int, int A, real) const {
   const real a = static_cast<real>(A);
   return av_0 - av_A * a;
 };
@@ -202,7 +202,7 @@ real KD03Params<proj>::cmpl_cent_a(
 
 template<Proj proj>
 real KD03Params<proj>::cmpl_surf_a(
-    int Z, int A, real erg) const {
+    int, int A, real) const {
   const real a = static_cast<real>(A);
   if constexpr (proj == Proj::neutron)
     return ad_0 - ad_A * a;
@@ -212,7 +212,7 @@ real KD03Params<proj>::cmpl_surf_a(
 
 template<Proj proj>
 real KD03Params<proj>::real_spin_a(
-    int Z, int A, real erg) const {
+    int, int, real) const {
   return aso_0;
 };
 
@@ -249,7 +249,7 @@ real KD03Params<proj>::real_cent_V(int Z, int A, real erg) const {
 }
 
 template<Proj proj>
-real KD03Params<proj>::cmpl_cent_V(int Z, int A, real erg) const {
+real KD03Params<proj>::cmpl_cent_V(int, int A, real erg) const {
   const real a = static_cast<real>(A);
   const real dE    = erg - Ef(A); 
   
@@ -274,7 +274,7 @@ real KD03Params<proj>::cmpl_surf_V(int Z, int A, real erg) const {
 }
 
 template<Proj proj>
-real KD03Params<proj>::real_spin_V(int Z, int A, real erg) const {
+real KD03Params<proj>::real_spin_V(int, int A, real erg) const {
   const real a = static_cast<real>(A);
   const real dE    = erg - Ef(A); 
 
@@ -285,7 +285,7 @@ real KD03Params<proj>::real_spin_V(int Z, int A, real erg) const {
 }
 
 template<Proj proj>
-real KD03Params<proj>::cmpl_spin_V(int Z, int A, real erg) const {
+real KD03Params<proj>::cmpl_spin_V(int, int A, real erg) const {
   const real dE    = erg - Ef(A); 
 
   const real wso1 = wso1_0;
