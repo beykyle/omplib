@@ -22,7 +22,7 @@ struct GeneralPotential {
 
 
 ///@brief Base class for an instance of a local potential between
-/// some target (A,Z) and a projectile at a given cms ench.Tlaby
+/// some target (A,Z) and a projectile
 struct Potential : public GeneralPotential {
   using ptr = std::unique_ptr<Potential>;
   using cptr = std::unique_ptr<const Potential>;
@@ -44,7 +44,7 @@ struct Potential : public GeneralPotential {
 };
 
 ///@brief Base class for an instance of a non-local potential between
-/// some target (A,Z) and a projectile at a given cms ench.Tlaby
+/// some target (A,Z) and a projectile
 struct NonLocalPotential : public GeneralPotential {
   using ptr = std::unique_ptr<NonLocalPotential>;
   using cptr = std::unique_ptr<const NonLocalPotential>;
@@ -162,12 +162,12 @@ public:
   };
 };
 
-using realGaussian = NGaussian<2>;
+using doubleGaussian = NGaussian<2>;
 
 ///@brief Thompson, D. R., LeMere, M., & Tang, Y. C. (1977). 
 /// Systematic investigation of scattering problems with the resonating-group method. 
 /// Nuclear Physics A, 286(1), 53-66.
-class Minnesota : public realGaussian {
+class Minnesota : public doubleGaussian {
 public:
   static Minnesota build_1S0() {
     return Minnesota(200, -98.15, 1.487, 0.465);
@@ -180,9 +180,36 @@ public:
   Minnesota(Minnesota&& rhs) = default;
 
   Minnesota(real V01, real V02, real k1, real k2):
-    realGaussian({Gaussian(V01, 0., 1/sqrt(k1) ), Gaussian(V02, 0., 1/sqrt(k2) )}) {}
+    doubleGaussian({Gaussian(V01, 0., 1/sqrt(k1) ), Gaussian(V02, 0., 1/sqrt(k2) )}) {}
 };
 
+class Yukawa : public Potential {
+private:
+  real mass_coupling;
+  real force_coupling;
+public:
+  cmpl eval(real r, const Channel&) const final {
+    return - force_coupling * exp(-r/mass_coupling) / r;
+  };
+  Yukawa(real mass_coupling, real force_coupling)
+    : mass_coupling(mass_coupling), force_coupling(force_coupling) {};
+  Yukawa(real alpha, real m, real g)
+    : mass_coupling(alpha * m), force_coupling(g*g) {};
+};
+
+class SphereWell : public Potential {
+private: 
+  real R;
+  cmpl depth;
+public:
+  cmpl eval(real r, const Channel&) const final {
+    if (r < R) return -depth;
+    return 0;
+  };
+
+  SphereWell(real R, cmpl depth)
+    : R(R), depth(depth) {};
+};
 
 /// @brief Common global phenomenological OMP form for a given isotope, A,Z.
 template<class Params>
@@ -216,30 +243,30 @@ public:
   cmpl eval(real r, const Channel& ch) const final {
     
     const auto V = WoodsSaxon{ 
-      cmpl{params.real_cent_V(Z,A,ch.Tlab),0},
-      params.real_cent_r(Z,A,ch.Tlab),
-      params.real_cent_a(Z,A,ch.Tlab) };
+      cmpl{params.real_cent_V(Z,A,ch.erg_lab),0},
+      params.real_cent_r(Z,A,ch.erg_lab),
+      params.real_cent_a(Z,A,ch.erg_lab) };
     const auto Vs = DerivWoodsSaxon{ 
-      cmpl{params.real_surf_V(Z,A,ch.Tlab),0},
-      params.real_surf_r(Z,A,ch.Tlab),
-      params.real_surf_a(Z,A,ch.Tlab) };
+      cmpl{params.real_surf_V(Z,A,ch.erg_lab),0},
+      params.real_surf_r(Z,A,ch.erg_lab),
+      params.real_surf_a(Z,A,ch.erg_lab) };
     const auto Vso = Thomas{ 
-      cmpl{params.real_spin_V(Z,A,ch.Tlab),0},
-      params.real_spin_r(Z,A,ch.Tlab),
-      params.real_spin_a(Z,A,ch.Tlab) };
+      cmpl{params.real_spin_V(Z,A,ch.erg_lab),0},
+      params.real_spin_r(Z,A,ch.erg_lab),
+      params.real_spin_a(Z,A,ch.erg_lab) };
     
     const auto W = WoodsSaxon{ 
-      cmpl{0,params.cmpl_cent_V(Z,A,ch.Tlab)},
-      params.cmpl_cent_r(Z,A,ch.Tlab),
-      params.cmpl_cent_a(Z,A,ch.Tlab) };
+      cmpl{0,params.cmpl_cent_V(Z,A,ch.erg_lab)},
+      params.cmpl_cent_r(Z,A,ch.erg_lab),
+      params.cmpl_cent_a(Z,A,ch.erg_lab) };
     const auto Ws = DerivWoodsSaxon{ 
-      cmpl{0,params.cmpl_surf_V(Z,A,ch.Tlab)},
-      params.cmpl_surf_r(Z,A,ch.Tlab),
-      params.cmpl_surf_a(Z,A,ch.Tlab) };
+      cmpl{0,params.cmpl_surf_V(Z,A,ch.erg_lab)},
+      params.cmpl_surf_r(Z,A,ch.erg_lab),
+      params.cmpl_surf_a(Z,A,ch.erg_lab) };
     const auto Wso = Thomas{ 
-      cmpl{0,params.cmpl_spin_V(Z,A,ch.Tlab)},
-      params.cmpl_spin_r(Z,A,ch.Tlab),
-      params.cmpl_spin_a(Z,A,ch.Tlab) };
+      cmpl{0,params.cmpl_spin_V(Z,A,ch.erg_lab)},
+      params.cmpl_spin_r(Z,A,ch.erg_lab),
+      params.cmpl_spin_a(Z,A,ch.erg_lab) };
 
     return V.eval(r,ch) + Vs.eval(r,ch) + Vso.eval(r,ch) * ch.spin_orbit()  // R
          + W.eval(r,ch) + Ws.eval(r,ch) + Wso.eval(r,ch) * ch.spin_orbit(); // Im
