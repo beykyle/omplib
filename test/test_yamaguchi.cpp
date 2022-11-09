@@ -23,7 +23,7 @@ TEST_CASE("Yamaguchi analytic s-wave phase shift") {
   const auto ch  = Channel(0., 15, constants::n_mass_amu, 0, constants::p_mass_amu, 1);
 
   // S-Wave, 0+
-  const auto am   = Channel::AngularMomentum(0, 2, 2);
+  const auto am   = Channel::AngularMomentum(2);
   SECTION("0.1MeV") {
     const auto e  = ch.set_erg_cms(0.1);
     const auto k  = e.k;

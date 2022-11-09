@@ -30,7 +30,7 @@ TEST_CASE("Build channel at varying energy") {
   const auto chn  = Channel(threshold, ch_radius, 
                             projectile_mass, 0, target_mass, Z);
   
-  const auto am   = Channel::AngularMomentum(l, S2, J2);
+  const auto am   = Channel::AngularMomentum(S2, l, J2);
 
   SECTION("neutron 1MeV") {
     const auto e    = chn.set_erg_cms(1.0);

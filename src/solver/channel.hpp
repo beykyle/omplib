@@ -20,12 +20,13 @@ enum class Parity : bool {
 /// @brief  all information relevant to a specific initial/final state 
 struct Channel {
 
-  /// @brief coupled AM states of the channel
+  /// @brief coupled AM states of the channel. This type is meant to be mutable,
+  /// with l and J2 updated according to set_spin_up and set_spin_down
   struct AngularMomentum {
+    /// @brief (2s+1), where s is the projectile intrinsic spin [hbar]
+    const int S2;
     /// @brief orbital angular momentum [hbar]
     int l;
-    /// @brief (2s+1), where s is the projectile intrinsic spin [hbar]
-    int S2;
     /// @brief (2j+1), where j is the channel total ang mom [hbar]
     int J2;
     /// @brief spatial parity of channel state
@@ -35,22 +36,27 @@ struct Channel {
       return l % 2 == 0 ? Parity::even : Parity::odd;
     }
 
-    void set_spin_up(int new_l){
+    /// @tparam ms2 2 * m_s, where m_s is the projection of the intrinsic 
+    /// spin along the total channel angular momentum axis
+    template<int ms2>
+    void set_spin(int new_l){
       assert(l > 0);
       l = new_l;
       pi = update_pi(l);
-      J2 = 2 * l + (S2 -1) + 1;
+      J2 = 2 * l + ms2 + 1;
     }
     
-    void set_spin_down(int new_l){
-      assert(l > 0);
-      l = new_l;
-      pi = update_pi(l);
-      J2 = 2 * l - (S2 -1) + 1;
+    AngularMomentum(int S2, int l, int J2)
+      : S2(S2), l(l), J2(J2), pi(update_pi(l)) 
+    {
+      assert(l >= 0);
+      assert(J2 > 0);
+      assert(S2 > 0);
     }
     
-    AngularMomentum(int l, int S2, int J2)
-      : l(l), S2(S2), J2(J2), pi(update_pi(l)) 
+    /// @brief initialize AM to S-Wave state
+    AngularMomentum(int S2)
+      : S2(S2), l(0), J2(S2), pi(update_pi(l)) 
     {
       assert(l >= 0);
       assert(J2 > 0);

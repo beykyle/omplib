@@ -76,7 +76,7 @@ public:
     // TODO for now just neutrons
     static_assert(charge<proj>() == 0);
   
-    auto am = Channel::AngularMomentum{0, S2, S2}; 
+    auto am = Channel::AngularMomentum{S2}; 
     
     // S-wave can only have spin up states   
     cmpl Sminus = 0;
@@ -89,11 +89,17 @@ public:
     
     // higher OAM states must account for spin up and down
     for (am.l = 1; am.l < MAXL; ++am.l) {
+      // twice the projections of the projectile spin
+      // along the channel ang momentum axis
+      constexpr int up   =  1; //  ms =  1/2 => 2ms =  1
+      constexpr int down = -1; // -ms = -1/2 => 2ms = -1
       
-      am.set_spin_down(am.l);
+      // spin down
+      am.set_spin<down>(am.l);
       Sminus = Solver(ch, e, am, p).smatrix();
       
-      am.set_spin_up(am.l);
+      // spin
+      am.set_spin<up>(am.l);
       Splus = Solver(ch, e, am , p).smatrix();
       
       func(am.l,Sminus,Splus);

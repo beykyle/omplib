@@ -32,6 +32,6 @@ TEST_CASE("GL weights shift reduce") {
     
     REQUIRE(gl.abscissa[0] == Approx(0.01304674));
     REQUIRE(gl.abscissa[3] == Approx(0.2833023));
-    pEQUIRE(gl.abscissa[8] == Approx(0.93253168));
+    REQUIRE(gl.abscissa[8] == Approx(0.93253168));
   }
 }
