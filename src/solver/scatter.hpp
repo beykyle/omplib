@@ -16,6 +16,32 @@ namespace omplib {
 template<Proj proj>
 /// @brief single channel scatter for incident nucleon on a nucleus
 class NAScatter {
+public:
+  
+  struct CrossSection {
+    real tot;
+    real rxn;
+  };
+
+  struct Amplitude {
+    /// @brief spin-preserving amplitude
+    std::array<cmpl, MAXL> A;
+    /// @brief spin-flipping amplitude
+    std::array<cmpl, MAXL> B;
+
+    /// @brief conversion factor from amplitude to T-Matrix
+    real ampl_to_T;
+  };
+  
+  using DiffXS         = std::vector<real>;
+  using AnalyzingPower = std::vector<real>;
+
+  struct AngularData {
+    DiffXS         dxdu;
+    AnalyzingPower Ay;
+    AngularData(unsigned int sz): dxdu(sz,0), Ay(sz,0) {};
+  };
+
 private:
   using Solver = RMatrixSolverSingleChannel<NBASIS>;
   /// @brief Dimension of spin 1/2 repr of SU(2) = (2*1/2 +1)
@@ -32,30 +58,9 @@ public:
     , ch_radius(ch_radius)
     , ch_threshold(ch_threshold) {};
 
-
-  struct Amplitude {
-    /// @brief spin-preserving amplitude
-    std::array<cmpl, MAXL> A;
-    /// @brief spin-flipping amplitude
-    std::array<cmpl, MAXL> B;
-
-    /// @brief conversion factor from amplitude to T-Matrix
-    real ampl_to_T;
-  };
-
-
-  struct CrossSection {
-    real tot;
-    real rxn;
-  };
-  
-  struct Solution {
-    CrossSection xs;
-    Amplitude T;
-  };
-  
   /// @tparam Potential callable (real r [fm], real rp [fm], Channel ch) -> cmpl [Mev]
-  /// @tparam SideEffect
+  /// @tparam SideEffect function that process/stores the S-Matrix elements for each 
+  /// partial wave
   template<class Potential, class SideEffect>
   /// @brief calculates the S-Matrix for each partial wave amplitude,
   /// and passes it into func for processing
@@ -106,11 +111,9 @@ public:
   } 
 
   /// @tparam Potential callable (real r [fm], real rp [fm], Channel ch) -> cmpl [Mev]
+  template<class Potential>
   /// @brief  Calculate the partial wave amplitudes (porportional to the T-Matrix)
   /// for spin-flip and spin-preserving processes. Eqns. 8,9 in Ingermarsson, 1947.
-  /// memory complexity O(NBASIS^2 + MAXL)
-  /// time complexity O(MAXL * NBASIS^3 )
-  template<class Potential>
   Amplitude amplitudes(real erg_cms, Potential p) const {
     using constants::pi;
     using constants::hbar;
@@ -137,11 +140,9 @@ public:
   } 
   
   /// @tparam Potential callable (real r [fm], real rp [fm], Channel ch) -> cmpl [Mev]
+  template<class Potential>
   /// @brief  Calculate the total and reaction cross section for the channel; 
   /// Eqns 46-47 in Pruitt, 2021
-  /// memory complexity O(NBASIS^2)
-  /// time complexity O(MAXL * NBASIS^3 )
-  template<class Potential>
   CrossSection xs(real erg_cms, Potential p) const {
   
     const auto ch = Channel(0, ch_radius, mass<proj>(), charge<proj>(), target.mass , target.Z);
@@ -158,7 +159,32 @@ public:
     );
 
     return xs;
-  } 
+  }
+
+  /// @param ampl partial-wave amplitudes
+  /// @param mu_grid Grid of mu = cos(theta) on [-1,1] on which to calculate 
+  /// analyzing powers and differential cross section
+  AngularData angular(const Amplitude& ampl, std::vector<real> mu_grid) const {
+    assert(mu_grid.front() >= -1);
+    assert(mu_grid.back()  <=  1);
+
+    AngularData data(mu_grid.size());
+    auto& [dxdu, Ay] = data;
+
+    for (int i = 0; i < mu_grid.size(); ++i) {
+      cmpl a{0,0};
+      cmpl b{0,0};
+      for (int l = 0; l < MAXL; ++l) {
+         a += ampl.A[l] * std::legendre(l,mu_grid[i]);
+         b += ampl.B[l] * std::assoc_legendre(l,1,mu_grid[i]);
+      }
+      dxdu[i] = a * conj(a) + b * conj(b);
+      Ay[i]   = a * conj(b) + b * conj(a);
+      Ay[i]  /= dxdu[i];
+    }
+    return data;
+  }
+
 };
 
 }
