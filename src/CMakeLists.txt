@@ -9,7 +9,7 @@ target_compile_options(omplib PUBLIC
   $<$<AND:$<CONFIG:Debug>>:
     -O0 -Wall -Wextra -g>
   $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang,GNU>>:
-  -O3>
+   -O3>
 )
 
 target_link_libraries(omplib PRIVATE Eigen3::Eigen nlohmann_json::nlohmann_json ${CMAKE_THREAD_LIBS_INIT})

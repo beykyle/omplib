@@ -17,13 +17,13 @@ template<unsigned int N>
 /// "An R-matrix package for coupled-channel problems in nuclear physics." 
 /// Computer physics communications 200 (2016): 199-219.
 class LagrangeLegendreBasis {
+public:
+  using GL = GaussLegendre<N,0,1>;
 private:
   ///@brief channel radius
   real a;
 
-  /// @brief Gauss-Legendre weights and abscissa for 
-  /// x on [0,1], with N basis functions
-  static constexpr auto g = GaussLegendre<N,0,1>();
+  static constexpr GL gl = GL{};
 
 public:
   LagrangeLegendreBasis(int a): a(a) {};
@@ -37,7 +37,7 @@ public:
     assert(r <= a);
     
     const real f = (N+n)%2==0 ? 1. : -1.;
-    const real xn = g.abscissa[n];
+    const real xn = gl.abscissa[n];
     return f * r / ( a * xn ) * sqrt( a * xn * ( 1 - xn ) ) 
       * std::legendre(N, 2 * r / a - 1) / (r - a*xn); 
   }
@@ -55,7 +55,7 @@ public:
     
     if (n != m) return 0;
     
-    const real xn = g.abscissa[n];
+    const real xn = gl.abscissa[n];
     return p(a*xn);
   }
 
@@ -70,10 +70,10 @@ public:
     assert(n < N);
     assert(m < N);
 
-    const real xn       = g.abscissa[n];
-    const real xm       = g.abscissa[m];
-    const real lambda_n = g.weights[n];
-    const real lambda_m = g.weights[m];
+    const real xn       = gl.abscissa[n];
+    const real xm       = gl.abscissa[m];
+    const real lambda_n = gl.weights[n];
+    const real lambda_m = gl.weights[m];
 
     return a * sqrt(lambda_n * lambda_m) * p(a*xn, a*xm);
   }
@@ -89,7 +89,7 @@ public:
     
     using constants::hbar;
     
-    const real xn = g.abscissa[n];
+    const real xn = gl.abscissa[n];
 
     if (n == m) {
       return l*(l+1)/(a*a*xn*xn) // centrifugal
@@ -97,7 +97,7 @@ public:
         / (3. * a * a * xn * xn * (1. - xn) * (1. - xn) );
     }
     
-    const real xm = g.abscissa[m];
+    const real xm = gl.abscissa[m];
     const real f  = (n+m)%2==0 ? 1. : -1.;
     
     // centrifugal only on diag
@@ -109,6 +109,7 @@ public:
   }
 
 };
+
 }
 
 #endif 
