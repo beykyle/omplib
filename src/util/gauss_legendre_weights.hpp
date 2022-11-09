@@ -8,7 +8,7 @@
 namespace omplib {
 
 /// @brief Number of basis functions
-template<unsigned int N>
+template<unsigned int N, int min = -1, int max = 1>
 /// @brief  weights and abscissacissa of basis polynomials for use in 
 /// Gauss-Legendre quadrature integration for x on shifted domain [0,1]
 /// https://en.wikipedia.org/wiki/Gauss%E2%80%93Legendre_quadrature
@@ -552,10 +552,14 @@ struct GaussLegendre {
       };
     }
     
-    // shift to domain x on [0,1]
+    // shift to domain x on [min,max] from [-1,1]
     for(unsigned int i =0; i < N; ++i ) {
-      abscissa[i] = 0.5*(abscissa[i] + 1);
-      weights[i] *= 0.5;;
+      // ratio of range to trad. range of 2 
+      constexpr real r     = (max - min)/2;
+      // shift from -1 to min
+      constexpr real shift = min + 1; 
+      abscissa[i] = r*(abscissa[i] + shift);
+      weights[i] *= r;
     }
   }
   

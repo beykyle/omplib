@@ -22,8 +22,8 @@ private:
   real a;
 
   /// @brief Gauss-Legendre weights and abscissa for 
-  /// x on [0,1]
-  static constexpr auto g = GaussLegendre<N>();
+  /// x on [0,1], with N basis functions
+  static constexpr auto g = GaussLegendre<N,0,1>();
 
 public:
   LagrangeLegendreBasis(int a): a(a) {};
