@@ -215,6 +215,8 @@ public:
     : R(R), depth(depth) {};
 };
 
+
+
 /// @brief Common global phenomenological OMP form for a given isotope, A,Z.
 template<class Params>
 class OMP : public Potential {
@@ -294,6 +296,46 @@ public:
   cmpl eval(real r, real rp, const PData& d) const final {
     return local_potential->eval(r, d) * non_local_factor( (r-rp), d);
   };
+};
+
+
+/// @brief Yamaguchi, Yoshio. 
+/// "Two-nucleon problem when the potential is nonlocal but separable. I." 
+/// Physical Review 95.6 (1954): 1628.
+class Yamaguchi : public NonLocalPotential {
+private:
+  real alpha;
+  real beta;
+  real f;
+public:
+  /// @param mu reduced mass [amu]
+  /// @param alpha [fm]^-1
+  /// @param beta [fm]^-1
+  Yamaguchi(real mu, real alpha, real beta)
+    : alpha(alpha)
+    , beta(beta)
+    , f(
+          constants::hbar * constants::hbar * constants::c * constants::c 
+        / (mu * constants::MeV_per_amu) 
+      ) 
+  {};
+  
+  ///@brief parameters chosen to reproduce bound state of deuteron and 
+  /// and neutron-proton triplet scattering length 
+  Yamaguchi(): alpha(0.2316053), beta(1.3918324), f(41.472) {};
+  cmpl eval(real r, real rp, const PData&) const final {
+    return 2 * f * beta * (alpha + beta)*(alpha + beta) * exp(-beta * (r + rp));
+  };
+
+  real analytic_swave_kmatrix(real k) const {
+    const auto a = alpha;
+    const auto b = beta;
+    const auto d = 2*(a + b)*(a+b);
+    real cot_delta = a*b*(a+2*b)/(d*k) 
+                   + (a*a + 2*a*b + 3 * b *b)/(b*d) * k
+                   + k*k*k/(b*d);
+    return 1./cot_delta;
+  }
 };
 
 }

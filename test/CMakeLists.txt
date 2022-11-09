@@ -14,6 +14,7 @@ if(NOT CMAKE_TESTING_ENABLED)
   set(UNIT_TEST_SOURCES
     test_read_json.cpp
     test_channel.cpp
+    test_yamaguchi.cpp
     )
   # Add unit test input files here
   # Prefixes are stripped so duplicate filenames must not appear
