@@ -191,7 +191,7 @@ struct Channel {
   
 
   Energetics set_erg_cms(real erg_cms) const {
-    return Energetics(erg_cms - threshold, *this);
+    return Energetics(erg_cms, *this);
   }
 
   Energetics set_erg_lab(real erg_lab) const {
@@ -208,15 +208,11 @@ struct Channel {
   }
   
   /// @param threshold [Mev]
-  /// @param erg_cms [Mev]
   /// @param radius [fm]
   /// @param proj_mass [amu] 
+  /// @param Zp proton number of projectile 
   /// @param targ_mass [amu]
   /// @param Zt proton number of target 
-  /// @param Zp proton number of projectile 
-  /// @param l orbital angular momentum [hbar]
-  /// @param J2 = 2*j+1, where j is total angular momentum  [hbar]
-  /// @param S2 = 2*s+1, where s is projectile spin angular momentum [hbar]
   Channel(real threshold, real radius, 
           real proj_mass, int Zp,
           real targ_mass, int Zt)
