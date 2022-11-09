@@ -62,7 +62,11 @@ public:
   /// @returns The maxmium l value used before convergence 
   /// worst case time complexity O(MAXL * NBASIS^3 )
   int core_solver(
-      Potential p, const Channel& ch, const Channel::Energetics& e, SideEffect func) const 
+      Potential p, 
+      const Channel& ch, 
+      const Channel::Energetics& e, 
+      SideEffect func,
+      real rel_err_crit = REL_ERR_EPS) const 
   {
     // TODO for now just neutrons
     static_assert(charge<proj>() == 0);
@@ -73,6 +77,10 @@ public:
     cmpl Sminus = 0;
     cmpl Splus  = Solver(ch, e, am, p).smatrix();
     func(am.l,Sminus,Splus);
+
+    auto sm_old = Sminus;
+
+    auto rel_err = [](auto l, auto r) { return (l-r)/r; };
     
     // higher OAM states must account for spin up and down
     for (am.l = 1; am.l < MAXL; ++am.l) {
@@ -83,8 +91,15 @@ public:
       am.set_spin_up(am.l);
       Splus = Solver(ch, e, am , p).smatrix();
       
-
       func(am.l,Sminus,Splus);
+      
+      if (
+          rel_err(Sminus.real(), sm_old.real()) < rel_err_crit and 
+          rel_err(Sminus.imag(), sm_old.imag()) < rel_err_crit 
+         ) break;
+
+      sm_old = Sminus;
+
     }
 
     return am.l;
