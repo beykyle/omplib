@@ -92,13 +92,13 @@ int main(int, char**) {
   
   const auto solver = NAScatter<n>(Xe144); 
 
-  auto p = [&pot](double r, double rp, const Channel& ch) -> cmpl { 
-    return pot.eval_reduced(r, rp, ch); 
+  auto p = [&pot](double r, double rp, const PData& d) -> cmpl { 
+    return pot.eval_reduced(r, rp, d); 
   };
   
   // spin-flipping and spin-preserving components of S-Matrix
   // for each partial wave
-  const auto [H,G] = solver.solve(erg, p);
+  const auto [H,G,_] = solver.amplitudes(erg, p);
 
   print_potential_vals();
   return 0;

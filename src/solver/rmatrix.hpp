@@ -6,6 +6,8 @@
 #include "util/lagrange_legendre.hpp"
 #include "util/types.hpp"
 
+#include "potential/potential.hpp"
+
 #include "solver/channel.hpp"
 
 #include <Eigen/LU>
@@ -29,32 +31,47 @@ class RMatrixSolverSingleChannel {
 private:
   using Matrix = Eigen::Matrix<cmpl,N,N>;
 
-  /// @brief Matrix on C^(NXN), define by H-E = (T + L + l*(l+1)/r^2 + V(r,r') - E)^-1 in the basis,
-  /// where T is the 2nd derivative component of the kinetic energy, and L is the Bloch operator
+  /// @brief Matrix on C^(NXN), define by H-E = (T + L + l*(l+1)/r^2 + V(r,r') - E)^-1 
+  /// in the basis, where T is the derivative component of the kinetic energy, 
+  /// and L is the Bloch operator
   Matrix Cinv;
-  
-  /// @brief channel information
-  const Channel& channel;
   
   /// @brief projected basis in which (H-E) is inverted using Gauss-Legendre quadrature
   LagrangeLegendreBasis<N> basis;
+  
+  /// @brief channel information
+  PData data;
+  /// @brief wavefunctions exterior to the channel (asymptotic) and their derivatives
+  const Channel::Asymptotics asym;
+  
 
 public:
   /// @tparam callable (real) -> cmpl evaluating a 
   /// radially weighted potential in the lth partial wave channel: 
   /// r * V(r,r') * r' , for a potential V(r,r') in MeV.
   /// If potential is local, r * V(r,r') * r'  = r V(r) * delta(r - r') 
+  /// @brief Solves the scattering equation, with the provided potential in the 
+  /// given channel.
+  /// time complexity O(N^3)
+  /// memory complexity O(N^2)
   template<class Potential>
-  RMatrixSolverSingleChannel(const Channel& channel, Potential potential)
-    : Cinv(), channel(channel), basis(channel.radius)
+  RMatrixSolverSingleChannel(
+      const Channel channel, 
+      const Channel::Energetics e, 
+      const Channel::AngularMomentum am, 
+      Potential potential)
+    : Cinv()
+    , basis( channel.radius )
+    , data(  channel, e, am )
+    , asym(  channel.set_angular_momentum(am, e.k) )
     { 
       using constants::hbar;
-      const auto l    = channel.l;
-      const auto h2ma = channel.h2ma;
+      const auto l    = am.l;
+      const auto h2ma = e.h2ma;
 
       // pass channel info into the potential callable
-      auto p = [&potential, &channel](real r, real rp) -> cmpl {
-        return potential(r, rp, channel);
+      auto p = [&potential, this](real r, real rp) -> cmpl {
+        return potential(r, rp, data);
       };
       
       // Eq. (6.10) in Baye, Daniel. 
@@ -62,14 +79,17 @@ public:
       // e.g. Cinv = (C-I*E)^-1
       for (unsigned int n = 0; n < N; ++n) {
         for (unsigned int m = 0; m < N; ++m) {
+          
           Cinv(n,m) = h2ma * basis.KE_Bloch_matrix_element(l,n,m) 
                     + basis.non_local_matrix_element(p,n,m);
+          
+          if (n == m) Cinv(n,n) -= e.erg_cms;
         }
-        Cinv(n,n) -= channel.erg_cms;
       }
       
       // invert C to solve the system 
       //TODO should be symmetric - probably more efficient inversion
+      //TODO GPU/CUSolve?
       Cinv = Cinv.inverse();  
     }
 
@@ -95,8 +115,8 @@ public:
   /// O(N^2)
   cmpl rmatrix() const {
     using constants::hbar;
-    const auto a    = channel.radius;
-    const auto h2ma = channel.h2ma;
+    const auto a    = data.ch.radius;
+    const auto h2ma = data.e.h2ma;
     
     cmpl R = 0;
     
@@ -110,11 +130,11 @@ public:
   
   /// @brief S-Matrix element for channel
   cmpl smatrix(cmpl R) const {
-    const auto k = channel.k;
-    const cmpl in   = channel.asymptotic_wvfxn_in;
-    const cmpl inp  = channel.asymptotic_wvfxn_deriv_in;
-    const cmpl out  = channel.asymptotic_wvfxn_out;
-    const cmpl outp = channel.asymptotic_wvfxn_deriv_out;
+    const auto k = data.e.k;
+    const cmpl in   = asym.wvfxn_in;
+    const cmpl inp  = asym.wvfxn_deriv_in;
+    const cmpl out  = asym.wvfxn_out;
+    const cmpl outp = asym.wvfxn_deriv_out;
 
     return (in - k * R * inp )/(out - k * R * outp);
   }
@@ -158,7 +178,7 @@ public:
       const std::vector<real>& r, std::array<cmpl,N> c ) const {
 
     assert(r.front() >= 0);
-    assert(r.back()  <= channel.radius);
+    assert(r.back()  <= data.ch.radius);
     
     std::vector<cmpl> w (r.size(), cmpl{0,0});
 
@@ -180,14 +200,12 @@ public:
     
     using constants::hbar;
     using constants::i;
-    const auto h2ma = channel.h2ma;
-    const auto a    = channel.radius;
+    const auto h2ma = data.e.h2ma;
+    const auto a    = data.ch.radius;
+    const auto k    = data.e.k;
     
     const auto wvext_deriv = 
-      (
-        channel.asymptotic_wvfxn_deriv_in 
-        + S * channel.asymptotic_wvfxn_deriv_out
-      ) / (2 * channel.k * i * a);
+      (asym.wvfxn_deriv_in + S * asym.wvfxn_deriv_out ) / (2 * k * i * a);
     
     for (unsigned int m = 0; m < N; ++m) {
       for (unsigned int n = 0; n < N; ++n) {

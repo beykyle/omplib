@@ -48,5 +48,17 @@ struct h_in {
   }
 };
 
+/// @tparam a spherical Bessel fxn f, one of: { j, eta, h_in, h_out}
+template <class T>
+/// @brief revaluates d/dr r*f(kr)
+struct ReducedDeriv {
+  T f;
+  ReducedDeriv(T f): f(f) {};
+  cmpl operator () (real kr) {
+    const auto l = f.l;
+    return (cmpl)(1 + l)*f(kr) - kr * T{l+1}(kr);
+  }
+};
+
 }
 #endif

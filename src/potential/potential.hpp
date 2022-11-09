@@ -12,14 +12,18 @@
 
 namespace omplib {
 
+/// @brief interface for general local or non-local potential
 struct GeneralPotential {
   using ptr = std::unique_ptr<GeneralPotential>;
   using cptr = std::unique_ptr<const GeneralPotential>;
   
-  virtual cmpl eval(real r, real, const Channel& ch) const = 0;
-  virtual cmpl eval_reduced(real r, real, const Channel& ch) const  = 0;
+  /// @brief  evaluate the potential at r, rp
+  virtual cmpl eval(real r, real rp, const PData& data) const = 0;
+  /// @brief  evaluate the reduced potential at r, rp
+  /// @returns V(r) * r * delta(r - rp) if potetial is local, 
+  /// r * V(r,rp) * rp if potential is non-local
+  virtual cmpl eval_reduced(real r, real rp, const PData& data) const = 0;
 };
-
 
 ///@brief Base class for an instance of a local potential between
 /// some target (A,Z) and a projectile
@@ -27,20 +31,20 @@ struct Potential : public GeneralPotential {
   using ptr = std::unique_ptr<Potential>;
   using cptr = std::unique_ptr<const Potential>;
 
-  /// @brief r is the distance between the projectile and target
-  virtual cmpl eval(real r, const Channel& ch) const = 0;
-  cmpl eval_reduced(real r, const Channel& ch) const { return eval(r, ch) * r; }
+  virtual cmpl eval(real r, const PData& d) const = 0;
+  cmpl eval_reduced(real r, const PData& d) const { return eval(r, d) * r; }
   
-  cmpl eval(real r, real rp, const Channel& ch) const final { 
-    if (r!=rp) return 0;
-    return eval(r, ch); 
+  cmpl eval(real r, real rp, const PData& d) const final { 
+    if (r!=rp) return {0,0};
+    return eval(r, d); 
   }
-  cmpl eval_reduced(real r, real rp, const Channel& ch) const final { 
-    if (r!=rp) return 0;
-    return eval_reduced(r,ch); 
+  cmpl eval_reduced(real r, real rp, const PData& d) const final { 
+    if (r!=rp) return {0,0};
+    return eval_reduced(r,d); 
   }
   
-  cmpl operator () (real r, const Channel& ch) const { return eval(r, ch); }
+  cmpl operator () (real r, const PData& d) const { return eval(r, d); }
+  cmpl operator () (real r, real rp, const PData& d) const { return eval(r, rp, d); }
 };
 
 ///@brief Base class for an instance of a non-local potential between
@@ -51,11 +55,11 @@ struct NonLocalPotential : public GeneralPotential {
 
   /// @brief r is a distance between the projectile and target
   /// @brief rp is another distance between the projectile and target
-  cmpl eval_reduced(real r, real rp, const Channel& ch) const final { 
-    return eval(r, rp, ch) * r * rp; 
+  cmpl eval_reduced(real r, real rp, const PData& d) const final { 
+    return eval(r, rp, d) * r * rp; 
   }
-  cmpl operator () (real r, real rp, const Channel& ch) const { 
-    return eval(r, rp, ch); }
+  cmpl operator () (real r, real rp, const PData& d) const { 
+    return eval(r, rp, d); }
 };
 
 /// @brief Common phenomenological potential form used for central potentials
@@ -73,7 +77,7 @@ public:
   WoodsSaxon(WoodsSaxon&& rhs) = default;
   WoodsSaxon() = default;
   
-  cmpl eval(real r, const Channel&) const final {
+  cmpl eval(real r, const PData&) const final {
     return V/(1. + exp((r-R)/a));
   };
 };
@@ -94,7 +98,7 @@ public:
   DerivWoodsSaxon(DerivWoodsSaxon&& rhs) = default;
   DerivWoodsSaxon() = default;
   
-  cmpl eval(real r, const Channel&) const final {
+  cmpl eval(real r, const PData&) const final {
     const auto y = exp((r-R))/a;
     return - V / a * ( y / ( (1. + y) * (1+y) ));
   };
@@ -116,8 +120,8 @@ public:
   Thomas(Thomas&& rhs) = default;
   Thomas() = default;
   
-  cmpl eval(real r, const Channel& ch) const final {
-    return DerivWoodsSaxon(V,R,a).eval(r,ch)/r;
+  cmpl eval(real r, const PData& d) const final {
+    return DerivWoodsSaxon(V,R,a).eval(r,d)/r;
   };
 };
 
@@ -135,7 +139,7 @@ public:
   Gaussian(Gaussian&& rhs) = default;
   Gaussian() = default;
   
-  cmpl eval(real r, const Channel&) const final {
+  cmpl eval(real r, const PData&) const final {
     return exp( (r-R)*(r-R)/(sigma*sigma) );
   };
 };
@@ -153,10 +157,10 @@ public:
   NGaussian(NGaussian&& rhs) = default;
   
   
-  cmpl eval(real r, const Channel& ch) const final {
+  cmpl eval(real r, const PData& d) const final {
     cmpl v = 0;
     for (unsigned int i = 0; i < N; ++i) {
-      v += gaussians[i].eval(r, ch);
+      v += gaussians[i].eval(r, d);
     }
     return v;
   };
@@ -188,7 +192,7 @@ private:
   real mass_coupling;
   real force_coupling;
 public:
-  cmpl eval(real r, const Channel&) const final {
+  cmpl eval(real r, const PData&) const final {
     return - force_coupling * exp(-r/mass_coupling) / r;
   };
   Yukawa(real mass_coupling, real force_coupling)
@@ -202,7 +206,7 @@ private:
   real R;
   cmpl depth;
 public:
-  cmpl eval(real r, const Channel&) const final {
+  cmpl eval(real r, const PData&) const final {
     if (r < R) return -depth;
     return 0;
   };
@@ -217,12 +221,10 @@ class OMP : public Potential {
 private:
   /// @brief target
   int A, Z;
-
-  
+ 
   /// @brief Determines the parameterization used for calculating 
   /// term depths, radii, and diffusivities
   Params params;
-
 
 public:
   OMP(Isotope isotope)
@@ -240,36 +242,38 @@ public:
     Z = Zn;
   }
 
-  cmpl eval(real r, const Channel& ch) const final {
+  cmpl eval(real r, const PData& d) const final {
+
+    const auto erg_lab = d.e.erg_lab;
     
     const auto V = WoodsSaxon{ 
-      cmpl{params.real_cent_V(Z,A,ch.erg_lab),0},
-      params.real_cent_r(Z,A,ch.erg_lab),
-      params.real_cent_a(Z,A,ch.erg_lab) };
+      cmpl{params.real_cent_V(Z,A,erg_lab),0},
+      params.real_cent_r(Z,A,erg_lab),
+      params.real_cent_a(Z,A,erg_lab) };
     const auto Vs = DerivWoodsSaxon{ 
-      cmpl{params.real_surf_V(Z,A,ch.erg_lab),0},
-      params.real_surf_r(Z,A,ch.erg_lab),
-      params.real_surf_a(Z,A,ch.erg_lab) };
+      cmpl{params.real_surf_V(Z,A,erg_lab),0},
+      params.real_surf_r(Z,A,erg_lab),
+      params.real_surf_a(Z,A,erg_lab) };
     const auto Vso = Thomas{ 
-      cmpl{params.real_spin_V(Z,A,ch.erg_lab),0},
-      params.real_spin_r(Z,A,ch.erg_lab),
-      params.real_spin_a(Z,A,ch.erg_lab) };
+      cmpl{params.real_spin_V(Z,A,erg_lab),0},
+      params.real_spin_r(Z,A,erg_lab),
+      params.real_spin_a(Z,A,erg_lab) };
     
     const auto W = WoodsSaxon{ 
-      cmpl{0,params.cmpl_cent_V(Z,A,ch.erg_lab)},
-      params.cmpl_cent_r(Z,A,ch.erg_lab),
-      params.cmpl_cent_a(Z,A,ch.erg_lab) };
+      cmpl{0,params.cmpl_cent_V(Z,A,erg_lab)},
+      params.cmpl_cent_r(Z,A,erg_lab),
+      params.cmpl_cent_a(Z,A,erg_lab) };
     const auto Ws = DerivWoodsSaxon{ 
-      cmpl{0,params.cmpl_surf_V(Z,A,ch.erg_lab)},
-      params.cmpl_surf_r(Z,A,ch.erg_lab),
-      params.cmpl_surf_a(Z,A,ch.erg_lab) };
+      cmpl{0,params.cmpl_surf_V(Z,A,erg_lab)},
+      params.cmpl_surf_r(Z,A,erg_lab),
+      params.cmpl_surf_a(Z,A,erg_lab) };
     const auto Wso = Thomas{ 
-      cmpl{0,params.cmpl_spin_V(Z,A,ch.erg_lab)},
-      params.cmpl_spin_r(Z,A,ch.erg_lab),
-      params.cmpl_spin_a(Z,A,ch.erg_lab) };
+      cmpl{0,params.cmpl_spin_V(Z,A,erg_lab)},
+      params.cmpl_spin_r(Z,A,erg_lab),
+      params.cmpl_spin_a(Z,A,erg_lab) };
 
-    return V.eval(r,ch) + Vs.eval(r,ch) + Vso.eval(r,ch) * ch.spin_orbit()  // R
-         + W.eval(r,ch) + Ws.eval(r,ch) + Wso.eval(r,ch) * ch.spin_orbit(); // Im
+    return V.eval(r,d) + Vs.eval(r,d) + Vso.eval(r,d) * d.am.spin_orbit()  // R
+         + W.eval(r,d) + Ws.eval(r,d) + Wso.eval(r,d) * d.am.spin_orbit(); // Im
   };
 };
 
@@ -287,8 +291,8 @@ public:
     : local_potential(std::move(potential))
     , non_local_factor(1/(pow(constants::pi, 3./2.)) * beta*beta*beta, 0, beta) {}
 
-  cmpl eval(real r, real rp, const Channel& ch) const final {
-    return local_potential->eval(r, ch) * non_local_factor( (r-rp), ch);
+  cmpl eval(real r, real rp, const PData& d) const final {
+    return local_potential->eval(r, d) * non_local_factor( (r-rp), d);
   };
 };
 

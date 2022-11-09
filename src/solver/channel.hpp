@@ -19,73 +19,188 @@ enum class Parity : bool {
 
 /// @brief  all information relevant to a specific initial/final state 
 struct Channel {
-  class Energetics {};
-  class Asymptotics {};
+
+  /// @brief coupled AM states of the channel
+  struct AngularMomentum {
+    /// @brief orbital angular momentum [hbar]
+    int l;
+    /// @brief (2s+1), where s is the projectile intrinsic spin [hbar]
+    int S2;
+    /// @brief (2j+1), where j is the channel total ang mom [hbar]
+    int J2;
+    /// @brief spatial parity of channel state
+    Parity pi;
+
+    Parity update_pi(int l) {
+      return l % 2 == 0 ? Parity::even : Parity::odd;
+    }
+
+    void set_spin_up(int new_l){
+      assert(l > 0);
+      l = new_l;
+      pi = update_pi(l);
+      J2 = 2 * l + (S2 -1) + 1;
+    }
+    
+    void set_spin_down(int new_l){
+      assert(l > 0);
+      l = new_l;
+      pi = update_pi(l);
+      J2 = 2 * l - (S2 -1) + 1;
+    }
+    
+    AngularMomentum(int l, int S2, int J2)
+      : l(l), S2(S2), J2(J2), pi(update_pi(l)) 
+    {
+      assert(l >= 0);
+      assert(J2 > 0);
+      assert(S2 > 0);
+    }
+    
+    /// @returns projection of spin along axis of orbital ang. mom.; e.g. L * S
+    real spin_orbit() const {
+      const real L = l;
+      const real S = (S2 - 1.)/2.;
+      const real J = (J2 - 1.)/2.;
+
+      return 0.5*(J*(J+1) - L*(L+1) - S*(S+1));
+    }
+  };
+  
+  /// @brief things that change w/ energy
+  struct Energetics {
+    /// @brief CMS energy [MeV]
+    real erg_cms;
+    /// @brief Bombarding kinetic energy in the lab frame [MeV]
+    real erg_lab;
+    /// @brief CMS momentum  w/ relativistic correction according to 
+    /// Eq. 17 of Ingemarsson, A. 
+    /// "Some notes on optical model calculations at medium energies." 
+    /// Physica Scripta 9.3 (1974): 156.
+    real k;
+    /// @brief scattering system reduced mass [MeV]
+    real reduced_mass;
+    /// @brief hbar^2 * c^2/(2 * reduced mass  * radius) [Mev fm]
+    real h2ma;
+    /// @brief Sommerfield parameter: sgn(Z_t * Z_p)/(a_B * k) [dimensionless]
+    /// ab is the Bohr radius, Z_t and Z_p are the target and product charges
+    real sommerfield_param;
+
+    Energetics(real erg_cms, const Channel& ch)
+    : erg_cms(erg_cms - ch.threshold) 
+    , erg_lab(erg_cms 
+        * (ch.proj_mass * constants::MeV_per_amu + ch.targ_mass * constants::MeV_per_amu) 
+        / (ch.targ_mass * constants::MeV_per_amu))
+    , k([this,&ch]() ->real { 
+        
+        using constants::MeV_per_amu;
+        using constants::hbar;
+        using constants::c;
+        
+        // relativistic-corrected wavenumber [1/fm]
+        // Eq. 17 of Ingemarsson, 1974
+        const auto m1 = ch.proj_mass * MeV_per_amu;
+        const auto m2 = ch.targ_mass * MeV_per_amu;
+        return m2 * sqrt(erg_lab * (erg_lab + 2 * m1 )) 
+                  / sqrt( (m1 + m2)*(m1 + m2)  + 2 * m2 * erg_lab)
+                  / (hbar * c);
+        }())
+    , reduced_mass([&erg_cms,&ch,this]() ->real { 
+        
+        using constants::hbar;
+        using constants::c;
+        using constants::MeV_per_amu;
+        
+        // relativistic-corrected reduced mass [MeV]
+        // Eq. 21 of Ingemarsson, 1974
+        const auto m1 = ch.proj_mass * MeV_per_amu;
+        const auto Ep = m1 + erg_cms;
+
+        return hbar * hbar * c * c * k * k * Ep / (Ep*Ep - m1*m1);
+
+        }())
+    , h2ma([&ch,this]() ->real { 
+        
+        using constants::hbar;
+        using constants::c;
+
+        return hbar * hbar * c * c / (2* reduced_mass * ch.radius); 
+
+        }())
+    , sommerfield_param([&ch,this]() ->real { 
+        
+        using constants::hbar;
+        using constants::c;
+        using constants::e_sqr;
+
+        // Bohr radius [fm]
+        const real ab = hbar * hbar * c * c / (reduced_mass * e_sqr * fabs(ch.Zz));
+    
+        // dimensionless
+        return std::copysign(1., ch.Zz) / (ab * k);
+
+        }())
+     {}
+  };
+
+  /// @brief things that change w/ orbital angular momentum
+  struct Asymptotics {
+    /// @brief value of the outgoing asymptotic wavefunction at 
+    /// the channel radius
+    cmpl wvfxn_out;
+    /// @brief value of the incoming asymptotic wavefunction at 
+    /// the channel radius
+    cmpl wvfxn_in;
+    /// @brief value of the derivative of the outgoing asymptotic 
+    /// wavefunction at the channel radius
+    cmpl wvfxn_deriv_out;
+    /// @brief value of the derivative of the incoming asymptotic 
+    /// wavefunction at the channel radius
+    cmpl wvfxn_deriv_in;
+
+    Asymptotics(const AngularMomentum& am, real k, const Channel& ch) 
+      : wvfxn_out( ch.radius * h_out{am.l}(k * ch.radius) )
+      , wvfxn_in(  ch.radius * h_in{am.l} (k*ch.radius)   )
+      , wvfxn_deriv_out( ReducedDeriv(h_out{am.l})(k*ch.radius) )
+      , wvfxn_deriv_in(  ReducedDeriv(h_in{am.l}) (k*ch.radius) )
+    {
+      //TODO use confluent hypergeometrics for asymptotics
+      // for now, assume neutral projectile and use Hankel fxns
+      // if asym wavefunction = r*h_n(kr)
+      // derivative = d/dr (r * h_n(kr)) = h_n(kr) + kr d/d(kr) h_n(kr)
+      assert(ch.Zz == 0);
+    }
+  };
 
   /// @brief channel energy threshold [MeV]
   real threshold;
-  /// @brief CMS energy [MeV]
-  real erg_cms;
-  /// @brief Bombarding kinetic energy in the lab frame [MeV]
-  real erg_lab;
   /// @brief channel radius [fm]
   real radius;
-  
-  /// @brief scattering system reduced mass [MeV]
-  real reduced_mass;
   /// @brief target mass [amu]
-  real target_mass;
+  real targ_mass;
   /// @brief projectile mass [amu]
   real proj_mass;
-  /// @brief hbar^2 * c^2/(2 * reduced mass  * radius) [Mev fm]
-  real h2ma;
-
   /// @brief product of proton # of target and projectile
   real Zz;
   
-  /// @brief CMS momentum  w/ relativistic correction according to 
-  /// Eq. 17 of Ingemarsson, A. 
-  /// "Some notes on optical model calculations at medium energies." 
-  /// Physica Scripta 9.3 (1974): 156.
-  real k;
 
-  /// @brief Sommerfield parameter: sgn(Z_t * Z_p)/(a_B * k) [dimensionless]
-  /// ab is the Bohr radius, Z_t and Z_p are the target and product charges
-  real sommerfield_param;
-  
-  /// @brief value of the outgoing asymptotic wavefunction at 
-  /// the channel radius
-  cmpl asymptotic_wvfxn_out;
-  /// @brief value of the derivative of the outgoing asymptotic 
-  /// wavefunction at the channel radius
-  cmpl asymptotic_wvfxn_deriv_out;
-  /// @brief value of the incoming asymptotic wavefunction at 
-  /// the channel radius
-  cmpl asymptotic_wvfxn_in;
-  /// @brief value of the derivative of the incoming asymptotic 
-  /// wavefunction at the channel radius
-  cmpl asymptotic_wvfxn_deriv_in;
-  
-  /// @brief orbital angular momentum of scattering system [hbar]
-  int l;
-  /// @brief (2J+1), where J is the total angular 
-  /// momentum of the channel [hbar]
-  int J2;
-  /// @brief (2S+1), where S is the intrinsic angular momentum of
-  /// the proprojectile
-  int S2;
-  /// @brief spatial parity of channel state
-  Parity pi;
-  
-  /// @returns projection of spin along axis of orbital ang. mom.; e.g. L * S
-  real spin_orbit() const {
-    const real L = l;
-    const real S = (S2 - 1.)/2.;
-    const real J = (J2 - 1.)/2.;
-
-    return 0.5*(J*(J+1) - L*(L+1) - S*(S+1));
+  Energetics set_erg_cms(real erg_cms) const {
+    return Energetics(erg_cms - threshold, *this);
   }
 
+  Energetics set_erg_lab(real erg_lab) const {
+    using constants::MeV_per_amu;
+    const auto m1 = proj_mass * MeV_per_amu;
+    const auto m2 = targ_mass * MeV_per_amu;
+
+    const auto erg_cms  = erg_lab * m2 / (m1 + m2); 
+    return set_erg_cms(erg_cms);
+  }
+  
+  Asymptotics set_angular_momentum(AngularMomentum am, real k) const {
+    return Asymptotics(am, k, *this);
+  }
+  
   /// @param threshold [Mev]
   /// @param erg_cms [Mev]
   /// @param radius [fm]
@@ -96,105 +211,26 @@ struct Channel {
   /// @param l orbital angular momentum [hbar]
   /// @param J2 = 2*j+1, where j is total angular momentum  [hbar]
   /// @param S2 = 2*s+1, where s is projectile spin angular momentum [hbar]
-  Channel(real threshold, real erg_cms, real radius, 
+  Channel(real threshold, real radius, 
           real proj_mass, int Zp,
-          real targ_mass, int Zt, 
-          int l, int J2, int S2)
+          real targ_mass, int Zt)
     : threshold(threshold)
-    , erg_cms(erg_cms)
     , radius(radius)
-    , target_mass(targ_mass)
+    , targ_mass(targ_mass)
     , proj_mass(proj_mass)
-    , Zz(Zp*Zt)
-    , l(l)
-    , J2(J2)
-    , S2(S2)
-    , pi( l % 2 == 0 ? Parity::even : Parity::odd)
-  {
-      reset_erg_cms(erg_cms);
-      reset_l(l);
-  }
+    , Zz(Zp*Zt) {}
+};
 
-  /// @brief resets orbital AM, and re-calculates asymptotics
-  void reset_l(int ln) {
-    
-    //TODO use confluent hypergeometrics for asymptotics
-    // for now, assume neutral projectile and use Hankel fxns
-    // if asym wavefunction = r*h_n(kr)
-    // derivative = d/dr (r * h_n(kr)) = h_n(kr) + kr d/d(kr) h_n(kr)
-    assert(Zz == 0);
-    
-    const auto kr = k*radius;
-    l = ln;
-    asymptotic_wvfxn_out       = radius * h_out{l}(kr);
-    asymptotic_wvfxn_deriv_out = (1.+l) * h_out{l}(kr) -  kr * h_out{l+1}(kr);
-    
-    asymptotic_wvfxn_in        = radius * h_in{l}(k*radius);
-    asymptotic_wvfxn_deriv_in  = (1.+l) * h_in{l}(kr) -  kr * h_in{l+1}(kr);
-  }
+/// @brief Problem data for evaluating potentials and solving 
+/// Schrodinger's eqn. Most potentials don't need all this, 
+/// but some do.
+struct PData {
+  Channel ch;
+  Channel::Energetics e;
+  Channel::AngularMomentum am;
   
-  /// @param erg_cmsn new cms frame energy [Mev]
-  /// @brief Holds target, projectile, and other params constant
-  /// Recalculates erg_lab, k, reduced_mass, h2ma, sommerfield_param
-  void reset_erg_cms(real erg_cmsn) {
-    
-    using constants::hbar;
-    using constants::c;
-    using constants::e_sqr;
-    using constants::MeV_per_amu;
-    
-    const auto erg_cms = erg_cmsn - threshold;
-    const auto m1      = proj_mass * MeV_per_amu;
-    const auto m2      = target_mass * MeV_per_amu;
-    
-    erg_lab = erg_cms * (m1 + m2) / m2; // Eq. 4 Inermarsson, 1974
-
-    // relativistic-corrected wavenumber [1/fm]
-    // Eq. 17 of Ingemarsson, 1974
-    k = m2 * sqrt(erg_lab * ( erg_lab + 2 * m1 )) 
-      / sqrt( (m1 + m2)*(m1 + m2)  + 2 * m2 * erg_lab)
-      / (hbar * c);
-
-    // relativistic-corrected reduced mass [MeV]
-    // Eq. 21 of Ingemarsson, 1974
-    const auto Ep = m1 + erg_cms;
-    reduced_mass  = hbar * hbar * c * c * k * k * Ep / (Ep*Ep - m1*m1);
-    
-    // [MeV fm]
-    h2ma = hbar * hbar * c * c / (2* reduced_mass * radius); 
-    
-    // Bohr radius [fm]
-    const real ab =  bohr_radius();
-    
-    // dimensionless
-    sommerfield_param = std::copysign(1., Zz) / (ab * k);
-  }
-  
-  /// @param erg_labn new lab frame energy [Mev]
-  /// @brief Holds target, projectile, and other params constant
-  /// Recalculates erg_lab, k, reduced_mass, h2ma, sommerfield_param
-  void reset_erg_lab(real erg_labn) {
-    using constants::MeV_per_amu;
-    const auto m1 = proj_mass * MeV_per_amu;
-    const auto m2 = target_mass * MeV_per_amu;
-
-    erg_cms  = erg_labn * m2 / (m1 + m2); 
-    reset_erg_cms(erg_cms);
-  }
-  
-  /// @param threshn new channel threshold [Mev]
-  /// @brief Holds target, projectile, and other params constant
-  /// Recalculates erg_lab, k, reduced_mass, h2ma, sommerfield_param
-  void reset_threshold(real threshn) {
-    threshold = threshn;
-    reset_erg_cms(erg_cms);
-  }
-
-  /// @returns the Bohr radius in [fm]
-  real bohr_radius() const {
-    using constants::hbar, constants::c, constants::e_sqr;
-    return hbar * hbar * c * c / (reduced_mass * e_sqr * fabs(Zz));
-  }
+  PData(Channel ch, Channel::Energetics e, Channel::AngularMomentum am)
+    : ch(ch), e(e), am(am) {}
 };
 
 };
