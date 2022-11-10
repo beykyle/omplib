@@ -45,6 +45,16 @@ Message("fetching nlohmann/json")
 FetchContent_MakeAvailable(json)
 
 FetchContent_Declare(
+  rational
+  GIT_REPOSITORY https://github.com/boostorg/rational.git
+  GIT_TAG master
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE)
+Message("fetching boost/rational")
+FetchContent_MakeAvailable(rational)
+set(RATIONAL_INCLUDE_DIR ${rational_SOURCE_DIR})
+
+FetchContent_Declare(
   Eigen
   GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
   GIT_TAG master
