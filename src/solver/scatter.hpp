@@ -44,8 +44,6 @@ public:
 
 private:
   using Solver = RMatrixSolverSingleChannel<NBASIS>;
-  /// @brief Dimension of spin 1/2 repr of SU(2) = (2*1/2 +1)
-  constexpr static int S2 = 2;
   Isotope target;
   
   real ch_radius;
@@ -76,7 +74,7 @@ public:
     // TODO for now just neutrons
     static_assert(charge<proj>() == 0);
   
-    auto am = Channel::AngularMomentum{S2}; 
+    auto am = Channel::AngularMomentum{ch.s}; 
     
     // S-wave can only have spin up states   
     cmpl Sminus = 0;
@@ -89,17 +87,13 @@ public:
     
     // higher OAM states must account for spin up and down
     for (am.l = 1; am.l < MAXL; ++am.l) {
-      // twice the projections of the projectile spin
-      // along the channel ang momentum axis
-      constexpr int up   =  1; //  ms =  1/2 => 2ms =  1
-      constexpr int down = -1; // -ms = -1/2 => 2ms = -1
       
       // spin down
-      am.set_spin<down>(am.l);
+      am.set_spin<-1,2>();
       Sminus = Solver(ch, e, am, p).smatrix();
       
-      // spin
-      am.set_spin<up>(am.l);
+      // spin up
+      am.set_spin<1,2>();
       Splus = Solver(ch, e, am , p).smatrix();
       
       func(am.l,Sminus,Splus);
@@ -124,7 +118,9 @@ public:
     using constants::pi;
     using constants::hbar;
     
-    const auto ch = Channel(0, ch_radius, mass<proj>(), charge<proj>(), target.mass , target.Z);
+    const auto ch = Channel(0, ch_radius, mass<proj>(), charge<proj>(), frac(1,2), 
+                            target.mass , target.Z);
+
     const auto e  = ch.set_erg_cms(erg_cms);
 
     Amplitude ampl;
@@ -151,7 +147,8 @@ public:
   /// Eqns 46-47 in Pruitt, 2021
   CrossSection xs(real erg_cms, Potential p) const {
   
-    const auto ch = Channel(0, ch_radius, mass<proj>(), charge<proj>(), target.mass , target.Z);
+    const auto ch = Channel(0, ch_radius, mass<proj>(), charge<proj>(), frac(1,2), 
+                            target.mass , target.Z);
     const auto e  = ch.set_erg_cms(erg_cms);
 
     CrossSection xs{0,0};
@@ -164,13 +161,16 @@ public:
         }
     );
 
+    xs.tot *= 2*constants::pi / (e.k * e.k);
+    xs.rxn *= 2*constants::pi / (e.k * e.k);
+
     return xs;
   }
 
   /// @param ampl partial-wave amplitudes
   /// @param mu_grid Grid of mu = cos(theta) on [-1,1] on which to calculate 
   /// analyzing powers and differential cross section
-  AngularData angular(const Amplitude& ampl, std::vector<real> mu_grid) const {
+  AngularData angular(const Channel& ch, const Amplitude& ampl, std::vector<real> mu_grid) const {
     assert(mu_grid.front() >= -1);
     assert(mu_grid.back()  <=  1);
 
@@ -184,7 +184,8 @@ public:
          a += ampl.A[l] * std::legendre(l,mu_grid[i]);
          b += ampl.B[l] * std::assoc_legendre(l,1,mu_grid[i]);
       }
-      dxdu[i] = a * conj(a) + b * conj(b);
+      // (|A|^2 + |B|^2) / (2*s +1)
+      dxdu[i] = (a * conj(a) + b * conj(b)) / cast<real>(2*ch.s +1);
       Ay[i]   = a * conj(b) + b * conj(a);
       Ay[i]  /= dxdu[i];
     }

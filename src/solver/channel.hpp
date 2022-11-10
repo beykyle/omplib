@@ -23,52 +23,59 @@ struct Channel {
   /// @brief coupled AM states of the channel. This type is meant to be mutable,
   /// with l and J2 updated according to set_spin_up and set_spin_down
   struct AngularMomentum {
-    /// @brief (2s+1), where s is the projectile intrinsic spin [hbar]
-    const int S2;
+    /// @brief intrinsic spin of projectile
+    const frac s;
+    /// @brief total angular momentum of channel
+    frac j;
     /// @brief orbital angular momentum [hbar]
     int l;
-    /// @brief (2j+1), where j is the channel total ang mom [hbar]
-    int J2;
     /// @brief spatial parity of channel state
     Parity pi;
+
 
     Parity update_pi(int l) {
       return l % 2 == 0 ? Parity::even : Parity::odd;
     }
 
-    /// @tparam ms2 2 * m_s, where m_s is the projection of the intrinsic 
-    /// spin along the total channel angular momentum axis
-    template<int ms2>
+    /// @tparam n numerator of projection of projectile spin along j axis
+    /// @tparam d denominator of projection of projectile spin along j axis
+    template<int n, int d = 1>
     void set_spin(int new_l){
-      assert(l > 0);
+      assert(new_l > 0);
       l = new_l;
       pi = update_pi(l);
-      J2 = 2 * l + ms2 + 1;
+      set_spin<n,d>();
     }
     
-    AngularMomentum(int S2, int l, int J2)
-      : S2(S2), l(l), J2(J2), pi(update_pi(l)) 
+    /// @tparam n numerator of projection of projectile spin along j axis
+    /// @tparam d denominator of projection of projectile spin along j axis
+    template<int n, int d = 1>
+    void set_spin(){
+      j = l + frac(n,d);
+    }
+    
+    AngularMomentum(frac s, frac j, int l)
+      : s(s), j(j), l(l), pi(update_pi(l)) 
     {
       assert(l >= 0);
-      assert(J2 > 0);
-      assert(S2 > 0);
+      assert(j >= 0);
+      assert(s >= 0);
     }
     
     /// @brief initialize AM to S-Wave state
-    AngularMomentum(int S2)
-      : S2(S2), l(0), J2(S2), pi(update_pi(l)) 
+    AngularMomentum(frac s)
+      : s(s), j(s), l(0), pi(update_pi(l)) 
     {
       assert(l >= 0);
-      assert(J2 > 0);
-      assert(S2 > 0);
+      assert(j >= 0);
+      assert(s >= 0);
     }
     
     /// @returns projection of spin along axis of orbital ang. mom.; e.g. L * S
     real spin_orbit() const {
-      const real L = l;
-      const real S = (S2 - 1.)/2.;
-      const real J = (J2 - 1.)/2.;
-
+      const auto J = cast<real>(j);
+      const auto S = cast<real>(s);
+      const auto L = static_cast<real>(l);
       return 0.5*(J*(J+1) - L*(L+1) - S*(S+1));
     }
   };
@@ -188,6 +195,8 @@ struct Channel {
   real proj_mass;
   /// @brief product of proton # of target and projectile
   real Zz;
+  /// @brief projectile spin
+  frac s;
   
 
   Energetics set_erg_cms(real erg_cms) const {
@@ -211,16 +220,19 @@ struct Channel {
   /// @param radius [fm]
   /// @param proj_mass [amu] 
   /// @param Zp proton number of projectile 
+  /// @param s spin of projectile
   /// @param targ_mass [amu]
   /// @param Zt proton number of target 
   Channel(real threshold, real radius, 
-          real proj_mass, int Zp,
+          real proj_mass, int Zp, frac s,
           real targ_mass, int Zt)
     : threshold(threshold)
     , radius(radius)
     , targ_mass(targ_mass)
     , proj_mass(proj_mass)
-    , Zz(Zp*Zt) {}
+    , Zz(Zp*Zt)
+    , s(s) 
+  {}
 };
 
 /// @brief Problem data for evaluating potentials and solving 

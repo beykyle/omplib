@@ -22,15 +22,12 @@ TEST_CASE("Build channel at varying energy") {
   constexpr real ch_radius = 12; // fm
   
   /// s-wave
-  constexpr int l   = 0;
-  constexpr int S2  = 2; // S2 == (2*(1/2) +1) == dimension of spin 1/2 SU(2) representation
-  // on 0+ ground state
-  constexpr int J2  = 1; // J2 == (2*J +1) == dimension of SU(2) representation
   
   const auto chn  = Channel(threshold, ch_radius, 
                             projectile_mass, 0, target_mass, Z);
   
-  const auto am   = Channel::AngularMomentum(S2, l, J2);
+  // s-wave, spin up
+  const auto am   = Channel::AngularMomentum(frac(1,2));
 
   SECTION("neutron 1MeV") {
     const auto e    = chn.set_erg_cms(1.0);
