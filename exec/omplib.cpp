@@ -98,7 +98,11 @@ int main(int, char**) {
   
   // spin-flipping and spin-preserving components of S-Matrix
   // for each partial wave
-  const auto [H,G,_] = solver.amplitudes(erg, p);
+  const auto [xs_tot, xs_rxn] = solver.xs(erg, p);
+
+  std::cout << "For n - 144Xe scattering at " << erg << " MeV:\n"
+            << "SigT:   " << xs_tot << " [fm]^-2\n"
+            << "SigRxn: " << xs_tot << " [fm]^-2\n";
 
   print_potential_vals();
   return 0;
