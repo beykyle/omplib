@@ -33,7 +33,8 @@ if(NOT CMAKE_TESTING_ENABLED)
 
   # https://github.com/catchorg/Catch2/blob/devel/docs/slow-compiles.md
   add_executable(all_tests catch_main.cpp ${UNIT_TEST_SOURCES})
-  target_link_libraries(all_tests PRIVATE nlohmann_json::nlohmann_json Catch2::Catch2WithMain omplib)
+  target_link_libraries(all_tests PRIVATE
+    nlohmann_json::nlohmann_json Catch2::Catch2WithMain omplib)
 
   add_custom_target(test
     COMMAND all_tests
