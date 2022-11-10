@@ -24,7 +24,8 @@ TEST_CASE("Build channel at varying energy") {
   /// s-wave
   
   const auto chn  = Channel(threshold, ch_radius, 
-                            projectile_mass, 0, target_mass, Z);
+                            projectile_mass, 0, frac(1,2), 
+                            target_mass, Z);
   
   // s-wave, spin up
   const auto am   = Channel::AngularMomentum(frac(1,2));

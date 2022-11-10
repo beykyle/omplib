@@ -20,7 +20,8 @@ TEST_CASE("Yamaguchi analytic s-wave phase shift") {
     return y.eval_reduced(r,rp,d);
   };
 
-  const auto ch  = Channel(0., 15, constants::n_mass_amu, 0, constants::p_mass_amu, 1);
+  const auto ch  = Channel(0., 15, constants::n_mass_amu, 0, frac(1,2), 
+                           constants::p_mass_amu, 1);
 
   // S-Wave, 0+
   const auto am   = Channel::AngularMomentum(2);
