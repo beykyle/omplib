@@ -193,57 +193,5 @@ public:
   }
 
 };
-
-/// @tparam Nucleon projectile
-template<Proj proj>
-/// @brief single channel scatter for incident nucleon on a nucleus
-class Scatter {
-public:
-  
-  constexpr static int SU2_REPR_DIM = spin<proj>()*2+1;
-
-  using SMatrix = std::array<std::array<cmpl,SU2_REPR_DIM>,MAXL>;
-
-private:
-  using Solver = RMatrixSolverSingleChannel<NBASIS>;
-  Isotope target;
-  
-  real ch_radius;
-  real ch_threshold;
-  
-public:
-  Scatter(Isotope target, real ch_radius=15, real ch_threshold=0)
-    : target(target)
-    , ch_radius(ch_radius)
-    , ch_threshold(ch_threshold) {};
-
-  /// @tparam Potential callable (real r [fm], real rp [fm], Channel ch) -> cmpl [Mev]
-  template<class Potential>
-  /// @brief SMatrix for arbitrary spin interaction w/ unpolarized target
-  SMatrix smatrix(real erg_cms, Potential p) const {
-    
-    const auto ch = Channel(0, ch_radius, mass<proj>(), charge<proj>(), spin<proj>(), 
-                            target.mass , target.Z);
-
-    const auto e    = ch.set_erg_cms(erg_cms);
-    auto am         = Channel::AngularMomentum{spin<proj>()}; 
-    auto&[s,j,l,pi] = am;
-
-    SMatrix smatrix{};
-    
-    // higher OAM states must account for spin up and down
-    for (l = 0; l < MAXL; ++l) {
-      int i = 0;
-      // j on |l - s|, |l-s| + 1, ..., l + s -1, l + s
-      const auto jmin = max(0, am.l - spin<proj>());
-      const auto jmax = am.l + spin<proj>();
-      for (j = jmin; j < jmax; ++j ) {
-        smatrix[i++][l] = Solver(ch, e, am).smatrix();
-      } 
-    }
-    return smatrix;
-  } 
-};
-
 }
 #endif 
