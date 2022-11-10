@@ -1,6 +1,8 @@
 #ifndef RMATRIX_HEADER
 #define RMATRIX_HEADER
 
+#include <Eigen/LU>
+
 #include "util/constants.hpp"
 #include "util/asymptotics.hpp"
 #include "util/lagrange_legendre.hpp"
@@ -9,8 +11,6 @@
 #include "potential/potential.hpp"
 
 #include "solver/channel.hpp"
-
-#include <Eigen/LU>
 
 namespace omplib {
 
