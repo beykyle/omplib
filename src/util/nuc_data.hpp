@@ -30,6 +30,13 @@ constexpr int charge() {
   if constexpr (p == Proj::neutron) return 0;
   if constexpr (p == Proj::proton ) return 1;
 }
+
+template<Proj p>
+constexpr frac spin() {
+  if constexpr (p == Proj::neutron) return frac(1,2);
+  if constexpr (p == Proj::proton ) return frac(1,2);
+}
+
 }
 
 #endif 
