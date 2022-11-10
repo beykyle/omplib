@@ -24,16 +24,16 @@ KD03Params<Proj::neutron>::KD03Params()
 {};
 
 KD03Params<Proj::proton>::KD03Params(json p) 
-  : OMParams<Proj::proton>()
-  , KD03Params<Proj::neutron>(p)
+  : KD03Params<Proj::neutron>(p)
+  , OMParams<Proj::proton>()
   , rc_0(  p["KDCoulomb_r_C_0"] )
   , rc_A(  p["KDCoulomb_r_C_A"] )
   , rc_A2( p["KDCoulomb_r_C_A2"])
 {};
 
 KD03Params<Proj::proton>::KD03Params() 
-  : OMParams<Proj::proton>()
-  , KD03Params<Proj::neutron>()
+  : KD03Params<Proj::neutron>()
+  , OMParams<Proj::proton>()
   , rc_0(1.2E0), rc_A(6.97E-1), rc_A2(1.3E1)
 {
   // params which are different for protons

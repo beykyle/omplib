@@ -30,15 +30,15 @@ CH89Params<Proj::neutron>::CH89Params()
 {};
 
 CH89Params<Proj::proton>::CH89Params()
-  : OMParams<Proj::proton>()
-  , CH89Params<Proj::neutron>()
+  : CH89Params<Proj::neutron>()
+  , OMParams<Proj::proton>()
   , rc_0(0.12)
   , rc_A(1.24)
 {};
 
 CH89Params<Proj::proton>::CH89Params(json p)
-  : OMParams<Proj::proton>()
-  , CH89Params<Proj::neutron>(p)
+  : CH89Params<Proj::neutron>(p)
+  , OMParams<Proj::proton>()
   , rc_0(  p["CH89Coulomb_r_c_0"] )
   , rc_A(  p["CH89Coulomb_r_c"] )
 {};

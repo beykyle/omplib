@@ -77,21 +77,40 @@ public:
   KD03Params();
   // @brief  Construct using params supplied in a json file
   KD03Params(json p): 
+    OMParams<projectile>(),
     // same for n's and p's 
-    v1_0(   p["KDHartreeFock_V1_0"]     ) , v1_asym(  p["KDHartreeFock_V1_asymm"]   ),
-    v1_A(   p["KDHartreeFock_V1_A"]     ) , v4_0(     p["KDHartreeFock_V4_0"]       ),
-    rv_0(   p["KDHartreeFock_r_0"]      ) , rv_A(     p["KDHartreeFock_r_A"]        ),
-    av_0(   p["KDHartreeFock_a_0"]      ) , av_A(     p["KDHartreeFock_a_A"]        ),
-    w2_0(   p["KDImagVolume_W2_0"]      ) , w2_A(     p["KDImagVolume_W2_A"]        ),
-    d1_0(   p["KDImagSurface_D1_0"]     ) , d1_asym(  p["KDImagSurface_D1_asymm"]   ),
-    d2_0(   p["KDImagSurface_D2_0"]     ) , d2_A(     p["KDImagSurface_D2_A"]       ),
-    d2_A2(  p["KDImagSurface_D2_A2"]    ) , d2_A3(    p["KDImagSurface_D2_A3"]      ),
-    d3_0(   p["KDImagSurface_D3_0"]     ) , rd_0(     p["KDImagSurface_r_0"]        ),
-    rd_A(   p["KDImagSurface_r_A"]      ) , vso1_0(   p["KDRealSpinOrbit_V1_0"]     ),
-    vso1_A( p["KDRealSpinOrbit_V1_A"]   ) , rso_0(    p["KDRealSpinOrbit_r_0"]      ),
-    vso2_0( p["KDRealSpinOrbit_V2_0"]   ) , aso_0(    p["KDRealSpinOrbit_a_0"]      ), 
-    rso_A(  p["KDRealSpinOrbit_r_A"]    ) , wso2_0(   p["KDImagSpinOrbit_W2_0"]     ), 
-    wso1_0( p["KDImagSpinOrbit_W1_0"]   ) 
+    rv_0(    p["KDHartreeFock_r_0"]    ), 
+    rv_A(    p["KDHartreeFock_r_A"]    ),
+    av_0(    p["KDHartreeFock_a_0"]    ), 
+    av_A(    p["KDHartreeFock_a_A"]    ),
+    rd_0(    p["KDImagSurface_r_0"]    ),
+    rd_A(    p["KDImagSurface_r_A"]    ), 
+    rso_0(   p["KDRealSpinOrbit_r_0"]  ),
+    rso_A(   p["KDRealSpinOrbit_r_A"]  ), 
+    aso_0(   p["KDRealSpinOrbit_a_0"]  ), 
+    
+    v1_0(    p["KDHartreeFock_V1_0"]      ), 
+    v1_asym( p["KDHartreeFock_V1_asymm"]  ),
+    v1_A(    p["KDHartreeFock_V1_A"]      ), 
+    v4_0(    p["KDHartreeFock_V4_0"]      ),
+    
+    w2_0(    p["KDImagVolume_W2_0"]       ), 
+    w2_A(    p["KDImagVolume_W2_A"]       ),
+    
+    d1_0(    p["KDImagSurface_D1_0"]      ), 
+    d1_asym( p["KDImagSurface_D1_asymm"]  ),
+    d2_0(    p["KDImagSurface_D2_0"]      ), 
+    d2_A(    p["KDImagSurface_D2_A"]      ),
+    d2_A2(   p["KDImagSurface_D2_A2"]     ), 
+    d2_A3(   p["KDImagSurface_D2_A3"]     ),
+    d3_0(    p["KDImagSurface_D3_0"]      ), 
+    
+    vso1_0( p["KDRealSpinOrbit_V1_0"]    ),
+    vso1_A( p["KDRealSpinOrbit_V1_A"]    ), 
+    
+    vso2_0( p["KDRealSpinOrbit_V2_0"]    ), 
+    wso1_0( p["KDImagSpinOrbit_W1_0"]    ),
+    wso2_0( p["KDImagSpinOrbit_W2_0"]    ) 
 
     // different for neutrons and protons
     {

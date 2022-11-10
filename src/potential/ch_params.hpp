@@ -75,28 +75,27 @@ public:
   CH89Params();
 
   CH89Params(json p):
-    v_0(     p["CH89RealCentral_V_0"]   ) ,
-    v_e(     p["CH89RealCentral_V_e"]   ) ,
-    v_asym(  p["CH89RealCentral_V_t"]   ) ,
     r_0(     p["CH89RealCentral_r_o_0"] ) , 
     r_A(     p["CH89RealCentral_r_o"]   ) ,
     a0(      p["CH89RealCentral_a_0"]   ) , 
+    rw_0(    p["CH89ImagCentral_r_w0"]  ),
+    rw_A(    p["CH89ImagCentral_r_w"]   ),
+    aw(      p["CH89ImagCentral_a_w"]   ),
+    rso_0(   p["CH89SpinOrbit_r_so_0"]   ),
+    rso_A(   p["CH89SpinOrbit_r_so"]     ),
+    aso(     p["CH89SpinOrbit_a_so"]     ),
     
+    v_0(     p["CH89RealCentral_V_0"]   ) ,
+    v_e(     p["CH89RealCentral_V_e"]   ) ,
+    v_asym(  p["CH89RealCentral_V_t"]   ) ,
     wv_0(    p["CH89ImagCentral_W_v0"]  ),
     wve_0(   p["CH89ImagCentral_W_ve0"] ),
     wv_ew(   p["CH89ImagCentral_W_vew"] ),
     ws_0(    p["CH89ImagCentral_W_s0"]  ),
+    ws_asym( p["CH89ImagCentral_W_st"]  ),
     ws_e0(   p["CH89ImagCentral_W_se0"] ),
     ws_ew(   p["CH89ImagCentral_W_sew"] ),
-    ws_asym( p["CH89ImagCentral_W_st"]  ),
-    rw_0(    p["CH89ImagCentral_r_w0"]  ),
-    rw_A(    p["CH89ImagCentral_r_w"]   ),
-    aw(      p["CH89ImagCentral_a_w"]   ),
-    
-    vso_0(   p["CH89SpinOrbit_V_so"]     ),
-    rso_0(   p["CH89SpinOrbit_r_so_0"]   ),
-    rso_A(   p["CH89SpinOrbit_r_so"]     ),
-    aso(     p["CH89SpinOrbit_a_so"]     )
+    vso_0(   p["CH89SpinOrbit_V_so"]     )
     
   {}
 

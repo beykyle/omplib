@@ -4,6 +4,10 @@
 #include <memory>
 #include <complex>
 
+#include <Eigen/LU>
+#include <vector>
+
+#include "Eigen/src/Core/Matrix.h"
 #include "util/types.hpp"
 #include "solver/channel.hpp"
 
@@ -42,6 +46,16 @@ struct Potential : public GeneralPotential {
     if (r!=rp) return {0,0};
     return eval_reduced(r,d); 
   }
+
+  std::vector<cmpl> eval(const std::vector<real>& r, const PData& d) const {
+    assert(r.front() >= 0);
+    assert(r.back() < d.ch.radius);
+    std::vector<cmpl> v(r.size(),0);
+    for (size_t i =0; i < r.size(); ++i){
+      v[i] = eval(r[i], d);
+    }
+    return v;
+  };
   
   cmpl operator () (real r, const PData& d) const { return eval(r, d); }
   cmpl operator () (real r, real rp, const PData& d) const { return eval(r, rp, d); }
@@ -215,11 +229,54 @@ public:
     : R(R), depth(depth) {};
 };
 
-
-
 /// @brief Common global phenomenological OMP form for a given isotope, A,Z.
 template<class Params>
 class OMP : public Potential {
+public:
+  struct OMPGrid {
+    std::vector<cmpl> cent;
+    std::vector<cmpl> surf;
+    std::vector<cmpl> spin;
+    OMPGrid(int sz):cent(sz,0), surf(sz,0), spin(sz,0) {};
+  };
+
+
+  struct Terms {
+
+    WoodsSaxon      V, W;
+    DerivWoodsSaxon Vs, Ws;
+    Thomas          Vso, Wso;
+
+    Terms(int A, int Z, real erg_lab, const Params& p)
+      : V(WoodsSaxon{ 
+          cmpl{p.real_cent_V(Z,A,erg_lab),0},
+          p.real_cent_r(Z,A,erg_lab),
+          p.real_cent_a(Z,A,erg_lab) }),
+        W(WoodsSaxon{ 
+          cmpl{0,p.cmpl_cent_V(Z,A,erg_lab)},
+          p.cmpl_cent_r(Z,A,erg_lab),
+          p.cmpl_cent_a(Z,A,erg_lab) }),
+        
+        Vs(DerivWoodsSaxon{ 
+          cmpl{p.real_surf_V(Z,A,erg_lab),0},
+          p.real_surf_r(Z,A,erg_lab),
+          p.real_surf_a(Z,A,erg_lab) }),
+        Ws(DerivWoodsSaxon{ 
+          cmpl{0,p.cmpl_surf_V(Z,A,erg_lab)},
+          p.cmpl_surf_r(Z,A,erg_lab),
+          p.cmpl_surf_a(Z,A,erg_lab) }),
+        
+        Vso(Thomas{ 
+          cmpl{p.real_spin_V(Z,A,erg_lab),0},
+          p.real_spin_r(Z,A,erg_lab),
+          p.real_spin_a(Z,A,erg_lab) }),
+        Wso(Thomas{ 
+          cmpl{0,p.cmpl_spin_V(Z,A,erg_lab)},
+          p.cmpl_spin_r(Z,A,erg_lab),
+          p.cmpl_spin_a(Z,A,erg_lab) })
+    {}
+  };
+
 private:
   /// @brief target
   int A, Z;
@@ -248,35 +305,22 @@ public:
 
     const auto erg_lab = d.e.erg_lab;
     
-    const auto V = WoodsSaxon{ 
-      cmpl{params.real_cent_V(Z,A,erg_lab),0},
-      params.real_cent_r(Z,A,erg_lab),
-      params.real_cent_a(Z,A,erg_lab) };
-    const auto Vs = DerivWoodsSaxon{ 
-      cmpl{params.real_surf_V(Z,A,erg_lab),0},
-      params.real_surf_r(Z,A,erg_lab),
-      params.real_surf_a(Z,A,erg_lab) };
-    const auto Vso = Thomas{ 
-      cmpl{params.real_spin_V(Z,A,erg_lab),0},
-      params.real_spin_r(Z,A,erg_lab),
-      params.real_spin_a(Z,A,erg_lab) };
+    const auto [V, W, Vs, Ws, Vso, Wso] = Terms(A, Z, erg_lab, params);
     
-    const auto W = WoodsSaxon{ 
-      cmpl{0,params.cmpl_cent_V(Z,A,erg_lab)},
-      params.cmpl_cent_r(Z,A,erg_lab),
-      params.cmpl_cent_a(Z,A,erg_lab) };
-    const auto Ws = DerivWoodsSaxon{ 
-      cmpl{0,params.cmpl_surf_V(Z,A,erg_lab)},
-      params.cmpl_surf_r(Z,A,erg_lab),
-      params.cmpl_surf_a(Z,A,erg_lab) };
-    const auto Wso = Thomas{ 
-      cmpl{0,params.cmpl_spin_V(Z,A,erg_lab)},
-      params.cmpl_spin_r(Z,A,erg_lab),
-      params.cmpl_spin_a(Z,A,erg_lab) };
-
     return V.eval(r,d) + Vs.eval(r,d) + Vso.eval(r,d) * d.am.spin_orbit()  // R
          + W.eval(r,d) + Ws.eval(r,d) + Wso.eval(r,d) * d.am.spin_orbit(); // Im
   };
+
+  OMPGrid to_rgrid(const std::vector<real>& r, const PData& d) const {
+    OMPGrid v(r.size());
+    const auto [V, W, Vs, Ws, Vso, Wso] = Terms(A, Z, d.e.erg_lab, params);
+    for (int i =0; i < r.size(); ++i){
+      v.cent = V(  r[i]) + W(  r[i]);
+      v.surf = Vs( r[i]) + Ws( r[i]);
+      v.spin = Vso(r[i]) + Wso(r[i]);
+    }
+    return v;
+  }
 };
 
 /// @brief An arbitrary local potential in r smeared into the off-diagonal 
