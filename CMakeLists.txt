@@ -20,7 +20,9 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "DEBUG")
 endif ()
 
-find_package (Git REQUIRED)
+find_package(Boost 1.7 REQUIRED)
+
+find_package(Git REQUIRED)
 find_package(Threads)
 
 # stackoverflow.com/a/24414345
@@ -43,16 +45,6 @@ FetchContent_Declare(
   json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
 Message("fetching nlohmann/json")
 FetchContent_MakeAvailable(json)
-
-FetchContent_Declare(
-  rational
-  GIT_REPOSITORY https://github.com/boostorg/rational.git
-  GIT_TAG master
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE)
-Message("fetching boost/rational")
-FetchContent_MakeAvailable(rational)
-set(RATIONAL_INCLUDE_DIR ${rational_SOURCE_DIR})
 
 FetchContent_Declare(
   Eigen

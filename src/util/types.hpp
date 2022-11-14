@@ -3,7 +3,7 @@
 
 #include <complex>
 
-#include "include/boost/rational.hpp"
+#include "boost/rational.hpp"
 
 namespace omplib {
   using real = double;
