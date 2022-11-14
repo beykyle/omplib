@@ -185,7 +185,7 @@ public:
          b += ampl.B[l] * std::assoc_legendre(l,1,mu_grid[i]);
       }
       // (|A|^2 + |B|^2) / (2*s +1)
-      dxdu[i] = (a * conj(a) + b * conj(b)) / cast<real>(2*ch.s +1);
+      dxdu[i] = (a * conj(a) + b * conj(b));
       Ay[i]   = a * conj(b) + b * conj(a);
       Ay[i]  /= dxdu[i];
     }
