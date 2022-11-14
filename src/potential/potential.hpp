@@ -374,7 +374,7 @@ public:
   real analytic_swave_kmatrix(real k) const {
     const auto a = alpha;
     const auto b = beta;
-    const auto d = 2*(a + b)*(a+b);
+    const auto d = 2*(a + b)*(a + b);
     real cot_delta = a*b*(a+2*b)/(d*k) 
                    + (a*a + 2*a*b + 3 * b *b)/(b*d) * k
                    + k*k*k/(b*d);
