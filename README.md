@@ -41,21 +41,20 @@ To build the `cpython` shared library for `OMPLib`, compile with the flag `-DBUI
 Or, even easier, to build the code and install the module all at once, run:
 
 ```
-python setup.py
+python setup.py -j
 ```
 
-or, 
+with j being the number of cores to build on, or, 
 
 ```
 pip install .
 ```
-
-Now you can simply:
+in the main project directory. Now you can simply:
 ```
-
+import omplib
+# do stuff
 ```
-
-in the main project directory. See `/examples` for example `Python` scripts using the module.
+See `/examples` for example `Python` scripts using the module.
 
 ## dependencies
 
