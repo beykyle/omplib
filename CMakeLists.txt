@@ -20,8 +20,12 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "DEBUG")
 endif ()
 
-find_package(Boost 1.7 REQUIRED)
+# for python bindings
+find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+find_package(xtensor REQUIRED)
+find_package(xtensor-python REQUIRED)
 
+find_package(Boost 1.7 REQUIRED COMPONENTS)
 find_package(Git REQUIRED)
 find_package(Threads)
 
