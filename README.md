@@ -1,7 +1,7 @@
 # omplib
 Optical Model Potential LIBrary
 
-This is a library of 2-body microscopic and phenomenological potentials relevant for nuclear reactions, with a primary focus on nucleon-nuclear scattering using optical potentials. It is equipped with an R-Matrix solver on a Lagrange-Legendre mesh for calculating scattering matrix elements and cross sections. Applications include fitting and uncertainty quantification of optical model parameters, and Hauser Feshbch inelastic scattering calculations. 
+This is a library of microscopic and phenomenological potentials relevant for nuclear reactions, with a primary focus on nucleon-nuclear scattering using optical potentials. It is equipped with an R-Matrix solver on a Lagrange-Legendre mesh for calculating scattering matrix elements and cross sections. Applications include fitting and uncertainty quantification of optical model parameters, and Hauser Feshbch inelastic scattering calculations. 
 
 The goals of this project are to provide a fast, flexible and high-fidelity solver for scattering problems, including non-local potentials, coupled-channels, and more; that is easy to plug into existing physics packages. This is primarily built as a library to be integrated into other projects, but can be used as a framework for standalone applications. For more information and references, build the documentation as shown below.
 
