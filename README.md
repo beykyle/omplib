@@ -87,14 +87,3 @@ Now, within the environment `omp`, you can `pip install` as above to build `OMPL
 ## configuration
 
 Currently, the primary application for `OMPLib` is uncertainty quantification for simple spherical potentials. For that reason, for single-channel calculations, it is set up to solve for the R-Matrix without heap allocations, using `Eigen` statically sized matrices, for speed. The file `src/util/config.hpp` holds important compile time constants, such as `NBASIS`; the number of basis functions to use in the R-Matrix solver. The resulting matrix for a single channel calculation will be represented as an `Eigen::Matrix<std::complex<double>,NBASIS,NBASIS>`. Inversion of these matrices is expected to dominate runtime for typical problems.
-
-## building a standalone c++ application
-
-A (rather barebones) file with a main function lives in `exec/omplib.cpp`. To use `OMPLib` in a toolkit/framework paradigm, copy the `exec` directory to a new directory (`my_exec`) of your choice within the main project directory. Change the name of `my_exec/omplib.cpp` (to e.g. `my_main.cpp`) as you see fit, and add the code for your application. Then replace `omplib.cpp` in `my_exec/CMakeLists.txt`, so it reads:
-
-```
-add_executable(my_exec_name my_main.cpp)
-target_link_libraries(my_exec_name omplib)
-```
-
-Then, replace `add_subdirectory(exec)` with `add_subdirectory(my_exec)` in the top-level `CMakeLists.txt`. Finally, build as shown above in [quickstart](https://github.com/beykyle/omplib/blob/main/README.md#quickstart).
