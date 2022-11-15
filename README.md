@@ -70,7 +70,7 @@ Handled by `CMake` (just run `cmake ..`, kick your feet up, and relax):
 Install yourself (sorry):
 - [Boost](https://www.boost.org/) 1.7+
 
-Install yourself, but only if you want to use the `Python` module:
+Install yourself, but only if you want to use the `Python` module, `omplibpy`:
 - [Python](https://www.python.org/) 3.7+
 - [numpy](https://numpy.org/)
 - [xtensor](https://xtensor.readthedocs.io/en/latest/)
