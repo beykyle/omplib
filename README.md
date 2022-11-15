@@ -3,7 +3,7 @@ Optical Model Potential LIBrary
 
 This is a library of microscopic and phenomenological potentials relevant for nuclear reactions, with a primary focus on nucleon-nuclear scattering using optical potentials. It is equipped with an R-Matrix solver on a Lagrange-Legendre mesh for calculating scattering matrix elements and cross sections. Applications include fitting and uncertainty quantification of optical model parameters, and Hauser Feshbch inelastic scattering calculations. 
 
-The goals of this project are to provide a fast, flexible and high-fidelity solver for scattering problems, including non-local potentials, coupled-channels, and more; that is easy to plug into existing physics packages. This is primarily built as a library to be integrated into other projects, but can be used as a framework for standalone applications. For more information and references, build the documentation as shown below.
+The goals of this project are to provide a fast, flexible and high-fidelity solver for scattering problems, including non-local potentials, coupled-channels, and more; that is easy to plug into existing physics packages. This is primarily built as a library to be integrated into other projects, but can be used as a framework for standalone applications. For more information and ereferences, build the documentation as shown below.
 
 ## quickstart
 
@@ -53,11 +53,11 @@ in the main project directory. Now you can simply:
 ```
 import omplibpy as omp
 
-# 0.1 Mev neutron incident on 48-Ca
+# 0.1 Mev neutron incident on 48-Ca, using WLH microscopic optical potential
 erg_cms_Mev = 0.1
 A = 20
 Z = 48 
-omp.wlh_xs(0.1, A, Z)
+xs_tot, xs_rxn = omp.wlh_xs_n(0.1, A, Z)
 ```
 See `/examples` for simple `Python` scripts using the module.
 
