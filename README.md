@@ -75,7 +75,7 @@ See `examples/` for more simple `Python` scripts using the module.
 - [pybind11](https://pybind11.readthedocs.io/en/stable/index.html)
 - [xtensor-python](https://xtensor-python.readthedocs.io/en/latest/index.html)
 
-It is highly recomended to use use a package, dependency and environment manager like [mamba](https://mamba.readthedocs.io/en/latest/) or [conda](https://docs.conda.io/en/latest/), especially if you want to use the `Python` module. Then, setting up an environment to run `OMPLib` from `Python` is as easy as (e.g. using `mamba`):
+It is highly recomended to use use a package, dependency and environment manager like [mamba](https://mamba.readthedocs.io/en/latest/) or [conda](https://docs.conda.io/en/latest/), especially if you want to use `omplibpy`. Then, setting up an environment to run `OMPLib` from `Python` is as easy as (e.g. using `mamba`):
 
 ```
 mamba create -n omp boost numpy pybind11 xtensor xtensor-python
