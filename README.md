@@ -12,7 +12,7 @@ git clone git@github.com:beykyle/omplib.git
 cd omplib
 mkdir build
 cd build 
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release .. 
 make 
 make test
 make docs
@@ -33,12 +33,9 @@ FetchContent_MakeAvailable(omplib)
 
 Now you can `#include` files like `"potential/params.hpp"` into your project, as long as you make `omplib` a dependency of the relevant target.
 
-## Python integration
+## python integration
 
-`OMPLib` uses `pybind11` with `xtensor-python` to provide a `Python` module, `omp`, with functionality to drive `OMPLib`, setting up potentials and solving scattering problems.
-To build the `cpython` shared library for `OMPLib`, compile with the flag `-DBUILD_PY_MODULE=On`. 
-
-Or, even easier, to build the code and install the module all at once, run:
+`OMPLib` uses `pybind11` with `xtensor-python` to provide a `Python` module, `omplibpy`, with functionality to build potentials and drive the solvers in `OMPLib`. See the list of [dependencies]() below for building the module. To manually build the `cpython` shared library for `OMPLib`, compile with the flag `-DBUILD_PY_MODULE=On`. However, the best way to build the code and install the module all at once is using the `setup.py` script, e.g., buy running:
 
 ```
 python setup.py install
@@ -49,7 +46,8 @@ or,
 ```
 pip install .
 ```
-in the main project directory. Now you can simply:
+
+in the main project directory. As long as all the aforementioned dependencies exist in your `Python` environment, `omplibpy` will be built and installed, so you can `import` it, like so:
 ```
 import omplibpy as omp
 
@@ -59,18 +57,18 @@ A = 20
 Z = 48 
 xs_tot, xs_rxn = omp.wlh_xs_n(0.1, A, Z)
 ```
-See `/examples` for simple `Python` scripts using the module.
+See `examples/` for more simple `Python` scripts using the module.
 
 ## dependencies
 
-Handled by `CMake` (just run `cmake ..`, kick your feet up, and relax):
+### handled by `CMake` (just run `cmake ..`, kick your feet up, and relax):
 - [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page)
 - [nlohmann/json](https://github.com/nlohmann/json)
 
-Install yourself (sorry):
+### install yourself (sorry):
 - [Boost](https://www.boost.org/) 1.7+
 
-Install yourself, but only if you want to use the `Python` module, `omplibpy`:
+### install yourself, but only if you want to use the `Python` module, `omplibpy`:
 - [Python](https://www.python.org/) 3.7+
 - [numpy](https://numpy.org/)
 - [xtensor](https://xtensor.readthedocs.io/en/latest/)
@@ -84,20 +82,19 @@ mamba create -n omp boost numpy pybind11 xtensor xtensor-python
 mamba activate omp
 ```
 
-Now, within this environment, you can just run `setup.py` to build `OMPLib` and install the `omp` module.
-
+Now, within the environment `omp`, you can `pip install` as above to build `OMPLib` and install the `omplibpy` module.
 
 ## configuration
 
-Currently, the primary application for `OMPLib` is uncertainty quantification for simple spherical potentials. For that reason, for single-channel calculations, it is set up to solve for the R-Matrix without heap allocations, using `Eigen` statically sized matrices, for speed. The file `src/util/config.hpp` holds important compile time constants, such as `NBASIS`; the number of basis functions to use in the R-Matrix solver. The resulting matrix for a single channel calculation will be represented as an `Eigen::Matrix<std::complex<double>,NBASIS,NBASIS>`. Inversion of this matrix is expected to dominate runtime for typical problems.
-
+Currently, the primary application for `OMPLib` is uncertainty quantification for simple spherical potentials. For that reason, for single-channel calculations, it is set up to solve for the R-Matrix without heap allocations, using `Eigen` statically sized matrices, for speed. The file `src/util/config.hpp` holds important compile time constants, such as `NBASIS`; the number of basis functions to use in the R-Matrix solver. The resulting matrix for a single channel calculation will be represented as an `Eigen::Matrix<std::complex<double>,NBASIS,NBASIS>`. Inversion of these matrices is expected to dominate runtime for typical problems.
 
 ## building a standalone c++ application
-A (rather barebones) file with a main function lives in `exec/omplib.cpp`. To use `OMPLib` as a framework, copy the `exec` directory to a new directory (`my_exec`) of your choice within the main project directory. Change the name of `my_exec/omplib.cpp` (to e.g. `my_main.cpp`) as you see fit, and add the code for your application. Then replace `omplib.cpp` in `my_exec/CMakeLists.txt`, so it reads:
+
+A (rather barebones) file with a main function lives in `exec/omplib.cpp`. To use `OMPLib` in a toolkit/framework paradigm, copy the `exec` directory to a new directory (`my_exec`) of your choice within the main project directory. Change the name of `my_exec/omplib.cpp` (to e.g. `my_main.cpp`) as you see fit, and add the code for your application. Then replace `omplib.cpp` in `my_exec/CMakeLists.txt`, so it reads:
 
 ```
 add_executable(my_exec_name my_main.cpp)
 target_link_libraries(my_exec_name omplib)
 ```
 
-Then, replace `add_subdirectory(exec)` with `add_subdirectory(my_exec)` in the top-level `CMakeLists.txt`. Finally, build as shown above.
+Then, replace `add_subdirectory(exec)` with `add_subdirectory(my_exec)` in the top-level `CMakeLists.txt`. Finally, build as shown above in [quickstart]().
