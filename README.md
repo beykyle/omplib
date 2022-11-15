@@ -89,7 +89,7 @@ Now, within this environment, you can just run `setup.py` to build `OMPLib` and 
 
 ## configuration
 
-Currently, the primary application for `OMPLib` is uncertainty quantification for simple spherical potentials. For that reason, for single-channel calculations, it is set up to solve for the R-Matrix without heap allocations, using `Eigen` statically sized matrices, for speed. The file `src/util/config.hpp` holds important compile time constants, such as `NBASIS`; the number of basis functions to use in the R-Matrix solver.
+Currently, the primary application for `OMPLib` is uncertainty quantification for simple spherical potentials. For that reason, for single-channel calculations, it is set up to solve for the R-Matrix without heap allocations, using `Eigen` statically sized matrices, for speed. The file `src/util/config.hpp` holds important compile time constants, such as `NBASIS`; the number of basis functions to use in the R-Matrix solver. The resulting matrix for a single channel calculation will be represented as an `Eigen::Matrix<std::complex<double>,NBASIS,NBASIS>`. Inversion of this matrix is expected to dominate runtime for typical problems.
 
 
 ## building a standalone c++ application
