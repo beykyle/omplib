@@ -51,8 +51,13 @@ pip install .
 ```
 in the main project directory. Now you can simply:
 ```
-import omplib
-# do stuff
+import omplibpy as omp
+
+# 0.1 Mev neutron incident on 48-Ca
+erg_cms_Mev = 0.1
+A = 20
+Z = 48 
+omp.wlh_xs(0.1, A, Z)
 ```
 See `/examples` for simple `Python` scripts using the module.
 
