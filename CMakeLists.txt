@@ -20,11 +20,6 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "DEBUG")
 endif ()
 
-# for python bindings
-find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
-find_package(xtensor REQUIRED)
-find_package(xtensor-python REQUIRED)
-
 find_package(Boost 1.7 REQUIRED COMPONENTS)
 find_package(Git REQUIRED)
 find_package(Threads)
@@ -42,7 +37,6 @@ if (!MSVC)
 endif (!MSVC)
 
 ### External projects
-#####################
 include(FetchContent)
 
 FetchContent_Declare(
@@ -62,10 +56,20 @@ Message("fetching Eigen")
 FetchContent_MakeAvailable(Eigen)
 set(EIGEN3_INCLUDE_DIR ${eigen_SOURCE_DIR})
 
-## SUBDIRECTORIES
+# directories
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(docs)
 if (NOT SUBPROJECT)
   add_subdirectory(exec)
+endif()
+
+# python bindings
+option(BUILD_PY_MODULE "BUILD_PY_MODULE" OFF)
+if(BUILD_PY_MODULE)
+  find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+  find_package(pybind11 REQUIRED)
+  find_package(xtensor REQUIRED)
+  find_package(xtensor-python REQUIRED)
+  add_subdirectory(omplibpy)
 endif()
