@@ -52,7 +52,7 @@ struct Potential : public GeneralPotential {
     assert(r.back() < d.ch.radius);
     std::vector<cmpl> v(r.size(),0);
     for (size_t i =0; i < r.size(); ++i){
-      v[i] = eval(r[i], d);
+      v[i] = eval(r.at(i), d);
     }
     return v;
   };
