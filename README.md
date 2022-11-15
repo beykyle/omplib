@@ -50,6 +50,11 @@ or,
 pip install .
 ```
 
+Now you can simply:
+```
+
+```
+
 in the main project directory. See `/examples` for example `Python` scripts using the module.
 
 ## dependencies
