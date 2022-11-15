@@ -26,7 +26,7 @@ void print_potential_vals() {
   auto kdn_uq     = KD03Params<n>::build_KDUQ();
   auto wlh_mean   = WLH21Params<n>();
   
-  // let's look at potnetial values for various isotopes on an energy grid
+  // let's look at potential values for various isotopes on an energy grid
   constexpr auto erg_min   = 0.01;
   constexpr auto erg_max   = 10.;
   constexpr auto e_range   = erg_max - erg_min;
@@ -96,8 +96,6 @@ int main(int, char**) {
     return pot.eval_reduced(r, rp, d); 
   };
   
-  // spin-flipping and spin-preserving components of S-Matrix
-  // for each partial wave
   const auto [xs_tot, xs_rxn] = solver.xs(erg, p);
 
   std::cout << "For n - 144Xe scattering at " << erg << " MeV:\n"
