@@ -86,7 +86,7 @@ mamba create -n omp cmake gcc boost gsl pybind11 xtensor xtensor-python
 mamba activate omp
 git clone git@github.com:beykyle/omplib.git
 cd omplib
-py setup.py build 
+py setup.py build -j8
 pip install .
 ```
 
