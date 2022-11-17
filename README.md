@@ -61,6 +61,8 @@ See `examples/` for more simple `Python` scripts using the module.
 
 ## dependencies
 
+This project includes an arguably bloated cadre of dependencies, as a tradeoff for speed of development, readability, and the ability to abdicate responsible for certain complicated components (e.g. special mathematical functions), to much more visible and well validated external libraries. Eventually, I would like for `OMPLib` to be published on [PyPI](https://pypi.org/) , allowing for dependencies to be handled automatically.
+
 ### handled by `CMake` (just run `cmake ..`, kick your feet up, and relax):
 - [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page)
 - [nlohmann/json](https://github.com/nlohmann/json)
@@ -68,7 +70,7 @@ See `examples/` for more simple `Python` scripts using the module.
 
 ### install yourself (sorry):
 - [Boost](https://www.boost.org/) 1.7+
-- [GSL](https://www.gnu.org/software/gsl/)
+- [GSL](https://www.gnu.org/software/gsl/) 2.7
 
 ### install yourself, but only if you want to use the `Python` module, `omplibpy`:
 - [Python](https://www.python.org/) 3.7+
@@ -77,11 +79,15 @@ See `examples/` for more simple `Python` scripts using the module.
 - [pybind11](https://pybind11.readthedocs.io/en/stable/index.html)
 - [xtensor-python](https://xtensor-python.readthedocs.io/en/latest/index.html)
 
-It is highly recomended to use use a package, dependency and environment manager like [mamba](https://mamba.readthedocs.io/en/latest/) or [conda](https://docs.conda.io/en/latest/), especially if you want to use `omplibpy`. Then, setting up an environment to run `OMPLib` from `Python` is as easy as (e.g. using `mamba`):
+It is highly recomended to use use a package, dependency and environment manager like [mamba](https://mamba.readthedocs.io/en/latest/) or [conda](https://docs.conda.io/en/latest/), especially if you want to use `omplibpy`.  Then, setting up an environment to run `OMPLib` from `Python` is as easy as (e.g. using `mamba`):
 
 ```
-mamba create -n omp boost gsl numpy pybind11 xtensor xtensor-python
+mamba create -n omp cmake gcc boost gsl pybind11 xtensor xtensor-python
 mamba activate omp
+git clone git@github.com:beykyle/omplib.git
+cd omplib
+py setup.py build 
+pip install .
 ```
 
 Now, within the environment `omp`, you can `pip install` as above to build `OMPLib` and install the `omplibpy` module.
@@ -89,3 +95,7 @@ Now, within the environment `omp`, you can `pip install` as above to build `OMPL
 ## configuration
 
 Currently, the primary application for `OMPLib` is uncertainty quantification for simple spherical potentials. For that reason, for single-channel calculations, it is set up to solve for the R-Matrix without heap allocations, using `Eigen` statically sized matrices, for speed. The file `src/util/config.hpp` holds important compile time constants, such as `NBASIS`; the number of basis functions to use in the R-Matrix solver. The resulting matrix for a single channel calculation will be represented as an `Eigen::Matrix<std::complex<double>,NBASIS,NBASIS>`. Inversion of these matrices is expected to dominate runtime for typical problems.
+
+## environment 
+
+As mentioned above, it is highly recommended to use a package, dependency and environment manager like [mamba](https://mamba.readthedocs.io/en/latest/) to manage depenencies.
