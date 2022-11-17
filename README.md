@@ -80,7 +80,7 @@ See `examples/` for more simple `Python` scripts using the module.
 It is highly recomended to use use a package, dependency and environment manager like [mamba](https://mamba.readthedocs.io/en/latest/) or [conda](https://docs.conda.io/en/latest/), especially if you want to use `omplibpy`. Then, setting up an environment to run `OMPLib` from `Python` is as easy as (e.g. using `mamba`):
 
 ```
-mamba create -n omp boost numpy pybind11 xtensor xtensor-python
+mamba create -n omp boost gsl numpy pybind11 xtensor xtensor-python
 mamba activate omp
 ```
 
