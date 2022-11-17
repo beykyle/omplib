@@ -96,6 +96,3 @@ Now, within the environment `omp`, you can `pip install` as above to build `OMPL
 
 Currently, the primary application for `OMPLib` is uncertainty quantification for simple spherical potentials. For that reason, for single-channel calculations, it is set up to solve for the R-Matrix without heap allocations, using `Eigen` statically sized matrices, for speed. The file `src/util/config.hpp` holds important compile time constants, such as `NBASIS`; the number of basis functions to use in the R-Matrix solver. The resulting matrix for a single channel calculation will be represented as an `Eigen::Matrix<std::complex<double>,NBASIS,NBASIS>`. Inversion of these matrices is expected to dominate runtime for typical problems.
 
-## environment 
-
-As mentioned above, it is highly recommended to use a package, dependency and environment manager like [mamba](https://mamba.readthedocs.io/en/latest/) to manage depenencies.
