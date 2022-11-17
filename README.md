@@ -64,6 +64,7 @@ See `examples/` for more simple `Python` scripts using the module.
 ### handled by `CMake` (just run `cmake ..`, kick your feet up, and relax):
 - [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page)
 - [nlohmann/json](https://github.com/nlohmann/json)
+- [catch2](https://catch2.docsforge.com/)
 
 ### install yourself (sorry):
 - [Boost](https://www.boost.org/) 1.7+
