@@ -1,6 +1,6 @@
 # cliutils.gitlab.io/modern-cmake/chapters/basics.html
 # https://docs.travis-ci.com/user/languages/cpp/#cmake
-cmake_minimum_required(VERSION 3.12.4)
+cmake_minimum_required(VERSION 3.18)
 
 # TODO this is a bit hacky
 if(DEFINED PROJECT_NAME)
@@ -20,7 +20,7 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "DEBUG")
 endif ()
 
-find_package(Boost 1.7 REQUIRED COMPONENTS)
+find_package(Boost 1.7 REQUIRED)
 find_package(Git REQUIRED)
 find_package(Threads)
 
@@ -67,8 +67,8 @@ endif()
 # python bindings
 option(BUILD_PY_MODULE "BUILD_PY_MODULE" OFF)
 if(BUILD_PY_MODULE)
-  find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
-  find_package(pybind11 REQUIRED)
+  find_package(Python REQUIRED  COMPONENTS Interpreter Development NumPy)
+  find_package(pybind11 REQUIRED CONFIG)
   find_package(xtensor REQUIRED)
   find_package(xtensor-python REQUIRED)
   add_subdirectory(omplibpy)
