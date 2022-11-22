@@ -20,7 +20,8 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "DEBUG")
 endif ()
 
-find_package(Boost 1.7 REQUIRED)
+find_package(GSL REQUIRED)
+find_package(Boost 1.7 REQUIRED COMPONENTS)
 find_package(Git REQUIRED)
 find_package(Threads)
 

@@ -4,7 +4,7 @@ add_library(omplib ${SRC_CPP_FILES})
 target_include_directories(omplib PUBLIC ${CMAKE_SOURCE_DIR}/src)
 
 target_include_directories(omplib PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR} ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
+  ${CMAKE_CURRENT_SOURCE_DIR} ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} ${GSL_INCLUDE_DIRS})
 
 target_compile_options(omplib PUBLIC
   $<$<AND:$<CONFIG:Debug>>:
@@ -14,7 +14,7 @@ target_compile_options(omplib PUBLIC
 )
 
 target_link_libraries(omplib PUBLIC
-  Eigen3::Eigen nlohmann_json::nlohmann_json ${CMAKE_THREAD_LIBS_INIT})
+  Eigen3::Eigen nlohmann_json::nlohmann_json GSL::gsl ${CMAKE_THREAD_LIBS_INIT})
 
 set_target_properties(omplib PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
