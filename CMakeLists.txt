@@ -1,6 +1,6 @@
 # cliutils.gitlab.io/modern-cmake/chapters/basics.html
 # https://docs.travis-ci.com/user/languages/cpp/#cmake
-cmake_minimum_required(VERSION 3.12.4)
+cmake_minimum_required(VERSION 3.18)
 
 # TODO this is a bit hacky
 if(DEFINED PROJECT_NAME)
@@ -20,7 +20,9 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "DEBUG")
 endif ()
 
-find_package (Git REQUIRED)
+find_package(GSL REQUIRED)
+find_package(Boost 1.7 REQUIRED COMPONENTS)
+find_package(Git REQUIRED)
 find_package(Threads)
 
 # stackoverflow.com/a/24414345
@@ -36,18 +38,39 @@ if (!MSVC)
 endif (!MSVC)
 
 ### External projects
-#####################
 include(FetchContent)
 
 FetchContent_Declare(
-  json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
-  )
+  json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+Message("fetching nlohmann/json")
 FetchContent_MakeAvailable(json)
 
-## SUBDIRECTORIES
+FetchContent_Declare(
+  Eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG master
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE)
+set(EIGEN_BUILD_DOC OFF)
+set(EIGEN_BUILD_PKGCONFIG OFF)
+Message("fetching Eigen")
+FetchContent_MakeAvailable(Eigen)
+set(EIGEN3_INCLUDE_DIR ${eigen_SOURCE_DIR})
+
+# directories
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(docs)
 if (NOT SUBPROJECT)
   add_subdirectory(exec)
+endif()
+
+# python bindings
+option(BUILD_PY_MODULE "BUILD_PY_MODULE" OFF)
+if(BUILD_PY_MODULE)
+  find_package(Python REQUIRED  COMPONENTS Interpreter Development NumPy)
+  find_package(pybind11 REQUIRED CONFIG)
+  find_package(xtensor REQUIRED)
+  find_package(xtensor-python REQUIRED)
+  add_subdirectory(omplibpy)
 endif()
