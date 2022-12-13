@@ -35,15 +35,10 @@ Now you can `#include` files like `"potential/params.hpp"` into your project, as
 
 ## python integration
 
-`OMPLib` uses `pybind11` with `xtensor-python` to provide a `Python` module, `omplibpy`, with functionality to build potentials and drive the solvers in `OMPLib`. See the list of [dependencies](https://github.com/beykyle/omplib/blob/main/README.md#install-yourself-but-only-if-you-want-to-use-the-python-module-omplibpy) below for building the module. To manually build the `cpython` shared library for `OMPLib`, compile with the flag `-DBUILD_PY_MODULE=On`, with everything else otherwise unchanged as in [quickstart](https://github.com/beykyle/omplib/blob/main/README.md#quickstart). However, the best way to build the code and install the module all at once is using the `setup.py` script, e.g., buy running:
+`OMPLib` uses `pybind11` with `xtensor-python` to provide a `Python` module, `omplibpy`, with functionality to build potentials and drive the solvers in `OMPLib`. See the list of [dependencies](https://github.com/beykyle/omplib/blob/main/README.md#install-yourself-but-only-if-you-want-to-use-the-python-module-omplibpy) below for building the module. To manually build the `cpython` shared library for `OMPLib`, compile with the flag `-DBUILD_PY_MODULE=On`, with everything else otherwise unchanged as in [quickstart](https://github.com/beykyle/omplib/blob/main/README.md#quickstart). However, the best way to build the code and install the module all at once is using the `setup.py` script, buy running:
 
 ```
-python setup.py install
-```
-
-or, 
-
-```
+python setup.py build
 pip install .
 ```
 
