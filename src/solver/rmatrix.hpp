@@ -88,7 +88,10 @@ public:
       }
       
       // invert C to solve the system 
-      //TODO should be symmetric - probably more efficient inversion
+      //TODO we shouldn't actually invert this matrix, instead factorize it, and store
+      // the decomposition using one of https://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html
+      //TODO should be symmetric - probably more efficient inversion, test different decompositions for speed
+      //TODO LAPACk/BLAS backend
       //TODO GPU/CUSolve?
       Cinv = Cinv.inverse();  
     }
